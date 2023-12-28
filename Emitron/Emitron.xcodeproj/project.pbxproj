@@ -2227,6 +2227,7 @@
 		225670AF240AFD3100BD05AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E7868MF82Z;
 				INFOPLIST_FILE = emitronScreenshots/Info.plist;
@@ -2246,6 +2247,7 @@
 		225670B0240AFD3100BD05AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E7868MF82Z;
 				INFOPLIST_FILE = emitronScreenshots/Info.plist;
@@ -2265,6 +2267,7 @@
 		225670B1240AFD3100BD05AE /* Beta */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E7868MF82Z;
 				INFOPLIST_FILE = emitronScreenshots/Info.plist;
@@ -2354,7 +2357,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.razeware.emitron.ios$(BUNDLE_ID_SUFFIX)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.lukailun.emitron.ios$(BUNDLE_ID_SUFFIX)";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = com.lukailun.emitron.ios.beta;
 				PRODUCT_MODULE_NAME = Emitron;
 				PRODUCT_NAME = raywenderlich;
