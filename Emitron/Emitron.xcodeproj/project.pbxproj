@@ -2590,7 +2590,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lukailun.emitron.ios.dev.EmitronWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lukailun.emitron.ios.EmitronWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2624,7 +2624,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lukailun.emitron.ios.dev.EmitronWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lukailun.emitron.ios.beta.EmitronWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
