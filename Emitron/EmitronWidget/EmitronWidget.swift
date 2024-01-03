@@ -78,5 +78,6 @@ struct EmitronWidget: Widget {
         }
         .configurationDisplayName("RW Tutorials")
         .description("See the latest video tutorials.")
+        .supportedFamilies([.systemMedium])
     }
 }
