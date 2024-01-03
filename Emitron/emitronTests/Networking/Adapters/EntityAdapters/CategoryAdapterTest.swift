@@ -26,84 +26,84 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import SwiftyJSON
 @testable import Emitron
+import SwiftyJSON
+import XCTest
 
 class CategoryAdapterTest: XCTestCase {
-  let sampleResource: JSON = [
-    "id": "1234",
-    "type": "categories",
-    "attributes": [
-      "name": "Algorithms & Data Structures",
-      "uri": "rw://carolus/categories/1234",
-      "ordinal": 5
+    let sampleResource: JSON = [
+        "id": "1234",
+        "type": "categories",
+        "attributes": [
+            "name": "Algorithms & Data Structures",
+            "uri": "rw://carolus/categories/1234",
+            "ordinal": 5,
+        ],
     ]
-  ]
-  
-  func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
-    let json: JSON = [
-      "data": [
-        dict
-      ]
-    ]
-    
-    let document = JSONAPIDocument(json)
-    return document.data.first!
-  }
 
-  func testValidResourceProcessedCorrectly() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let category = try CategoryAdapter.process(resource: resource)
-    
-    XCTAssertEqual(1234, category.id)
-    XCTAssertEqual("Algorithms & Data Structures", category.name)
-    XCTAssertEqual("rw://carolus/categories/1234", category.uri)
-    XCTAssertEqual(5, category.ordinal)
-  }
-  
-  func testInvalidTypeThrows() throws {
-    var sample = sampleResource
-    sample["type"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+    func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
+        let json: JSON = [
+            "data": [
+                dict,
+            ],
+        ]
+
+        let document = JSONAPIDocument(json)
+        return document.data.first!
     }
-  }
-  
-  func testMissingNameThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testValidResourceProcessedCorrectly() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let category = try CategoryAdapter.process(resource: resource)
+
+        XCTAssertEqual(1234, category.id)
+        XCTAssertEqual("Algorithms & Data Structures", category.name)
+        XCTAssertEqual("rw://carolus/categories/1234", category.uri)
+        XCTAssertEqual(5, category.ordinal)
     }
-  }
-  
-  func testMissingUriThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "uri")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testInvalidTypeThrows() throws {
+        var sample = sampleResource
+        sample["type"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testMissingOrdinalThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testMissingNameThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
     }
-  }
+
+    func testMissingUriThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "uri")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testMissingOrdinalThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try CategoryAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
 }

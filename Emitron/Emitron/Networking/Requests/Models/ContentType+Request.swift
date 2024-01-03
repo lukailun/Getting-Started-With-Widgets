@@ -27,18 +27,18 @@
 // THE SOFTWARE.
 
 extension ContentType {
-  var requestValue: String {
-    switch self {
-    case .collection:
-      return "collection"
-    case .episode:
-      return "episode"
-    case .screencast:
-      return "screencast"
-    case .article:
-      return "article"
-    case .product:
-      return "product"
+    var requestValue: String {
+        switch self {
+        case .collection:
+            return "collection"
+        case .episode:
+            return "episode"
+        case .screencast:
+            return "screencast"
+        case .article:
+            return "article"
+        case .product:
+            return "product"
+        }
     }
-  }
 }

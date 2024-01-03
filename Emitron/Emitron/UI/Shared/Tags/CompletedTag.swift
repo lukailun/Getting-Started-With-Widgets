@@ -29,28 +29,28 @@
 import SwiftUI
 
 struct CompletedTag: View {
-  var body: some View {
-    TagView(
-      text: "completed",
-      textColor: .accentTagForeground,
-      backgroundColor: .accentTagBackground,
-      borderColor: .accentTagBackground,
-      image: .checkmark
-    )
-  }
+    var body: some View {
+        TagView(
+            text: "completed",
+            textColor: .accentTagForeground,
+            backgroundColor: .accentTagBackground,
+            borderColor: .accentTagBackground,
+            image: .checkmark
+        )
+    }
 }
 
 struct CompletedTag_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack(spacing: 10) {
-      completedTag.colorScheme(.light)
-      completedTag.colorScheme(.dark)
+    static var previews: some View {
+        VStack(spacing: 10) {
+            completedTag.colorScheme(.light)
+            completedTag.colorScheme(.dark)
+        }
     }
-  }
-  
-  static var completedTag: some View {
-    CompletedTag()
-      .padding()
-      .background(Color.backgroundColor)
-  }
+
+    static var completedTag: some View {
+        CompletedTag()
+            .padding()
+            .background(Color.backgroundColor)
+    }
 }

@@ -28,11 +28,11 @@
 
 import GRDB
 
-extension Bookmark: FetchableRecord, TableRecord, PersistableRecord { }
+extension Bookmark: FetchableRecord, TableRecord, PersistableRecord {}
 
 extension Bookmark {
-  static let content = belongsTo(Content.self)
-  var content: QueryInterfaceRequest<Content> {
-    request(for: Bookmark.content)
-  }
+    static let content = belongsTo(Content.self)
+    var content: QueryInterfaceRequest<Content> {
+        request(for: Bookmark.content)
+    }
 }

@@ -29,26 +29,26 @@
 @testable import Emitron
 
 class VideosServiceMock: VideosService {
-  private(set) var videoRequestedCount = 0
-  private(set) var getVideoStreamCount = 0
-  private(set) var getVideoDownloadCount = 0
-  
-  init() {
-    super.init(client: RWAPI(authToken: ""))
-  }
-  
-  func reset() {
-    videoRequestedCount = 0
-    getVideoStreamCount = 0
-    getVideoDownloadCount = 0
-  }
-  
-  override func getVideoStream(for id: Int, completion: @escaping (Result<StreamVideoRequest.Response, RWAPIError>) -> Void) {
-    getVideoStreamCount += 1
-  }
-  
-  override func getVideoDownload(for id: Int, completion: @escaping (Result<DownloadVideoRequest.Response, RWAPIError>) -> Void) {
-    getVideoDownloadCount += 1
-    completion(Result.success(AttachmentTest.Mocks.downloads.0))
-  }
+    private(set) var videoRequestedCount = 0
+    private(set) var getVideoStreamCount = 0
+    private(set) var getVideoDownloadCount = 0
+
+    init() {
+        super.init(client: RWAPI(authToken: ""))
+    }
+
+    func reset() {
+        videoRequestedCount = 0
+        getVideoStreamCount = 0
+        getVideoDownloadCount = 0
+    }
+
+    override func getVideoStream(for _: Int, completion _: @escaping (Result<StreamVideoRequest.Response, RWAPIError>) -> Void) {
+        getVideoStreamCount += 1
+    }
+
+    override func getVideoDownload(for _: Int, completion: @escaping (Result<DownloadVideoRequest.Response, RWAPIError>) -> Void) {
+        getVideoDownloadCount += 1
+        completion(Result.success(AttachmentTest.Mocks.downloads.0))
+    }
 }

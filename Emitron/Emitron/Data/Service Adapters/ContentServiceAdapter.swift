@@ -29,5 +29,5 @@
 typealias ContentServiceAdapterResponse = Result<(contentIds: [Int], cacheUpdate: DataCacheUpdate, totalResultCount: Int), RWAPIError>
 
 protocol ContentServiceAdapter {
-  func findContent(parameters: [Parameter], completion: @escaping(_ response: ContentServiceAdapterResponse) -> Void)
+    func findContent(parameters: [Parameter], completion: @escaping (_ response: ContentServiceAdapterResponse) -> Void)
 }

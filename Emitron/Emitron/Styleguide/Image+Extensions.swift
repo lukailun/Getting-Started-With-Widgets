@@ -28,36 +28,36 @@
 
 import SwiftUI
 
-extension Image {  
-  static var closeWhite: Image {
-    Image("closeWhite")
-  }
-  
-  static var close: Image {
-    Image("close")
-  }
-  
-  static var padlock: Image {
-    Image("padlock")
-  }
-  
-  static var bookmark: Image {
-    Image("bookmark")
-  }
-  
-  static var download: Image {
-    Image("download")
-  }
-  
-  static var materialIconPlay: Image {
-    Image("materialIconPlay")
-  }
-  
-  static var checkmark: Image {
-    Image("checkmark")
-  }
-  
-  static var artworkDownloadSwitch: Image {
-    Image("artworkDownloadSwitch")
-  }
+extension Image {
+    static var closeWhite: Image {
+        Image("closeWhite")
+    }
+
+    static var close: Image {
+        Image("close")
+    }
+
+    static var padlock: Image {
+        Image("padlock")
+    }
+
+    static var bookmark: Image {
+        Image("bookmark")
+    }
+
+    static var download: Image {
+        Image("download")
+    }
+
+    static var materialIconPlay: Image {
+        Image("materialIconPlay")
+    }
+
+    static var checkmark: Image {
+        Image("checkmark")
+    }
+
+    static var artworkDownloadSwitch: Image {
+        Image("artworkDownloadSwitch")
+    }
 }

@@ -29,18 +29,18 @@
 import SwiftUI
 
 extension DownloadDeletionConfirmation {
-  var alert: Alert {
-    Alert(
-      title: Text(title),
-      message: Text(message),
-      primaryButton: .destructive(Text("Delete"), action: confirm),
-      secondaryButton: .cancel()
-    )
-  }
+    var alert: Alert {
+        Alert(
+            title: Text(title),
+            message: Text(message),
+            primaryButton: .destructive(Text("Delete"), action: confirm),
+            secondaryButton: .cancel()
+        )
+    }
 }
 
 extension DownloadDeletionConfirmation: Identifiable {
-  var id: Int {
-    contentId
-  }
+    var id: Int {
+        contentId
+    }
 }

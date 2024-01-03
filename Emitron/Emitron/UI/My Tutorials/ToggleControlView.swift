@@ -29,66 +29,66 @@
 import SwiftUI
 
 struct ToggleControlView: View {
-  @State var toggleState: MyTutorialsState
-  var toggleUpdated: ((MyTutorialsState) -> Void)?
-  
-  var body: some View {
-    ZStack(alignment: .bottom) {
-      RoundedRectangle(cornerRadius: 1)
-        .fill(Color.toggleLineDeselected)
-        .frame(height: 2)
-      
-      HStack {
-        toggleButton(for: .inProgress)
-        toggleButton(for: .completed)
-        toggleButton(for: .bookmarked)
-      }
+    @State var toggleState: MyTutorialsState
+    var toggleUpdated: ((MyTutorialsState) -> Void)?
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            RoundedRectangle(cornerRadius: 1)
+                .fill(Color.toggleLineDeselected)
+                .frame(height: 2)
+
+            HStack {
+                toggleButton(for: .inProgress)
+                toggleButton(for: .completed)
+                toggleButton(for: .bookmarked)
+            }
+        }
     }
-  }
-  
-  private func toggleButton(for state: MyTutorialsState) -> some View {
-    Button(action: {
-      guard state != self.toggleState else { return }
-      
-      self.toggleState = state
-      self.toggleUpdated?(state)
-      MessageBus.current.dismiss()
-    }) {
-      toggleButtonContent(for: state)
+
+    private func toggleButton(for state: MyTutorialsState) -> some View {
+        Button(action: {
+            guard state != self.toggleState else { return }
+
+            self.toggleState = state
+            self.toggleUpdated?(state)
+            MessageBus.current.dismiss()
+        }) {
+            toggleButtonContent(for: state)
+        }
     }
-  }
-  
-  private func toggleButtonContent(for state: MyTutorialsState) -> some View {
-    VStack {
-      Text(state.displayString)
-        .font(.uiButtonLabelSmall)
-        .foregroundColor(toggleState == state ? Color.toggleTextSelected : .toggleTextDeselected)
-      
-      RoundedRectangle(cornerRadius: 1)
-        .fill(toggleState == state ? Color.toggleLineSelected : .toggleLineDeselected)
-        .frame(height: 2)
+
+    private func toggleButtonContent(for state: MyTutorialsState) -> some View {
+        VStack {
+            Text(state.displayString)
+                .font(.uiButtonLabelSmall)
+                .foregroundColor(toggleState == state ? Color.toggleTextSelected : .toggleTextDeselected)
+
+            RoundedRectangle(cornerRadius: 1)
+                .fill(toggleState == state ? Color.toggleLineSelected : .toggleLineDeselected)
+                .frame(height: 2)
+        }
     }
-  }
 }
 
 #if DEBUG
-struct ToggleControlView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      tabs.colorScheme(.light)
-      tabs.colorScheme(.dark)
+    struct ToggleControlView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                tabs.colorScheme(.light)
+                tabs.colorScheme(.dark)
+            }
+        }
+
+        static var tabs: some View {
+            VStack(spacing: 40) {
+                ToggleControlView(toggleState: .inProgress)
+                ToggleControlView(toggleState: .completed)
+                ToggleControlView(toggleState: .bookmarked)
+            }
+            .padding([.vertical], 40)
+            .padding([.horizontal], 10)
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var tabs: some View {
-    VStack(spacing: 40) {
-      ToggleControlView(toggleState: .inProgress)
-      ToggleControlView(toggleState: .completed)
-      ToggleControlView(toggleState: .bookmarked)
-    }
-      .padding([.vertical], 40)
-      .padding([.horizontal], 10)
-      .background(Color.backgroundColor)
-  }
-}
 #endif

@@ -26,61 +26,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 @testable import Emitron
+import XCTest
 
 class PersistenceStore_UserKeychainTest: XCTestCase {
-  
-  var persistenceStore: PersistenceStore!
-  
-  private let userDictionary = [
-    "external_id": "sample_external_id",
-    "email": "email@example.com",
-    "username": "sample_username",
-    "avatar_url": "http://example.com/avatar.jpg",
-    "name": "Sample Name",
-    "token": "Samaple.Token"
-  ]
-  
-  override func setUp() {
-    super.setUp()
-    // swiftlint:disable:next force_try
-    let database = try! EmitronDatabase.testDatabase()
-    persistenceStore = PersistenceStore(db: database)
-  }
-  
-  override func tearDown() {
-    super.tearDown()
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    persistenceStore.removeUserFromKeychain()
-  }
-  
-  func testPersistenceToKeychain() {
-    guard let user = User(dictionary: userDictionary) else {
-      return XCTFail("User not found")
+    var persistenceStore: PersistenceStore!
+
+    private let userDictionary = [
+        "external_id": "sample_external_id",
+        "email": "email@example.com",
+        "username": "sample_username",
+        "avatar_url": "http://example.com/avatar.jpg",
+        "name": "Sample Name",
+        "token": "Samaple.Token",
+    ]
+
+    override func setUp() {
+        super.setUp()
+        // swiftlint:disable:next force_try
+        let database = try! EmitronDatabase.testDatabase()
+        persistenceStore = PersistenceStore(db: database)
     }
-    
-    XCTAssert(persistenceStore.persistUserToKeychain(user: user))
-    
-    guard let restoredUser = persistenceStore.userFromKeychain() else {
-      return XCTFail("Unable to restore user from Keychain")
+
+    override func tearDown() {
+        super.tearDown()
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        persistenceStore.removeUserFromKeychain()
     }
-    
-    XCTAssertEqual(user, restoredUser)
-  }
-  
-  func testRemovalOfUserFromKeychain() {
-    XCTAssertNil(persistenceStore.userFromKeychain())
-    
-    guard let user = User(dictionary: userDictionary) else {
-      return XCTFail("User not found")
+
+    func testPersistenceToKeychain() {
+        guard let user = User(dictionary: userDictionary) else {
+            return XCTFail("User not found")
+        }
+
+        XCTAssert(persistenceStore.persistUserToKeychain(user: user))
+
+        guard let restoredUser = persistenceStore.userFromKeychain() else {
+            return XCTFail("Unable to restore user from Keychain")
+        }
+
+        XCTAssertEqual(user, restoredUser)
     }
-    
-    XCTAssert(persistenceStore.persistUserToKeychain(user: user))
-    XCTAssertNotNil(persistenceStore.userFromKeychain())
-    
-    XCTAssert(persistenceStore.removeUserFromKeychain())
-    
-    XCTAssertNil(persistenceStore.userFromKeychain())
-  }
+
+    func testRemovalOfUserFromKeychain() {
+        XCTAssertNil(persistenceStore.userFromKeychain())
+
+        guard let user = User(dictionary: userDictionary) else {
+            return XCTFail("User not found")
+        }
+
+        XCTAssert(persistenceStore.persistUserToKeychain(user: user))
+        XCTAssertNotNil(persistenceStore.userFromKeychain())
+
+        XCTAssert(persistenceStore.removeUserFromKeychain())
+
+        XCTAssertNil(persistenceStore.userFromKeychain())
+    }
 }

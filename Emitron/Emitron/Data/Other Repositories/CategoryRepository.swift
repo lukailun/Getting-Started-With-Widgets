@@ -29,72 +29,72 @@
 import Combine
 
 class CategoryRepository: Refreshable {
-  let repository: Repository
-  let service: CategoriesService
+    let repository: Repository
+    let service: CategoriesService
 
-  var refreshableCheckTimeSpan: RefreshableTimeSpan = .long
-  
-  @Published private (set) var state: DataState = .initial
-  @Published private (set) var categories: [Category] = []
-  
-  init(repository: Repository, service: CategoriesService) {
-    self.repository = repository
-    self.service = service
-    populate()
-  }
-  
-  func populate() {
-    loadFromPersistentStore()
-    
-    if shouldRefresh || categories.isEmpty {
-      fetchCategoriesAndUpdatePersistentStore()
+    var refreshableCheckTimeSpan: RefreshableTimeSpan = .long
+
+    @Published private(set) var state: DataState = .initial
+    @Published private(set) var categories: [Category] = []
+
+    init(repository: Repository, service: CategoriesService) {
+        self.repository = repository
+        self.service = service
+        populate()
     }
-  }
-  
-  private func loadFromPersistentStore() {
-    do {
-      self.categories = try repository.categoryList()
-      state = .hasData
-    } catch {
-      self.state = .failed
-      Failure
-        .fetch(from: "CategoryRepository", reason: error.localizedDescription)
-        .log()
+
+    func populate() {
+        loadFromPersistentStore()
+
+        if shouldRefresh || categories.isEmpty {
+            fetchCategoriesAndUpdatePersistentStore()
+        }
     }
-  }
-  
-  private func saveToPersistentStore() {
-    do {
-      try self.repository.syncCategoryList(self.categories)
-    } catch {
-      Failure
-        .fetch(from: "CategoryRepository", reason: error.localizedDescription)
-        .log()
+
+    private func loadFromPersistentStore() {
+        do {
+            categories = try repository.categoryList()
+            state = .hasData
+        } catch {
+            state = .failed
+            Failure
+                .fetch(from: "CategoryRepository", reason: error.localizedDescription)
+                .log()
+        }
     }
-  }
-  
-  private func fetchCategoriesAndUpdatePersistentStore() {
-    if state == .loading || state == .loadingAdditional {
-      return
+
+    private func saveToPersistentStore() {
+        do {
+            try repository.syncCategoryList(categories)
+        } catch {
+            Failure
+                .fetch(from: "CategoryRepository", reason: error.localizedDescription)
+                .log()
+        }
     }
-    
-    state = .loading
-    
-    service.allCategories { [weak self] result in
-      guard let self = self else { return }
-      
-      switch result {
-      case .failure(let error):
-        self.state = .failed
-        Failure
-        .fetch(from: "CategoryRepository", reason: error.localizedDescription)
-        .log()
-      case .success(let categories):
-        self.categories = categories
-        self.state = .hasData
-        self.saveToPersistentStore()
-        self.saveOrReplaceRefreshableUpdateDate()
-      }
+
+    private func fetchCategoriesAndUpdatePersistentStore() {
+        if state == .loading || state == .loadingAdditional {
+            return
+        }
+
+        state = .loading
+
+        service.allCategories { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case let .failure(error):
+                self.state = .failed
+                Failure
+                    .fetch(from: "CategoryRepository", reason: error.localizedDescription)
+                    .log()
+            case let .success(categories):
+                self.categories = categories
+                self.state = .hasData
+                self.saveToPersistentStore()
+                self.saveOrReplaceRefreshableUpdateDate()
+            }
+        }
     }
-  }
 }

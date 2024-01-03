@@ -29,72 +29,72 @@
 import SwiftUI
 
 struct PagerView<Content: View>: View {
-  @State private var currentIndex: Int = 0
-  @GestureState private var translation: CGFloat = 0
-  
-  let pageCount: Int
-  let showIndicator: Bool
-  let content: Content
-  
-  init(pageCount: Int, showIndicator: Bool = false, @ViewBuilder content: () -> Content) {
-    self.pageCount = pageCount
-    self.showIndicator = showIndicator
-    self.content = content()
-  }
-  
-  var body: some View {
-    ZStack(alignment: .bottom) {
-      GeometryReader { proxy in
-        HStack(spacing: 0) {
-          self.content
-            .frame(width: proxy.size.width)
-        }
-          .frame(width: proxy.size.width, alignment: .leading)
-          .offset(x: -CGFloat(self.currentIndex) * proxy.size.width)
-          .offset(x: self.translation)
-        .animation(.interactiveSpring())
-          .gesture(
-            DragGesture()
-              .updating(self.$translation) { value, state, _ in
-                state = value.translation.width
-              }
-              .onEnded { value in
-                let offset = value.translation.width / proxy.size.width
-                if abs(offset) < 0.1 {
-                  return
-                }
-                let newIndex = offset < 0 ? self.currentIndex + 1 : self.currentIndex - 1
-                self.currentIndex = Int(newIndex).clamped(to: 0...(self.pageCount - 1))
-              }
-          )
-      }
-      
-      if showIndicator {
-        PagingIndicatorView(pageCount: pageCount, currentIndex: $currentIndex)
-          .padding()
-      }
+    @State private var currentIndex: Int = 0
+    @GestureState private var translation: CGFloat = 0
+
+    let pageCount: Int
+    let showIndicator: Bool
+    let content: Content
+
+    init(pageCount: Int, showIndicator: Bool = false, @ViewBuilder content: () -> Content) {
+        self.pageCount = pageCount
+        self.showIndicator = showIndicator
+        self.content = content()
     }
-  }
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            GeometryReader { proxy in
+                HStack(spacing: 0) {
+                    self.content
+                        .frame(width: proxy.size.width)
+                }
+                .frame(width: proxy.size.width, alignment: .leading)
+                .offset(x: -CGFloat(self.currentIndex) * proxy.size.width)
+                .offset(x: self.translation)
+                .animation(.interactiveSpring())
+                .gesture(
+                    DragGesture()
+                        .updating(self.$translation) { value, state, _ in
+                            state = value.translation.width
+                        }
+                        .onEnded { value in
+                            let offset = value.translation.width / proxy.size.width
+                            if abs(offset) < 0.1 {
+                                return
+                            }
+                            let newIndex = offset < 0 ? self.currentIndex + 1 : self.currentIndex - 1
+                            self.currentIndex = Int(newIndex).clamped(to: 0 ... (self.pageCount - 1))
+                        }
+                )
+            }
+
+            if showIndicator {
+                PagingIndicatorView(pageCount: pageCount, currentIndex: $currentIndex)
+                    .padding()
+            }
+        }
+    }
 }
 
 #if DEBUG
-struct PagerView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      PagerView(pageCount: 3) {
-        Color.red
-        Color.blue
-        Color.green
-      }
-      
-      PagerView(pageCount: 5, showIndicator: true) {
-        Color.red
-        Color.blue
-        Color.green
-        Color.yellow
-        Color.purple
-      }
+    struct PagerView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                PagerView(pageCount: 3) {
+                    Color.red
+                    Color.blue
+                    Color.green
+                }
+
+                PagerView(pageCount: 5, showIndicator: true) {
+                    Color.red
+                    Color.blue
+                    Color.green
+                    Color.yellow
+                    Color.purple
+                }
+            }
+        }
     }
-  }
-}
 #endif

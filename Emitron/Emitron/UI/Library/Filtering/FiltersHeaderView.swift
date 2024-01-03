@@ -29,94 +29,94 @@
 import SwiftUI
 
 private enum Layout {
-  enum Padding {
-    static let overall: CGFloat = 12
-    static let textTrailing: CGFloat = 15
-  }
-  
-  static let cornerRadius: CGFloat = 9
-  static let imageSize: CGFloat = 15
+    enum Padding {
+        static let overall: CGFloat = 12
+        static let textTrailing: CGFloat = 15
+    }
+
+    static let cornerRadius: CGFloat = 9
+    static let imageSize: CGFloat = 15
 }
 
 struct FiltersHeaderView: View {
-  var filterGroup: FilterGroup
-  @ObservedObject var filters: Filters
-  
-  @State var isExpanded: Bool = false
-  
-  var body: some View {
-    VStack {
-      Button(action: {
-        self.isExpanded.toggle()
-      }) {
-        HStack {
-          Text(filterGroup.type.name)
-            .foregroundColor(.titleText)
-            .font(.uiLabelBold)
-          
-          Spacer()
-          
-          Text(isExpanded ? "Hide (\(numOfOnFilters))" : "Show (\(numOfOnFilters))")
-            .foregroundColor(.contentText)
-            .font(.uiLabelBold)
+    var filterGroup: FilterGroup
+    @ObservedObject var filters: Filters
+
+    @State var isExpanded: Bool = false
+
+    var body: some View {
+        VStack {
+            Button(action: {
+                self.isExpanded.toggle()
+            }) {
+                HStack {
+                    Text(filterGroup.type.name)
+                        .foregroundColor(.titleText)
+                        .font(.uiLabelBold)
+
+                    Spacer()
+
+                    Text(isExpanded ? "Hide (\(numOfOnFilters))" : "Show (\(numOfOnFilters))")
+                        .foregroundColor(.contentText)
+                        .font(.uiLabelBold)
+                }
+                .padding([.top, .bottom], Layout.Padding.overall)
+                .padding([.trailing, .leading], Layout.Padding.textTrailing)
+                .background(Color.filterHeaderBackground)
+                .cornerRadius(Layout.cornerRadius)
+            }
+            .accessibility(label: Text(filterGroup.type.name))
+
+            if isExpanded {
+                expandedView
+            }
         }
-        .padding([.top, .bottom], Layout.Padding.overall)
-        .padding([.trailing, .leading], Layout.Padding.textTrailing)
-        .background(Color.filterHeaderBackground)
-        .cornerRadius(Layout.cornerRadius)
-      }
-        .accessibility(label: Text(filterGroup.type.name))
-        
-      if isExpanded {
-        expandedView
-      }
     }
-  }
-  
-  private var numOfOnFilters: Int {
-    filterGroup.filters.filter(\.isOn).count
-  }
-  
-  private var expandedView: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      ForEach(Array(filterGroup.filters), id: \.self) { filter in
-        TitleCheckmarkView(name: filter.filterName, isOn: filter.isOn, onChange: { _ in
-          filter.isOn.toggle()
-          self.filters.update(with: filter)
-        })
-          .padding([.leading, .trailing], 14)
-      }
+
+    private var numOfOnFilters: Int {
+        filterGroup.filters.filter(\.isOn).count
     }
-  }
+
+    private var expandedView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(Array(filterGroup.filters), id: \.self) { filter in
+                TitleCheckmarkView(name: filter.filterName, isOn: filter.isOn, onChange: { _ in
+                    filter.isOn.toggle()
+                    self.filters.update(with: filter)
+                })
+                .padding([.leading, .trailing], 14)
+            }
+        }
+    }
 }
 
 #if DEBUG
-struct FilterGroupView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      filters.colorScheme(.dark)
-      filters.colorScheme(.light)
+    struct FilterGroupView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                filters.colorScheme(.dark)
+                filters.colorScheme(.light)
+            }
+        }
+
+        static var filters: some View {
+            let filters = Param
+                .filters(for: [.difficulties(difficulties: [.beginner, .intermediate, .advanced])])
+                .map { Filter(groupType: .difficulties, param: $0, isOn: false) }
+
+            return VStack {
+                FiltersHeaderView(
+                    filterGroup: FilterGroup(type: .difficulties, filters: filters),
+                    filters: Filters(),
+                    isExpanded: true
+                )
+                FiltersHeaderView(
+                    filterGroup: FilterGroup(type: .categories, filters: filters),
+                    filters: Filters()
+                )
+            }
+            .padding()
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var filters: some View {
-    let filters = Param
-      .filters(for: [.difficulties(difficulties: [.beginner, .intermediate, .advanced])])
-      .map { Filter(groupType: .difficulties, param: $0, isOn: false) }
-    
-    return VStack {
-      FiltersHeaderView(
-        filterGroup: FilterGroup(type: .difficulties, filters: filters),
-        filters: Filters(),
-        isExpanded: true
-      )
-      FiltersHeaderView(
-        filterGroup: FilterGroup(type: .categories, filters: filters),
-        filters: Filters()
-      )
-    }
-      .padding()
-      .background(Color.backgroundColor)
-  }
-}
 #endif

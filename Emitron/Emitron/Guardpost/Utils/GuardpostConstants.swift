@@ -27,5 +27,5 @@
 // THE SOFTWARE.
 
 extension String {
-  static let hmacToRemove: String = "HMAC with SHA256: "
+    static let hmacToRemove: String = "HMAC with SHA256: "
 }

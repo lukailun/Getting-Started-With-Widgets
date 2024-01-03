@@ -29,18 +29,18 @@
 @testable import Emitron
 
 extension User {
-  static var withDownloads: User {
-    noPermissions.with(permissions: [.downloadVideos])
-  }
-  
-  static var noPermissions: User {
-    User(dictionary: [
-      "external_id": "EXTERNAL_ID",
-      "email": "hello@example.com",
-      "username": "USERNAME",
-      "avatar_url": "https://example.com/avatar.png",
-      "name": "NAME",
-      "token": "THIS_IS_A_TOKEN"
-    ])!
-  }
+    static var withDownloads: User {
+        noPermissions.with(permissions: [.downloadVideos])
+    }
+
+    static var noPermissions: User {
+        User(dictionary: [
+            "external_id": "EXTERNAL_ID",
+            "email": "hello@example.com",
+            "username": "USERNAME",
+            "avatar_url": "https://example.com/avatar.png",
+            "name": "NAME",
+            "token": "THIS_IS_A_TOKEN",
+        ])!
+    }
 }

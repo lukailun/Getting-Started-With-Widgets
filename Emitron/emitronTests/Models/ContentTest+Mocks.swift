@@ -26,37 +26,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+@testable import Emitron
 import Foundation
 import SwiftyJSON
-@testable import Emitron
 
 extension ContentTest {
-  enum Mocks {
-    static var collection: (Content, DataCacheUpdate) {
-      loadMockFrom(filename: "ContentDetails_Collection")
+    enum Mocks {
+        static var collection: (Content, DataCacheUpdate) {
+            loadMockFrom(filename: "ContentDetails_Collection")
+        }
+
+        static var screencast: (Content, DataCacheUpdate) {
+            loadMockFrom(filename: "ContentDetails_Screencast")
+        }
+
+        private static func loadMockFrom(filename: String) -> (Content, DataCacheUpdate) {
+            do {
+                let bundle = Bundle(for: ContentTest.self)
+                let fileURL = bundle.url(forResource: filename, withExtension: "json")
+                let data = try Data(contentsOf: fileURL!)
+                let json = try JSON(data: data)
+
+                let document = JSONAPIDocument(json)
+                let resource = document.data.first!
+                let content = try ContentAdapter.process(resource: resource)
+                let cacheUpdate = try DataCacheUpdate.loadFrom(document: document)
+
+                return (content, cacheUpdate)
+            } catch {
+                preconditionFailure("Unable to load mock Content from JSON: \(error)")
+            }
+        }
     }
-    
-    static var screencast: (Content, DataCacheUpdate) {
-      loadMockFrom(filename: "ContentDetails_Screencast")
-    }
-    
-    private static func loadMockFrom(filename: String) -> (Content, DataCacheUpdate) {
-      do {
-        
-        let bundle = Bundle(for: ContentTest.self)
-        let fileURL = bundle.url(forResource: filename, withExtension: "json")
-        let data = try Data(contentsOf: fileURL!)
-        let json = try JSON(data: data)
-        
-        let document = JSONAPIDocument(json)
-        let resource = document.data.first!
-        let content = try ContentAdapter.process(resource: resource)
-        let cacheUpdate = try DataCacheUpdate.loadFrom(document: document)
-        
-        return (content, cacheUpdate)
-      } catch {
-        preconditionFailure("Unable to load mock Content from JSON: \(error)")
-      }
-    }
-  }
 }

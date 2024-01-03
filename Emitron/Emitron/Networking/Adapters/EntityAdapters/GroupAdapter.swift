@@ -27,28 +27,28 @@
 // THE SOFTWARE.
 
 struct GroupAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship]) throws -> Group {
-    guard resource.entityType == .group else { throw EntityAdapterError.invalidResourceTypeForAdapter }
-    
-    guard let name = resource.attributes["name"] as? String,
-      let ordinal = resource.attributes["ordinal"] as? Int
-      else {
-        throw EntityAdapterError.invalidOrMissingAttributes
+    static func process(resource: JSONAPIResource, relationships: [EntityRelationship]) throws -> Group {
+        guard resource.entityType == .group else { throw EntityAdapterError.invalidResourceTypeForAdapter }
+
+        guard let name = resource.attributes["name"] as? String,
+              let ordinal = resource.attributes["ordinal"] as? Int
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        guard let parentContent = relationships.first(where: { relationship -> Bool in
+            relationship.from.type == .content
+                && relationship.to.id == resource.id
+                && relationship.to.type == .group
+        }) else {
+            throw EntityAdapterError.invalidOrMissingRelationships
+        }
+        let contentId = parentContent.from.id
+
+        return Group(id: resource.id,
+                     name: name,
+                     description: resource.attributes["description"] as? String,
+                     ordinal: ordinal,
+                     contentId: contentId)
     }
-    
-    guard let parentContent = relationships.first(where: { relationship -> Bool in
-      relationship.from.type == .content
-        && relationship.to.id == resource.id
-        && relationship.to.type == .group
-    }) else {
-      throw EntityAdapterError.invalidOrMissingRelationships
-    }
-    let contentId = parentContent.from.id
-    
-    return Group(id: resource.id,
-                 name: name,
-                 description: resource.attributes["description"] as? String,
-                 ordinal: ordinal,
-                 contentId: contentId)
-  }
 }

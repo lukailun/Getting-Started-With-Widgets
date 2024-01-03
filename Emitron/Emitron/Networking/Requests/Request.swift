@@ -30,38 +30,38 @@ import struct Foundation.Data
 import SwiftyJSON
 
 enum HTTPMethod: String {
-  case GET
-  case POST
-  case PUT
-  case DELETE
-  case PATCH
+    case GET
+    case POST
+    case PUT
+    case DELETE
+    case PATCH
 }
 
 protocol Request {
-  associatedtype Response
+    associatedtype Response
 
-  var method: HTTPMethod { get }
-  var path: String { get }
-  var additionalHeaders: [String: String] { get }
-  var body: Data? { get }
+    var method: HTTPMethod { get }
+    var path: String { get }
+    var additionalHeaders: [String: String] { get }
+    var body: Data? { get }
 
-  func handle(response: Data) throws -> Response
+    func handle(response: Data) throws -> Response
 }
 
 // Default implementation to .GET
 extension Request {
-  var method: HTTPMethod { .GET }
-  var body: Data? { nil }
+    var method: HTTPMethod { .GET }
+    var body: Data? { nil }
 }
 
 enum RequestError: Error {
-  case responseMissingRequiredMeta(field: String?)
-  
-  var localizedDescription: String {
-    let prefix = "RequestError::"
-    switch self {
-    case .responseMissingRequiredMeta(field: let field):
-      return "\(prefix)ResponseMissingRequiredMeta: [Field: \(field ?? "UNKNOWN")]"
+    case responseMissingRequiredMeta(field: String?)
+
+    var localizedDescription: String {
+        let prefix = "RequestError::"
+        switch self {
+        case let .responseMissingRequiredMeta(field: field):
+            return "\(prefix)ResponseMissingRequiredMeta: [Field: \(field ?? "UNKNOWN")]"
+        }
     }
-  }
 }

@@ -27,12 +27,12 @@
 // THE SOFTWARE.
 
 extension ContentSubscriptionPlan {
-  var requestValue: String {
-    switch self {
-    case .beginner:
-      return "false"
-    case .professional:
-      return "true"
+    var requestValue: String {
+        switch self {
+        case .beginner:
+            return "false"
+        case .professional:
+            return "true"
+        }
     }
-  }
 }

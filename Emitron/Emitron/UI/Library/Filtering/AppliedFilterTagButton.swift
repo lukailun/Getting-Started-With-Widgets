@@ -29,103 +29,103 @@
 import SwiftUI
 
 enum AppliedFilterType {
-  case `default`
-  case destructive
-  
-  var backgroundColor: Color {
-    switch self {
-    case .default:
-      return .filterTagBackground
-    case .destructive:
-      return .filterTagDestructiveBackground
+    case `default`
+    case destructive
+
+    var backgroundColor: Color {
+        switch self {
+        case .default:
+            return .filterTagBackground
+        case .destructive:
+            return .filterTagDestructiveBackground
+        }
     }
-  }
-  
-  var borderColor: Color {
-    switch self {
-    case .default:
-      return .filterTagBorder
-    case .destructive:
-      return .filterTagDestructiveBorder
+
+    var borderColor: Color {
+        switch self {
+        case .default:
+            return .filterTagBorder
+        case .destructive:
+            return .filterTagDestructiveBorder
+        }
     }
-  }
-  
-  var textColor: Color {
-    switch self {
-    case .default:
-      return .filterTagText
-    case .destructive:
-      return .filterTagDestructiveText
+
+    var textColor: Color {
+        switch self {
+        case .default:
+            return .filterTagText
+        case .destructive:
+            return .filterTagDestructiveText
+        }
     }
-  }
-  
-  var iconColor: Color {
-    switch self {
-    case .default:
-      return .filterTagIcon
-    case .destructive:
-      return .filterTagDestructiveIcon
+
+    var iconColor: Color {
+        switch self {
+        case .default:
+            return .filterTagIcon
+        case .destructive:
+            return .filterTagDestructiveIcon
+        }
     }
-  }
 }
 
 private enum Layout {
-  enum Padding {
-    static let overall: CGFloat = 10
-    static let textTrailing: CGFloat = 2
-  }
-  
-  static let cornerRadius: CGFloat = 9
-  static let imageSize: CGFloat = 10
+    enum Padding {
+        static let overall: CGFloat = 10
+        static let textTrailing: CGFloat = 2
+    }
+
+    static let cornerRadius: CGFloat = 9
+    static let imageSize: CGFloat = 10
 }
 
 struct AppliedFilterTagButton: View {
-  let name: String
-  let type: AppliedFilterType
-  let removeFilterAction: () -> Void
-  
-  var body: some View {
-    Button(action: removeFilterAction) {
-      HStack(spacing: 7) {
-        Text(name)
-          .foregroundColor(type.textColor)
-          .font(.uiButtonLabelSmall)
-        Image(systemName: "multiply")
-          .resizable()
-          .frame(width: Layout.imageSize, height: Layout.imageSize)
-          .foregroundColor(type.iconColor)
-      }
-        .padding(.all, Layout.Padding.overall)
-    .background(
-      RoundedRectangle(cornerRadius: Layout.cornerRadius)
-        .fill(type.backgroundColor)
-        .overlay(
-          RoundedRectangle(cornerRadius: Layout.cornerRadius)
-            .stroke(type.borderColor, lineWidth: 2)
-        )
-      )
+    let name: String
+    let type: AppliedFilterType
+    let removeFilterAction: () -> Void
+
+    var body: some View {
+        Button(action: removeFilterAction) {
+            HStack(spacing: 7) {
+                Text(name)
+                    .foregroundColor(type.textColor)
+                    .font(.uiButtonLabelSmall)
+                Image(systemName: "multiply")
+                    .resizable()
+                    .frame(width: Layout.imageSize, height: Layout.imageSize)
+                    .foregroundColor(type.iconColor)
+            }
+            .padding(.all, Layout.Padding.overall)
+            .background(
+                RoundedRectangle(cornerRadius: Layout.cornerRadius)
+                    .fill(type.backgroundColor)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Layout.cornerRadius)
+                            .stroke(type.borderColor, lineWidth: 2)
+                    )
+            )
+        }
+        .padding(1)
     }
-    .padding(1)
-  }
 }
 
 #if DEBUG
-struct AppliedFilterView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      tags.colorScheme(.dark)
-      tags.colorScheme(.light)
+    struct AppliedFilterView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                tags.colorScheme(.dark)
+                tags.colorScheme(.light)
+            }
+        }
+
+        static var tags: some View {
+            HStack {
+                AppliedFilterTagButton(name: "Clear All", type: .destructive) {}
+                AppliedFilterTagButton(name: "Test Filter", type: .default) {}
+                AppliedFilterTagButton(name: "Another", type: .default) {}
+            }
+            .padding()
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var tags: some View {
-    HStack {
-      AppliedFilterTagButton(name: "Clear All", type: .destructive) { }
-      AppliedFilterTagButton(name: "Test Filter", type: .default) { }
-      AppliedFilterTagButton(name: "Another", type: .default) { }
-    }
-    .padding()
-    .background(Color.backgroundColor)
-  }
-}
 #endif

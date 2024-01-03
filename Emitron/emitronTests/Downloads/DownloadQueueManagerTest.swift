@@ -26,239 +26,238 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import GRDB
 import Combine
 @testable import Emitron
+import GRDB
+import XCTest
 
 class DownloadQueueManagerTest: XCTestCase {
-  private var database: DatabaseWriter!
-  private var persistenceStore: PersistenceStore!
-  private var videoService = VideosServiceMock()
-  private var downloadService: DownloadService!
-  private var queueManager: DownloadQueueManager!
-  private var subscriptions = Set<AnyCancellable>()
+    private var database: DatabaseWriter!
+    private var persistenceStore: PersistenceStore!
+    private var videoService = VideosServiceMock()
+    private var downloadService: DownloadService!
+    private var queueManager: DownloadQueueManager!
+    private var subscriptions = Set<AnyCancellable>()
 
-  override func setUp() {
-    super.setUp()
-    // There's one already running—let's stop that
-    DownloadService.current.stopProcessing()
-    // swiftlint:disable:next force_try
-    database = try! EmitronDatabase.testDatabase()
-    persistenceStore = PersistenceStore(db: database)
-    let userModelController = UserMCMock(user: .withDownloads)
-    downloadService = DownloadService(persistenceStore: persistenceStore,
-                                      userModelController: userModelController,
-                                      videosServiceProvider: { _ in self.videoService })
-    queueManager = DownloadQueueManager(persistenceStore: persistenceStore)
-    downloadService.stopProcessing()
-  }
-  
-  override func tearDown() {
-    super.tearDown()
-    videoService.reset()
-    subscriptions = []
-  }
-  
-  func getAllContents() -> [Content] {
-    // swiftlint:disable:next force_try
-    try! database.read { db in
-      try Content.fetchAll(db)
+    override func setUp() {
+        super.setUp()
+        // There's one already running—let's stop that
+        DownloadService.current.stopProcessing()
+        // swiftlint:disable:next force_try
+        database = try! EmitronDatabase.testDatabase()
+        persistenceStore = PersistenceStore(db: database)
+        let userModelController = UserMCMock(user: .withDownloads)
+        downloadService = DownloadService(persistenceStore: persistenceStore,
+                                          userModelController: userModelController,
+                                          videosServiceProvider: { _ in self.videoService })
+        queueManager = DownloadQueueManager(persistenceStore: persistenceStore)
+        downloadService.stopProcessing()
     }
-  }
-  
-  func getAllDownloads() -> [Download] {
-    // swiftlint:disable:next force_try
-    try! database.read { db in
-      try Download.fetchAll(db)
+
+    override func tearDown() {
+        super.tearDown()
+        videoService.reset()
+        subscriptions = []
     }
-  }
-  
-  func persistableState(for content: Content, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
-    
-    var parentContent: Content?
-    if let groupId = content.groupId {
-      // There must be parent content
-      if let parentGroup = cacheUpdate.groups.first(where: { $0.id == groupId }) {
-        parentContent = cacheUpdate.contents.first { $0.id == parentGroup.contentId }
-      }
+
+    func getAllContents() -> [Content] {
+        // swiftlint:disable:next force_try
+        try! database.read { db in
+            try Content.fetchAll(db)
+        }
     }
-    
-    let groups = cacheUpdate.groups.filter { $0.contentId == content.id }
-    let groupIds = groups.map(\.id)
-    let childContent = cacheUpdate.contents.filter { groupIds.contains($0.groupId ?? -1) }
-    
-    return ContentPersistableState(
-      content: content,
-      contentDomains: cacheUpdate.contentDomains.filter({ $0.contentId == content.id }),
-      contentCategories: cacheUpdate.contentCategories.filter({ $0.contentId == content.id }),
-      bookmark: cacheUpdate.bookmarks.first(where: { $0.contentId == content.id }),
-      parentContent: parentContent,
-      progression: cacheUpdate.progressions.first(where: { $0.contentId == content.id }),
-      groups: groups,
-      childContents: childContent
-    )
-  }
-  
-  func sampleDownload() throws -> Download {
-    let screencast = ContentTest.Mocks.screencast
-    let recorder = downloadService.requestDownload(contentId: screencast.0.id) { _ in
-      self.persistableState(for: screencast.0, with: screencast.1)
+
+    func getAllDownloads() -> [Download] {
+        // swiftlint:disable:next force_try
+        try! database.read { db in
+            try Download.fetchAll(db)
+        }
     }
-    .record()
-    
-    let completion = try wait(for: recorder.completion, timeout: 1)
-    
-    XCTAssert(completion == .finished)
-    
-    return getAllDownloads().first!
-  }
-  
-  func samplePersistedDownload(state: Download.State = .pending) throws -> Download {
-    try database.write { db in
-      let content = PersistenceMocks.content
-      try content.save(db)
-      
-      var download = PersistenceMocks.download(for: content)
-      download.state = state
-      try download.save(db)
-      
-      return download
+
+    func persistableState(for content: Content, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
+        var parentContent: Content?
+        if let groupId = content.groupId {
+            // There must be parent content
+            if let parentGroup = cacheUpdate.groups.first(where: { $0.id == groupId }) {
+                parentContent = cacheUpdate.contents.first { $0.id == parentGroup.contentId }
+            }
+        }
+
+        let groups = cacheUpdate.groups.filter { $0.contentId == content.id }
+        let groupIds = groups.map(\.id)
+        let childContent = cacheUpdate.contents.filter { groupIds.contains($0.groupId ?? -1) }
+
+        return ContentPersistableState(
+            content: content,
+            contentDomains: cacheUpdate.contentDomains.filter { $0.contentId == content.id },
+            contentCategories: cacheUpdate.contentCategories.filter { $0.contentId == content.id },
+            bookmark: cacheUpdate.bookmarks.first(where: { $0.contentId == content.id }),
+            parentContent: parentContent,
+            progression: cacheUpdate.progressions.first(where: { $0.contentId == content.id }),
+            groups: groups,
+            childContents: childContent
+        )
     }
-  }
-  
-  func testPendingStreamSendsNewDownloads() throws {
-    let recorder = queueManager.pendingStream.record()
-    
-    var download = try sampleDownload()
-    try database.write { db in
-      try download.save(db)
+
+    func sampleDownload() throws -> Download {
+        let screencast = ContentTest.Mocks.screencast
+        let recorder = downloadService.requestDownload(contentId: screencast.0.id) { _ in
+            self.persistableState(for: screencast.0, with: screencast.1)
+        }
+        .record()
+
+        let completion = try wait(for: recorder.completion, timeout: 1)
+
+        XCTAssert(completion == .finished)
+
+        return getAllDownloads().first!
     }
-    
-    let downloads = try wait(for: recorder.next(2), timeout: 1, description: "PendingDownloads")
-    
-    XCTAssertEqual([nil, download], downloads.map { $0?.download })
-  }
-  
-  func testPendingStreamSendingPreExistingDownloads() throws {
-    var download = try sampleDownload()
-    try database.write { db in
-      try download.save(db)
+
+    func samplePersistedDownload(state: Download.State = .pending) throws -> Download {
+        try database.write { db in
+            let content = PersistenceMocks.content
+            try content.save(db)
+
+            var download = PersistenceMocks.download(for: content)
+            download.state = state
+            try download.save(db)
+
+            return download
+        }
     }
-    
-    let recorder = queueManager.pendingStream.record()
-    let pending = try wait(for: recorder.next(), timeout: 1)
-    
-    XCTAssertEqual(download, pending!!.download)
-  }
-  
-  func testReadyForDownloadStreamSendsUpdatesAsListChanges() throws {
-    var download1 = try samplePersistedDownload(state: .readyForDownload)
-    var download2 = try samplePersistedDownload(state: .readyForDownload)
-    var download3 = try samplePersistedDownload(state: .urlRequested)
-    
-    let recorder = queueManager.readyForDownloadStream.record()
-    var readyForDownload = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual(download1, readyForDownload!!.download)
-    
-    try database.write { db in
-      download3.state = .readyForDownload
-      try download3.save(db)
+
+    func testPendingStreamSendsNewDownloads() throws {
+        let recorder = queueManager.pendingStream.record()
+
+        var download = try sampleDownload()
+        try database.write { db in
+            try download.save(db)
+        }
+
+        let downloads = try wait(for: recorder.next(2), timeout: 1, description: "PendingDownloads")
+
+        XCTAssertEqual([nil, download], downloads.map { $0?.download })
     }
-    
-    // This shouldn't fire cos it doesn't affect the stream
-    //readyForDownload = try wait(for: recorder.next(), timeout: 1)
-    //XCTAssertEqual(download1, readyForDownload!!.download)
-    
-    try database.write { db in
-      download1.state = .enqueued
-      try download1.save(db)
+
+    func testPendingStreamSendingPreExistingDownloads() throws {
+        var download = try sampleDownload()
+        try database.write { db in
+            try download.save(db)
+        }
+
+        let recorder = queueManager.pendingStream.record()
+        let pending = try wait(for: recorder.next(), timeout: 1)
+
+        XCTAssertEqual(download, pending!!.download)
     }
-    readyForDownload = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual(download2, readyForDownload!!.download)
-    
-    try database.write { db in
-      download2.state = .enqueued
-      try download2.save(db)
+
+    func testReadyForDownloadStreamSendsUpdatesAsListChanges() throws {
+        var download1 = try samplePersistedDownload(state: .readyForDownload)
+        var download2 = try samplePersistedDownload(state: .readyForDownload)
+        var download3 = try samplePersistedDownload(state: .urlRequested)
+
+        let recorder = queueManager.readyForDownloadStream.record()
+        var readyForDownload = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual(download1, readyForDownload!!.download)
+
+        try database.write { db in
+            download3.state = .readyForDownload
+            try download3.save(db)
+        }
+
+        // This shouldn't fire cos it doesn't affect the stream
+        // readyForDownload = try wait(for: recorder.next(), timeout: 1)
+        // XCTAssertEqual(download1, readyForDownload!!.download)
+
+        try database.write { db in
+            download1.state = .enqueued
+            try download1.save(db)
+        }
+        readyForDownload = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual(download2, readyForDownload!!.download)
+
+        try database.write { db in
+            download2.state = .enqueued
+            try download2.save(db)
+        }
+        readyForDownload = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual(download3, readyForDownload!!.download)
+
+        try database.write { db in
+            download3.state = .enqueued
+            try download3.save(db)
+        }
+        readyForDownload = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertNil(readyForDownload!)
     }
-    readyForDownload = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual(download3, readyForDownload!!.download)
-    
-    try database.write { db in
-      download3.state = .enqueued
-      try download3.save(db)
+
+    func testDownloadQueueStreamRespectsTheMaxLimit() throws {
+        let recorder = queueManager.downloadQueue.record()
+
+        let download1 = try samplePersistedDownload(state: .enqueued)
+        let download2 = try samplePersistedDownload(state: .enqueued)
+        _ = try samplePersistedDownload(state: .enqueued)
+
+        let queue = try wait(for: recorder.next(4), timeout: 1)
+        XCTAssertEqual([
+            [], // Empty to start
+            [download1], // d1 Enqueued
+            [download1, download2], // d2 Enqueued
+            [download1, download2], // Final download makes no difference
+        ],
+        queue.map { $0.map(\.download) })
     }
-    readyForDownload = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertNil(readyForDownload!)
-  }
-  
-  func testDownloadQueueStreamRespectsTheMaxLimit() throws {
-    let recorder = queueManager.downloadQueue.record()
-    
-    let download1 = try samplePersistedDownload(state: .enqueued)
-    let download2 = try samplePersistedDownload(state: .enqueued)
-    _ = try samplePersistedDownload(state: .enqueued)
-    
-    let queue = try wait(for: recorder.next(4), timeout: 1)
-    XCTAssertEqual([
-      [],                     // Empty to start
-      [download1],            // d1 Enqueued
-      [download1, download2], // d2 Enqueued
-      [download1, download2]  // Final download makes no difference
-    ],
-                   queue.map { $0.map(\.download) })
-  }
-  
-  func testDownloadQueueStreamSendsFromThePast() throws {
-    let download1 = try samplePersistedDownload(state: .enqueued)
-    let download2 = try samplePersistedDownload(state: .enqueued)
-    _ = try samplePersistedDownload(state: .enqueued)
-    
-    let recorder = queueManager.downloadQueue.record()
-    let queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download1, download2], queue!.map(\.download))
-  }
-  
-  func testDownloadQueueStreamSendsInProgressFirst() throws {
-    _ = try samplePersistedDownload(state: .enqueued)
-    let download2 = try samplePersistedDownload(state: .inProgress)
-    _ = try samplePersistedDownload(state: .enqueued)
-    let download4 = try samplePersistedDownload(state: .inProgress)
-    
-    let recorder = queueManager.downloadQueue.record()
-    let queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download2, download4], queue!.map(\.download))
-  }
-  
-  func testDownloadQueueStreamUpdatesWhenInProgressCompleted() throws {
-    let download1 = try samplePersistedDownload(state: .enqueued)
-    var download2 = try samplePersistedDownload(state: .inProgress)
-    _ = try samplePersistedDownload(state: .enqueued)
-    let download4 = try samplePersistedDownload(state: .inProgress)
-    
-    let recorder = queueManager.downloadQueue.record()
-    var queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download2, download4], queue!.map(\.download))
-    
-    try database.write { db in
-      download2.state = .complete
-      try download2.save(db)
+
+    func testDownloadQueueStreamSendsFromThePast() throws {
+        let download1 = try samplePersistedDownload(state: .enqueued)
+        let download2 = try samplePersistedDownload(state: .enqueued)
+        _ = try samplePersistedDownload(state: .enqueued)
+
+        let recorder = queueManager.downloadQueue.record()
+        let queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download1, download2], queue!.map(\.download))
     }
-    
-    queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download4, download1], queue!.map(\.download))
-  }
-  
-  func testDownloadQueueStreamDoesNotChangeIfAtCapacity() throws {
-    let download1 = try samplePersistedDownload(state: .enqueued)
-    let download2 = try samplePersistedDownload(state: .enqueued)
-    
-    let recorder = queueManager.downloadQueue.record()
-    var queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download1, download2], queue!.map(\.download))
-    
-    _ = try samplePersistedDownload(state: .enqueued)
-    queue = try wait(for: recorder.next(), timeout: 1)
-    XCTAssertEqual([download1, download2], queue!.map(\.download))
-  }
+
+    func testDownloadQueueStreamSendsInProgressFirst() throws {
+        _ = try samplePersistedDownload(state: .enqueued)
+        let download2 = try samplePersistedDownload(state: .inProgress)
+        _ = try samplePersistedDownload(state: .enqueued)
+        let download4 = try samplePersistedDownload(state: .inProgress)
+
+        let recorder = queueManager.downloadQueue.record()
+        let queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download2, download4], queue!.map(\.download))
+    }
+
+    func testDownloadQueueStreamUpdatesWhenInProgressCompleted() throws {
+        let download1 = try samplePersistedDownload(state: .enqueued)
+        var download2 = try samplePersistedDownload(state: .inProgress)
+        _ = try samplePersistedDownload(state: .enqueued)
+        let download4 = try samplePersistedDownload(state: .inProgress)
+
+        let recorder = queueManager.downloadQueue.record()
+        var queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download2, download4], queue!.map(\.download))
+
+        try database.write { db in
+            download2.state = .complete
+            try download2.save(db)
+        }
+
+        queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download4, download1], queue!.map(\.download))
+    }
+
+    func testDownloadQueueStreamDoesNotChangeIfAtCapacity() throws {
+        let download1 = try samplePersistedDownload(state: .enqueued)
+        let download2 = try samplePersistedDownload(state: .enqueued)
+
+        let recorder = queueManager.downloadQueue.record()
+        var queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download1, download2], queue!.map(\.download))
+
+        _ = try samplePersistedDownload(state: .enqueued)
+        queue = try wait(for: recorder.next(), timeout: 1)
+        XCTAssertEqual([download1, download2], queue!.map(\.download))
+    }
 }

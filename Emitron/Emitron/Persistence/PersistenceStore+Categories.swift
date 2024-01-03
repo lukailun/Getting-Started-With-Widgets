@@ -29,39 +29,40 @@
 import GRDB
 
 // MARK: - Data reading methods for display
+
 extension PersistenceStore {
-  /// Return a list of all **Category** objects in the data store
-  func categoryList() throws -> [Category] {
-    try db.read { db in
-      try Category
-        .order(Category.Columns.name.asc)
-        .fetchAll(db)
+    /// Return a list of all **Category** objects in the data store
+    func categoryList() throws -> [Category] {
+        try db.read { db in
+            try Category
+                .order(Category.Columns.name.asc)
+                .fetchAll(db)
+        }
     }
-  }
-  
-  /// Get all the **Category** objects with the given keys
-  func categories(with categoryIds: [Int]) throws -> [Category] {
-    try db.read { db in
-      try Category
-        .fetchAll(db, keys: categoryIds)
-        .sorted { $0.ordinal <= $1.ordinal }
+
+    /// Get all the **Category** objects with the given keys
+    func categories(with categoryIds: [Int]) throws -> [Category] {
+        try db.read { db in
+            try Category
+                .fetchAll(db, keys: categoryIds)
+                .sorted { $0.ordinal <= $1.ordinal }
+        }
     }
-  }
 }
 
 // MARK: - Data writing methods
+
 extension PersistenceStore {
-  
-  /// Sync the **Category** list with the data store
-  /// - Parameter categories: The list of **Category** objects to sync
-  func sync(categories: [Category]) throws {
-    try db.write { db in
-      // Delete categories that no longer exist
-      try Category
-        .filter(!categories.map(\.id).contains(Category.Columns.id))
-        .deleteAll(db)
-      // And now save all the categories we've been provided
-      try categories.forEach { try $0.save(db) }
+    /// Sync the **Category** list with the data store
+    /// - Parameter categories: The list of **Category** objects to sync
+    func sync(categories: [Category]) throws {
+        try db.write { db in
+            // Delete categories that no longer exist
+            try Category
+                .filter(!categories.map(\.id).contains(Category.Columns.id))
+                .deleteAll(db)
+            // And now save all the categories we've been provided
+            try categories.forEach { try $0.save(db) }
+        }
     }
-  }
 }

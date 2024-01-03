@@ -29,8 +29,7 @@
 import XCTest
 
 class AttachmentTest: XCTestCase {
-  
-  override func setUp() {
-    super.setUp()
-  }
+    override func setUp() {
+        super.setUp()
+    }
 }

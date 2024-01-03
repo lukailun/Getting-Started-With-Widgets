@@ -26,86 +26,86 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import SwiftyJSON
 @testable import Emitron
+import SwiftyJSON
+import XCTest
 
 class BookmarkAdapterTest: XCTestCase {
-  let sampleResource: JSON = [
-    "id": "1234",
-    "type": "bookmarks",
-    "attributes": [
-      "created_at": "2020-01-01T12:00:00.000Z"
-    ],
-    "relationships": [
-      "content": [
-        "data": [
-          "id": 4321,
-          "type": "contents"
+    let sampleResource: JSON = [
+        "id": "1234",
+        "type": "bookmarks",
+        "attributes": [
+            "created_at": "2020-01-01T12:00:00.000Z",
+        ],
+        "relationships": [
+            "content": [
+                "data": [
+                    "id": 4321,
+                    "type": "contents",
+                ],
+                "links": [
+                    "self": "https://example.com/contents/4321",
+                ],
+            ],
         ],
         "links": [
-          "self": "https://example.com/contents/4321"
+            "self": "https://example.com/bookmarks/1234",
+        ],
+    ]
+
+    func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
+        let json: JSON = [
+            "data": [
+                dict,
+            ],
         ]
-      ]
-    ],
-    "links": [
-      "self": "https://example.com/bookmarks/1234"
-    ]
-  ]
-  
-  func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
-    let json: JSON = [
-      "data": [
-        dict
-      ]
-    ]
-    
-    let document = JSONAPIDocument(json)
-    return document.data.first!
-  }
-  
-  func testValidResourceProcessedCorrectly() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let bookmark = try BookmarkAdapter.process(resource: resource)
-    
-    XCTAssertEqual(1234, bookmark.id)
-    let cmpts = DateComponents(timeZone: TimeZone(secondsFromGMT: 0), year: 2020, month: 1, day: 1, hour: 12, minute: 0, second: 0)
-    XCTAssertEqual(Calendar.current.date(from: cmpts), bookmark.createdAt)
-    XCTAssertEqual(4321, bookmark.contentId)
-  }
-  
-  func testInvalidTypeThrows() throws {
-    var sample = sampleResource
-    sample["type"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+
+        let document = JSONAPIDocument(json)
+        return document.data.first!
     }
-  }
-  
-  func testInvalidCreatedAtThrows() throws {
-    var sample = sampleResource
-    sample["attributes"]["created_at"] = "this is not a valid time"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testValidResourceProcessedCorrectly() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let bookmark = try BookmarkAdapter.process(resource: resource)
+
+        XCTAssertEqual(1234, bookmark.id)
+        let cmpts = DateComponents(timeZone: TimeZone(secondsFromGMT: 0), year: 2020, month: 1, day: 1, hour: 12, minute: 0, second: 0)
+        XCTAssertEqual(Calendar.current.date(from: cmpts), bookmark.createdAt)
+        XCTAssertEqual(4321, bookmark.contentId)
     }
-  }
-  
-  func testMissingContentRelationshipThrows() throws {
-    var sample = sampleResource
-    let contentRelationship = sample["relationships"]["contents"]
-    sample["relationships"] = ["not_contents": contentRelationship]
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingRelationships, error as! EntityAdapterError)
+
+    func testInvalidTypeThrows() throws {
+        var sample = sampleResource
+        sample["type"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+        }
     }
-  }
+
+    func testInvalidCreatedAtThrows() throws {
+        var sample = sampleResource
+        sample["attributes"]["created_at"] = "this is not a valid time"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testMissingContentRelationshipThrows() throws {
+        var sample = sampleResource
+        let contentRelationship = sample["relationships"]["contents"]
+        sample["relationships"] = ["not_contents": contentRelationship]
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try BookmarkAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingRelationships, error as! EntityAdapterError)
+        }
+    }
 }

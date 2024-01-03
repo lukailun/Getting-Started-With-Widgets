@@ -29,240 +29,239 @@
 import SwiftUI
 
 extension Color {
-  
-  static var contentText: Color {
-    Color("contentText")
-  }
-  
-  static var titleText: Color {
-    Color("titleText")
-  }
-  
-  static var backgroundColor: Color {
-    Color("backgroundColor")
-  }
-  
-  static var cardBackground: Color {
-    Color("cardBackground")
-  }
-  
-  static var activeIcon: Color {
-    Color("activeIcon")
-  }
-  
-  static var inactiveIcon: Color {
-    Color("inactiveIcon")
-  }
-  
-  static var accentTagBackground: Color {
-    Color("accentTagBackground")
-  }
-  
-  static var accentTagForeground: Color {
-    Color("accentTagForeground")
-  }
-  
-  static var tagBackground: Color {
-    Color("tagBackground")
-  }
-  
-  static var tagForeground: Color {
-    Color("tagForeground")
-  }
-  
-  static var proTagBackground: Color {
-    Color("proTagBackground")
-  }
-  
-  static var proTagForeground: Color {
-    Color("proTagForeground")
-  }
-  
-  static var proTagBorder: Color {
-    Color("proTagBorder")
-  }
-  
-  static var filterTagBackground: Color {
-    Color("filterTagBackground")
-  }
-  
-  static var filterTagBorder: Color {
-    Color("filterTagBorder")
-  }
-  
-  static var filterTagIcon: Color {
-    Color("filterTagIcon")
-  }
-  
-  static var filterTagText: Color {
-    Color("filterTagText")
-  }
-  
-  static var filterTagDestructiveBackground: Color {
-    Color("filterTagDestructiveBackground")
-  }
-  
-  static var filterTagDestructiveBorder: Color {
-    Color("filterTagDestructiveBorder")
-  }
-  
-  static var filterTagDestructiveIcon: Color {
-    Color("filterTagDestructiveIcon")
-  }
-  
-  static var filterTagDestructiveText: Color {
-    Color("filterTagDestructiveText")
-  }
-  
-  static var filterHeaderBackground: Color {
-    Color("filterHeaderBackground")
-  }
-  
-  static var primaryButtonBackground: Color {
-    Color("primaryButtonBackground")
-  }
-  
-  static var secondaryButtonBackground: Color {
-    Color("secondaryButtonBackground")
-  }
-  
-  static var destructiveButtonBackground: Color {
-    Color("destructiveButtonBackground")
-  }
-  
-  static var buttonText: Color {
-    Color("buttonText")
-  }
-  
-  static var accent: Color {
-    Color("accent")
-  }
-  
-  static var alarm: Color {
-    Color("alarm")
-  }
-  
-  static var warning: Color {
-    Color("warning")
-  }
-  
-  static var borderColor: Color {
-    Color("borderColor")
-  }
-  
-  static var separator: Color {
-    Color("separator")
-  }
-  
-  static var textButtonText: Color {
-    Color("textButtonText")
-  }
-  
-  static var iconButton: Color {
-    Color("iconButton")
-  }
-  
-  static var modalBackground: Color {
-    Color("modalBackgroundColor")
-  }
-  
-  static var listHeaderBackground: Color {
-    Color("listHeaderBackground")
-  }
-  
-  static var appIconBorder: Color {
-    Color("appIconBorder")
-  }
-  
-  static var toggleTextSelected: Color {
-    Color("toggleTextSelected")
-  }
-  
-  static var toggleTextDeselected: Color {
-    Color("toggleTextDeselected")
-  }
-  
-  static var toggleLineSelected: Color {
-    Color("toggleLineSelected")
-  }
-  
-  static var toggleLineDeselected: Color {
-    Color("toggleLineDeselected")
-  }
-  
-  static var checkmarkBackground: Color {
-    Color("checkmarkBackground")
-  }
-  
-  static var checkmarkBorder: Color {
-    Color("checkmarkBorder")
-  }
-  
-  static var checkmarkColor: Color {
-    Color("checkmarkColor")
-  }
-  
-  static var appBlack: Color {
-    Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0)
-  }
-  
-  static var snackError: Color {
-    Color("error")
-  }
-  
-  static var snackWarning: Color {
-    Color("warning")
-  }
-  
-  static var snackSuccess: Color {
-    Color("success")
-  }
-  
-  static var snackText: Color {
-    Color("snackText")
-  }
-  
-  static var snackTabBg: Color {
-    Color("snackTagBg")
-  }
-  
-  static var searchFieldBackground: Color {
-    Color("searchFieldBackground")
-  }
-  
-  static var searchFieldBorder: Color {
-    Color("searchFieldBorder")
-  }
-  
-  static var searchFieldIcon: Color {
-    Color("searchFieldIcon")
-  }
-  
-  static var searchFieldText: Color {
-    Color("searchFieldText")
-  }
-  
-  static var searchFieldShadow: Color {
-    Color("searchFieldShadow")
-  }
-  
-  static var downloadButtonDownloaded: Color {
-    Color("downloadButtonDownloaded")
-  }
-  
-  static var downloadButtonDownloadingBackground: Color {
-    Color("downloadButtonDownloadingBackground")
-  }
-  
-  static var downloadButtonDownloadingForeground: Color {
-    Color("downloadButtonDownloadingForeground")
-  }
-  
-  static var downloadButtonNotDownloaded: Color {
-    Color("downloadButtonNotDownloaded")
-  }
-  
-  static var downloadButtonWarning: Color {
-    Color("downloadButtonWarning")
-  }
+    static var contentText: Color {
+        Color("contentText")
+    }
+
+    static var titleText: Color {
+        Color("titleText")
+    }
+
+    static var backgroundColor: Color {
+        Color("backgroundColor")
+    }
+
+    static var cardBackground: Color {
+        Color("cardBackground")
+    }
+
+    static var activeIcon: Color {
+        Color("activeIcon")
+    }
+
+    static var inactiveIcon: Color {
+        Color("inactiveIcon")
+    }
+
+    static var accentTagBackground: Color {
+        Color("accentTagBackground")
+    }
+
+    static var accentTagForeground: Color {
+        Color("accentTagForeground")
+    }
+
+    static var tagBackground: Color {
+        Color("tagBackground")
+    }
+
+    static var tagForeground: Color {
+        Color("tagForeground")
+    }
+
+    static var proTagBackground: Color {
+        Color("proTagBackground")
+    }
+
+    static var proTagForeground: Color {
+        Color("proTagForeground")
+    }
+
+    static var proTagBorder: Color {
+        Color("proTagBorder")
+    }
+
+    static var filterTagBackground: Color {
+        Color("filterTagBackground")
+    }
+
+    static var filterTagBorder: Color {
+        Color("filterTagBorder")
+    }
+
+    static var filterTagIcon: Color {
+        Color("filterTagIcon")
+    }
+
+    static var filterTagText: Color {
+        Color("filterTagText")
+    }
+
+    static var filterTagDestructiveBackground: Color {
+        Color("filterTagDestructiveBackground")
+    }
+
+    static var filterTagDestructiveBorder: Color {
+        Color("filterTagDestructiveBorder")
+    }
+
+    static var filterTagDestructiveIcon: Color {
+        Color("filterTagDestructiveIcon")
+    }
+
+    static var filterTagDestructiveText: Color {
+        Color("filterTagDestructiveText")
+    }
+
+    static var filterHeaderBackground: Color {
+        Color("filterHeaderBackground")
+    }
+
+    static var primaryButtonBackground: Color {
+        Color("primaryButtonBackground")
+    }
+
+    static var secondaryButtonBackground: Color {
+        Color("secondaryButtonBackground")
+    }
+
+    static var destructiveButtonBackground: Color {
+        Color("destructiveButtonBackground")
+    }
+
+    static var buttonText: Color {
+        Color("buttonText")
+    }
+
+    static var accent: Color {
+        Color("accent")
+    }
+
+    static var alarm: Color {
+        Color("alarm")
+    }
+
+    static var warning: Color {
+        Color("warning")
+    }
+
+    static var borderColor: Color {
+        Color("borderColor")
+    }
+
+    static var separator: Color {
+        Color("separator")
+    }
+
+    static var textButtonText: Color {
+        Color("textButtonText")
+    }
+
+    static var iconButton: Color {
+        Color("iconButton")
+    }
+
+    static var modalBackground: Color {
+        Color("modalBackgroundColor")
+    }
+
+    static var listHeaderBackground: Color {
+        Color("listHeaderBackground")
+    }
+
+    static var appIconBorder: Color {
+        Color("appIconBorder")
+    }
+
+    static var toggleTextSelected: Color {
+        Color("toggleTextSelected")
+    }
+
+    static var toggleTextDeselected: Color {
+        Color("toggleTextDeselected")
+    }
+
+    static var toggleLineSelected: Color {
+        Color("toggleLineSelected")
+    }
+
+    static var toggleLineDeselected: Color {
+        Color("toggleLineDeselected")
+    }
+
+    static var checkmarkBackground: Color {
+        Color("checkmarkBackground")
+    }
+
+    static var checkmarkBorder: Color {
+        Color("checkmarkBorder")
+    }
+
+    static var checkmarkColor: Color {
+        Color("checkmarkColor")
+    }
+
+    static var appBlack: Color {
+        Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0)
+    }
+
+    static var snackError: Color {
+        Color("error")
+    }
+
+    static var snackWarning: Color {
+        Color("warning")
+    }
+
+    static var snackSuccess: Color {
+        Color("success")
+    }
+
+    static var snackText: Color {
+        Color("snackText")
+    }
+
+    static var snackTabBg: Color {
+        Color("snackTagBg")
+    }
+
+    static var searchFieldBackground: Color {
+        Color("searchFieldBackground")
+    }
+
+    static var searchFieldBorder: Color {
+        Color("searchFieldBorder")
+    }
+
+    static var searchFieldIcon: Color {
+        Color("searchFieldIcon")
+    }
+
+    static var searchFieldText: Color {
+        Color("searchFieldText")
+    }
+
+    static var searchFieldShadow: Color {
+        Color("searchFieldShadow")
+    }
+
+    static var downloadButtonDownloaded: Color {
+        Color("downloadButtonDownloaded")
+    }
+
+    static var downloadButtonDownloadingBackground: Color {
+        Color("downloadButtonDownloadingBackground")
+    }
+
+    static var downloadButtonDownloadingForeground: Color {
+        Color("downloadButtonDownloadingForeground")
+    }
+
+    static var downloadButtonNotDownloaded: Color {
+        Color("downloadButtonNotDownloaded")
+    }
+
+    static var downloadButtonWarning: Color {
+        Color("downloadButtonWarning")
+    }
 }

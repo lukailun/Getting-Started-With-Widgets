@@ -29,8 +29,8 @@
 import SwiftUI
 
 class PortraitHostingController<Content>: UIHostingController<Content> where Content: View {
-  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    // iPads can have any orientation. Everything else should be portrait only.
-    UIDevice.current.userInterfaceIdiom == .pad ? .all : .portrait
-  }
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        // iPads can have any orientation. Everything else should be portrait only.
+        UIDevice.current.userInterfaceIdiom == .pad ? .all : .portrait
+    }
 }

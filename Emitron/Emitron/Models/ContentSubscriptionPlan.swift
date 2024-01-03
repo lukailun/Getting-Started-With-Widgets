@@ -27,28 +27,28 @@
 // THE SOFTWARE.
 
 enum ContentSubscriptionPlan: Int, Codable {
-  case beginner
-  case professional
-  
-  init(_ pro: Bool) {
-    self = pro ? .professional : .beginner
-  }
-  
-  var displayString: String {
-    switch self {
-    case .beginner:
-      return "Beginner"
-    case .professional:
-      return "Professional"
+    case beginner
+    case professional
+
+    init(_ pro: Bool) {
+        self = pro ? .professional : .beginner
     }
-  }
-  
-  var sortOrdinal: Int {
-    switch self {
-    case .beginner:
-      return 0
-    case .professional:
-      return 1
+
+    var displayString: String {
+        switch self {
+        case .beginner:
+            return "Beginner"
+        case .professional:
+            return "Professional"
+        }
     }
-  }
+
+    var sortOrdinal: Int {
+        switch self {
+        case .beginner:
+            return 0
+        case .professional:
+            return 1
+        }
+    }
 }

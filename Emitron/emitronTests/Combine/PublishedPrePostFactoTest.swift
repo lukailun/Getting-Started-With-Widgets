@@ -26,64 +26,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 import Combine
 @testable import Emitron
+import XCTest
 
 class PublishedPostFactoTest: XCTestCase {
+    class PrePostObservedObject: ObservablePrePostFactoObject {
+        // This doesn't get syntesized
+        let objectDidChange = ObservableObjectPublisher()
 
-  class PrePostObservedObject: ObservablePrePostFactoObject {
-    // This doesn't get syntesized
-    let objectDidChange = ObservableObjectPublisher()
-    
-    @Published var notifiedBeforeChangeCommitted: Int = 0
-    @PublishedPrePostFacto var notifiedAfterChangeCommitted: Int = 0
-  }
-  
-  var observedObject: PrePostObservedObject!
-  
-  override func setUp() {
-    super.setUp()
-    observedObject = PrePostObservedObject()
-  }
-  
-  func testNotifiedBeforeChangeWithPublished() throws {
-    let recorder = observedObject.objectWillChange.record()
-    
-    observedObject.notifiedBeforeChangeCommitted = 1
-    try wait(for: recorder.next(), timeout: 1)
-  }
-  
-  func testGetNotificationsOfValueChangesFromPublished() throws {
-    let recorder = observedObject.$notifiedBeforeChangeCommitted.record()
-    
-    observedObject.notifiedBeforeChangeCommitted = 1
-    observedObject.notifiedAfterChangeCommitted = 2
-    observedObject.notifiedBeforeChangeCommitted = 3
-    observedObject.notifiedAfterChangeCommitted = 4
-    
-    let values = try wait(for: recorder.next(3), timeout: 1)
-    
-    XCTAssertEqual([0, 1, 3], values)
-  }
-  
-  func testNotifiedAfterChangeWithPublishedPostFacto() throws {
-    let recorder = observedObject.objectDidChange.record()
-    
-    observedObject.notifiedAfterChangeCommitted = 1
-    try wait(for: recorder.next(), timeout: 1)
-  }
-  
-  func testGetNotificationsOfValueChangesFromPublishedPostFacto() throws {
-    let recorder = observedObject.$notifiedAfterChangeCommitted.record()
-    
-    observedObject.notifiedBeforeChangeCommitted = 1
-    observedObject.notifiedAfterChangeCommitted = 2
-    observedObject.notifiedBeforeChangeCommitted = 3
-    observedObject.notifiedAfterChangeCommitted = 4
-    
-    let values = try wait(for: recorder.next(3), timeout: 1)
-    
-    XCTAssertEqual([0, 2, 4], values)
-  }
+        @Published var notifiedBeforeChangeCommitted: Int = 0
+        @PublishedPrePostFacto var notifiedAfterChangeCommitted: Int = 0
+    }
+
+    var observedObject: PrePostObservedObject!
+
+    override func setUp() {
+        super.setUp()
+        observedObject = PrePostObservedObject()
+    }
+
+    func testNotifiedBeforeChangeWithPublished() throws {
+        let recorder = observedObject.objectWillChange.record()
+
+        observedObject.notifiedBeforeChangeCommitted = 1
+        try wait(for: recorder.next(), timeout: 1)
+    }
+
+    func testGetNotificationsOfValueChangesFromPublished() throws {
+        let recorder = observedObject.$notifiedBeforeChangeCommitted.record()
+
+        observedObject.notifiedBeforeChangeCommitted = 1
+        observedObject.notifiedAfterChangeCommitted = 2
+        observedObject.notifiedBeforeChangeCommitted = 3
+        observedObject.notifiedAfterChangeCommitted = 4
+
+        let values = try wait(for: recorder.next(3), timeout: 1)
+
+        XCTAssertEqual([0, 1, 3], values)
+    }
+
+    func testNotifiedAfterChangeWithPublishedPostFacto() throws {
+        let recorder = observedObject.objectDidChange.record()
+
+        observedObject.notifiedAfterChangeCommitted = 1
+        try wait(for: recorder.next(), timeout: 1)
+    }
+
+    func testGetNotificationsOfValueChangesFromPublishedPostFacto() throws {
+        let recorder = observedObject.$notifiedAfterChangeCommitted.record()
+
+        observedObject.notifiedBeforeChangeCommitted = 1
+        observedObject.notifiedAfterChangeCommitted = 2
+        observedObject.notifiedBeforeChangeCommitted = 3
+        observedObject.notifiedAfterChangeCommitted = 4
+
+        let values = try wait(for: recorder.next(3), timeout: 1)
+
+        XCTAssertEqual([0, 2, 4], values)
+    }
 }

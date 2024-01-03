@@ -29,28 +29,35 @@
 import Combine
 
 protocol EmitronSettings {
-  // MARK: - Library
-  // MARK: Filters
-  var filters: Set<Filter> { get set }
-  
-  // MARK: Sorting
-  var sortFilter: SortFilter { get set }
-  
-  // MARK: - Video Playback
-  var playbackToken: String? { get set }
-  
-  // MARK: - User Settings
-  // MARK: Video Playback
-  var playbackSpeed: PlaybackSpeed { get set }
-  var playbackSpeedPublisher: AnyPublisher<PlaybackSpeed, Never> { get }
-  
-  var closedCaptionOn: Bool { get set }
-  var closedCaptionOnPublisher: AnyPublisher<Bool, Never> { get }
-  
-  // MARK: Download Behaviour
-  var downloadQuality: Attachment.Kind { get set }
-  var downloadQualityPublisher: AnyPublisher<Attachment.Kind, Never> { get }
-  
-  var wifiOnlyDownloads: Bool { get set }
-  var wifiOnlyDownloadsPublisher: AnyPublisher<Bool, Never> { get }
+    // MARK: - Library
+
+    // MARK: Filters
+
+    var filters: Set<Filter> { get set }
+
+    // MARK: Sorting
+
+    var sortFilter: SortFilter { get set }
+
+    // MARK: - Video Playback
+
+    var playbackToken: String? { get set }
+
+    // MARK: - User Settings
+
+    // MARK: Video Playback
+
+    var playbackSpeed: PlaybackSpeed { get set }
+    var playbackSpeedPublisher: AnyPublisher<PlaybackSpeed, Never> { get }
+
+    var closedCaptionOn: Bool { get set }
+    var closedCaptionOnPublisher: AnyPublisher<Bool, Never> { get }
+
+    // MARK: Download Behaviour
+
+    var downloadQuality: Attachment.Kind { get set }
+    var downloadQualityPublisher: AnyPublisher<Attachment.Kind, Never> { get }
+
+    var wifiOnlyDownloads: Bool { get set }
+    var wifiOnlyDownloadsPublisher: AnyPublisher<Bool, Never> { get }
 }

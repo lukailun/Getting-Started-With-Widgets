@@ -27,9 +27,9 @@
 // THE SOFTWARE.
 
 enum DataState {
-  case initial
-  case loading
-  case loadingAdditional
-  case hasData
-  case failed
+    case initial
+    case loading
+    case loadingAdditional
+    case hasData
+    case failed
 }

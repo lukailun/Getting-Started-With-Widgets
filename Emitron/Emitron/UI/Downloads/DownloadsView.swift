@@ -29,17 +29,17 @@
 import SwiftUI
 
 struct DownloadsView: View {
-  @State var contentScreen: ContentScreen
-  @ObservedObject var downloadRepository: DownloadRepository
+    @State var contentScreen: ContentScreen
+    @ObservedObject var downloadRepository: DownloadRepository
 
-  var body: some View {
-    contentView
-      .navigationBarTitle(Text(Constants.downloads))
-  }
+    var body: some View {
+        contentView
+            .navigationBarTitle(Text(Constants.downloads))
+    }
 
-  private var contentView: some View {
-    ContentListView(contentRepository: downloadRepository,
-                    downloadAction: DownloadService.current,
-                    contentScreen: contentScreen)
-  }
+    private var contentView: some View {
+        ContentListView(contentRepository: downloadRepository,
+                        downloadAction: DownloadService.current,
+                        contentScreen: contentScreen)
+    }
 }

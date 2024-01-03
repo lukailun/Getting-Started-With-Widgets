@@ -29,87 +29,92 @@
 import Foundation
 
 class Service {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  let networkClient: RWAPI
-  let session: URLSession
+    let networkClient: RWAPI
+    let session: URLSession
 
-  // MARK: - Initializers
-  init(client: RWAPI) {
-    self.networkClient = client
-    self.session = URLSession(configuration: .default)
-  }
-  
-  // MARK: - Utilities
-  var isAuthenticated: Bool {
-    !self.networkClient.authToken.isEmpty
-  }
+    // MARK: - Initializers
 
-  // MARK: - Internal
-  func makeAndProcessRequest<R: Request>(
-    request: R,
-    parameters: [Parameter]? = nil,
-    completion: @escaping (Result<R.Response, RWAPIError>) -> Void) {
-
-    let handleResponse: (Result<R.Response, RWAPIError>) -> Void = { result in
-      DispatchQueue.main.async {
-        completion(result)
-      }
+    init(client: RWAPI) {
+        networkClient = client
+        session = URLSession(configuration: .default)
     }
 
-    guard let urlRequest = prepare(request: request, parameters: parameters) else {
-      return
+    // MARK: - Utilities
+
+    var isAuthenticated: Bool {
+        !networkClient.authToken.isEmpty
     }
 
-    let task = session.dataTask(with: urlRequest) { data, response, error in
+    // MARK: - Internal
 
-      guard let httpResponse = response as? HTTPURLResponse,
-        200..<300 ~= httpResponse.statusCode else {
-          let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-          handleResponse(.failure(.requestFailed(error, statusCode)))
-          return
-      }
-
-      do {
-        if let data = data {
-          let value = try request.handle(response: data)
-          handleResponse(.success(value))
-        } else {
-          handleResponse(.failure(.noData))
+    func makeAndProcessRequest<R: Request>(
+        request: R,
+        parameters: [Parameter]? = nil,
+        completion: @escaping (Result<R.Response, RWAPIError>) -> Void
+    ) {
+        let handleResponse: (Result<R.Response, RWAPIError>) -> Void = { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
         }
-      } catch let handleError as NSError {
-        handleResponse(.failure(.processingError(handleError)))
-      }
+
+        guard let urlRequest = prepare(request: request, parameters: parameters) else {
+            return
+        }
+
+        let task = session.dataTask(with: urlRequest) { data, response, error in
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  200 ..< 300 ~= httpResponse.statusCode
+            else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+                handleResponse(.failure(.requestFailed(error, statusCode)))
+                return
+            }
+
+            do {
+                if let data = data {
+                    let value = try request.handle(response: data)
+                    handleResponse(.success(value))
+                } else {
+                    handleResponse(.failure(.noData))
+                }
+            } catch let handleError as NSError {
+                handleResponse(.failure(.processingError(handleError)))
+            }
+        }
+        task.resume()
     }
-    task.resume()
-  }
 
-  func prepare<R: Request>(request: R,
-                           parameters: [Parameter]?) -> URLRequest? {
-    let pathURL = networkClient.environment.baseUrl.appendingPathComponent(request.path)
+    func prepare<R: Request>(request: R,
+                             parameters: [Parameter]?) -> URLRequest?
+    {
+        let pathURL = networkClient.environment.baseUrl.appendingPathComponent(request.path)
 
-    var components = URLComponents(url: pathURL,
-                                   resolvingAgainstBaseURL: false)
+        var components = URLComponents(url: pathURL,
+                                       resolvingAgainstBaseURL: false)
 
-    if let parameters = parameters {
-      components?.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
+        if let parameters = parameters {
+            components?.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+
+        guard let url = components?.url else {
+            return nil
+        }
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method.rawValue
+        // body *needs* to be the last property that we set, because of this bug: https://bugs.swift.org/browse/SR-6687
+        urlRequest.httpBody = request.body
+
+        let authTokenHeader: HTTPHeader = ("Authorization", "Token \(networkClient.authToken)")
+        let headers =
+            [authTokenHeader, networkClient.contentTypeHeader]
+                + [networkClient.additionalHeaders, request.additionalHeaders].joined()
+        headers.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
+
+        return urlRequest
     }
-
-    guard let url = components?.url else {
-      return nil
-    }
-
-    var urlRequest = URLRequest(url: url)
-    urlRequest.httpMethod = request.method.rawValue
-    // body *needs* to be the last property that we set, because of this bug: https://bugs.swift.org/browse/SR-6687
-    urlRequest.httpBody = request.body
-
-    let authTokenHeader: HTTPHeader = ("Authorization", "Token \(networkClient.authToken)")
-    let headers =
-      [authTokenHeader, networkClient.contentTypeHeader]
-      + [networkClient.additionalHeaders, request.additionalHeaders].joined()
-    headers.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
-
-    return urlRequest
-  }
 }

@@ -27,37 +27,37 @@
 // THE SOFTWARE.
 
 enum SortFilter: Int, Codable {
-  case newest
-  case popularity
-  
-  var next: SortFilter {
-    switch self {
-    case .newest:
-      return .popularity
-    case .popularity:
-      return .newest
+    case newest
+    case popularity
+
+    var next: SortFilter {
+        switch self {
+        case .newest:
+            return .popularity
+        case .popularity:
+            return .newest
+        }
     }
-  }
-  
-  var name: String {
-    switch self {
-    case .newest:
-      return Constants.newest
-    case .popularity:
-      return Constants.popularity
+
+    var name: String {
+        switch self {
+        case .newest:
+            return Constants.newest
+        case .popularity:
+            return Constants.popularity
+        }
     }
-  }
-  
-  var paramValue: ParameterSortValue {
-    switch self {
-    case .newest:
-      return .releasedAt
-    case .popularity:
-      return .popularity
+
+    var paramValue: ParameterSortValue {
+        switch self {
+        case .newest:
+            return .releasedAt
+        case .popularity:
+            return .popularity
+        }
     }
-  }
-  
-  var parameter: Parameter {
-    Param.sort(for: paramValue, descending: true)
-  }
+
+    var parameter: Parameter {
+        Param.sort(for: paramValue, descending: true)
+    }
 }

@@ -29,18 +29,18 @@
 import Combine
 
 final class BookmarkRepository: ContentRepository {
-  override var nonPaginationParameters: [Parameter] {
-    get {
-      let filters = Param.filters(for: [.contentTypes(types: [.collection, .screencast])])
-      let sortOrder = Param.sort(for: .updatedAt, descending: true)
-      return filters + [sortOrder]
+    override var nonPaginationParameters: [Parameter] {
+        get {
+            let filters = Param.filters(for: [.contentTypes(types: [.collection, .screencast])])
+            let sortOrder = Param.sort(for: .updatedAt, descending: true)
+            return filters + [sortOrder]
+        }
+        set {
+            preconditionFailure("Not allowed to use setter on this variable. [Value: \(newValue)]")
+        }
     }
-    set {
-      preconditionFailure("Not allowed to use setter on this variable. [Value: \(newValue)]")
+
+    override var invalidationPublisher: AnyPublisher<Void, Never>? {
+        repository.cachedBookmarksInvalidated
     }
-  }
-  
-  override var invalidationPublisher: AnyPublisher<Void, Never>? {
-    repository.cachedBookmarksInvalidated
-  }
 }

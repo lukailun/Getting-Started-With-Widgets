@@ -28,11 +28,11 @@
 
 import GRDB
 
-extension Progression: FetchableRecord, TableRecord, PersistableRecord { }
+extension Progression: FetchableRecord, TableRecord, PersistableRecord {}
 
 extension Progression {
-  static let content = belongsTo(Content.self)
-  var content: QueryInterfaceRequest<Content> {
-    request(for: Progression.content)
-  }
+    static let content = belongsTo(Content.self)
+    var content: QueryInterfaceRequest<Content> {
+        request(for: Progression.content)
+    }
 }

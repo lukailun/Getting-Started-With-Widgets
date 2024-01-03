@@ -29,28 +29,28 @@
 import struct Foundation.Date
 
 struct Permission: Equatable, Codable {
-  enum Tag: Int, Codable {
-    case streamBeginner
-    case streamPro
-    case download
-    
-    init?(from string: String) {
-      switch string {
-      case "stream-beginner-videos":
-        self = .streamBeginner
-      case "stream-professional-videos":
-        self = .streamPro
-      case "download-videos":
-        self = .download
-      default:
-        return nil
-      }
+    enum Tag: Int, Codable {
+        case streamBeginner
+        case streamPro
+        case download
+
+        init?(from string: String) {
+            switch string {
+            case "stream-beginner-videos":
+                self = .streamBeginner
+            case "stream-professional-videos":
+                self = .streamPro
+            case "download-videos":
+                self = .download
+            default:
+                return nil
+            }
+        }
     }
-  }
-  
-  var id: Int
-  var name: String
-  var tag: Tag
-  var createdAt: Date
-  var updatedAt: Date
+
+    var id: Int
+    var name: String
+    var tag: Tag
+    var createdAt: Date
+    var updatedAt: Date
 }

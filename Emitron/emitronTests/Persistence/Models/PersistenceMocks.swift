@@ -26,34 +26,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
 @testable import Emitron
+import Foundation
 
 enum PersistenceMocks {
-  static var content: Content {
-    Content(id: 1,
-            uri: "rw://betamax/collections/1",
-            name: "Sample Contents",
-            descriptionHtml: "Description",
-            descriptionPlainText: "Description",
-            releasedAt: Date(),
-            free: false,
-            professional: true,
-            difficulty: .intermediate,
-            contentType: .screencast,
-            duration: 1234,
-            videoIdentifier: nil,
-            cardArtworkUrl: URL(string: "https://example.com/card_artwork.png")!,
-            technologyTriple: "Some Tech",
-            contributors: "HELLO",
-            groupId: nil,
-            ordinal: 0)
-  }
-  
-  static func download(for content: Content) -> Download {
-    Download(id: UUID(),
-             requestedAt: Date(),
-             state: .pending,
-             contentId: content.id)
-  }
+    static var content: Content {
+        Content(id: 1,
+                uri: "rw://betamax/collections/1",
+                name: "Sample Contents",
+                descriptionHtml: "Description",
+                descriptionPlainText: "Description",
+                releasedAt: Date(),
+                free: false,
+                professional: true,
+                difficulty: .intermediate,
+                contentType: .screencast,
+                duration: 1234,
+                videoIdentifier: nil,
+                cardArtworkUrl: URL(string: "https://example.com/card_artwork.png")!,
+                technologyTriple: "Some Tech",
+                contributors: "HELLO",
+                groupId: nil,
+                ordinal: 0)
+    }
+
+    static func download(for content: Content) -> Download {
+        Download(id: UUID(),
+                 requestedAt: Date(),
+                 state: .pending,
+                 contentId: content.id)
+    }
 }

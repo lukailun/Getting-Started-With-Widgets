@@ -26,137 +26,136 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import SwiftUI
 import KingfisherSwiftUI
+import SwiftUI
 import UIKit
 
 struct ContentDetailView: View {
-  @State private var currentlyDisplayedVideoPlaybackViewModel: VideoPlaybackViewModel?
-  
-  var content: ContentListDisplayable
-  @ObservedObject var childContentsViewModel: ChildContentsViewModel
-  @ObservedObject var dynamicContentViewModel: DynamicContentViewModel
+    @State private var currentlyDisplayedVideoPlaybackViewModel: VideoPlaybackViewModel?
 
-  @EnvironmentObject var sessionController: SessionController
-  var user: User {
-    sessionController.user!
-  }
-  
-  private var canStreamPro: Bool {
-    user.canStreamPro
-  }
-  
-  var imageRatio: CGFloat = 283 / 375
-  var maxImageHeight: CGFloat = 384
-  
-  var body: some View {
-    ZStack {
-      contentView
-      
-      if currentlyDisplayedVideoPlaybackViewModel != nil {
-        FullScreenVideoPlayerRepresentable(viewModel: $currentlyDisplayedVideoPlaybackViewModel)
-      }
-    }
-  }
-  
-  var contentView: some View {
-    GeometryReader { geometry in
-      List {
-        Section {
-          
-          if self.content.professional && !self.canStreamPro {
-            self.headerImageLockedProContent(for: geometry.size.width)
-          } else {
-            self.headerImagePlayableContent(for: geometry.size.width)
-          }
-          
-          ContentSummaryView(content: self.content, dynamicContentViewModel: self.dynamicContentViewModel)
-            .padding([.leading, .trailing], 20)
-            .padding([.bottom], 37)
-        }
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.backgroundColor)
-        
-        ChildContentListingView(
-          childContentsViewModel: self.childContentsViewModel,
-          currentlyDisplayedVideoPlaybackViewModel: self.$currentlyDisplayedVideoPlaybackViewModel
-        )
-          .background(Color.backgroundColor)
-      }
-    }
-      .navigationBarTitle(Text(""), displayMode: .inline)
-      .background(Color.backgroundColor)
-  }
-  
-  private func openSettings() {
-    // open iPhone settings
-    if
-      let url = URL(string: UIApplication.openSettingsURLString),
-      UIApplication.shared.canOpenURL(url)
-    { UIApplication.shared.open(url) }
-  }
-  
-  private var continueOrPlayButton: Button<AnyView> {
-    Button(action: {
-      self.currentlyDisplayedVideoPlaybackViewModel = self.dynamicContentViewModel.videoPlaybackViewModel(
-        apiClient: self.sessionController.client,
-        dismissClosure: {
-          self.currentlyDisplayedVideoPlaybackViewModel = nil
-        }
-      )
-    }) {
-      if case .hasData = childContentsViewModel.state {
-        if case .inProgress = dynamicContentViewModel.viewProgress {
-          return AnyView(ContinueButtonView())
-        } else {
-          return AnyView(PlayButtonView())
-        }
-      } else {
-        return AnyView(
-          HStack {
-            Spacer()
-            ActivityIndicator()
-            Spacer()
-          }
-        )
-      }
-    }
-  }
+    var content: ContentListDisplayable
+    @ObservedObject var childContentsViewModel: ChildContentsViewModel
+    @ObservedObject var dynamicContentViewModel: DynamicContentViewModel
 
-  private func headerImagePlayableContent(for width: CGFloat) -> some View {
-    VStack(spacing: 0, content: {
-      ZStack(alignment: .center) {
-        VerticalFadeImageView(
-          imageUrl: content.cardArtworkUrl,
-          blurred: false,
-          width: width,
-          height: min(width * imageRatio, maxImageHeight)
-        )
-        
-        continueOrPlayButton
-      }
-      
-      progressBar
-    })
-  }
-  
-  private func headerImageLockedProContent(for width: CGFloat) -> some View {
-    ZStack {
-      VerticalFadeImageView(
-        imageUrl: content.cardArtworkUrl,
-        blurred: true,
-        width: width,
-        height: min(width * imageRatio, maxImageHeight)
-      )
-      
-      ProContentLockedOverlayView()
+    @EnvironmentObject var sessionController: SessionController
+    var user: User {
+        sessionController.user!
     }
-  }
-  
-  private var progressBar: AnyView? {
-    if case .inProgress(let progress) = dynamicContentViewModel.viewProgress {
-      return AnyView(ProgressBarView(progress: progress, isRounded: false))
+
+    private var canStreamPro: Bool {
+        user.canStreamPro
     }
-    return nil
-  }
+
+    var imageRatio: CGFloat = 283 / 375
+    var maxImageHeight: CGFloat = 384
+
+    var body: some View {
+        ZStack {
+            contentView
+
+            if currentlyDisplayedVideoPlaybackViewModel != nil {
+                FullScreenVideoPlayerRepresentable(viewModel: $currentlyDisplayedVideoPlaybackViewModel)
+            }
+        }
+    }
+
+    var contentView: some View {
+        GeometryReader { geometry in
+            List {
+                Section {
+                    if self.content.professional && !self.canStreamPro {
+                        self.headerImageLockedProContent(for: geometry.size.width)
+                    } else {
+                        self.headerImagePlayableContent(for: geometry.size.width)
+                    }
+
+                    ContentSummaryView(content: self.content, dynamicContentViewModel: self.dynamicContentViewModel)
+                        .padding([.leading, .trailing], 20)
+                        .padding([.bottom], 37)
+                }
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.backgroundColor)
+
+                ChildContentListingView(
+                    childContentsViewModel: self.childContentsViewModel,
+                    currentlyDisplayedVideoPlaybackViewModel: self.$currentlyDisplayedVideoPlaybackViewModel
+                )
+                .background(Color.backgroundColor)
+            }
+        }
+        .navigationBarTitle(Text(""), displayMode: .inline)
+        .background(Color.backgroundColor)
+    }
+
+    private func openSettings() {
+        // open iPhone settings
+        if
+            let url = URL(string: UIApplication.openSettingsURLString),
+            UIApplication.shared.canOpenURL(url)
+        { UIApplication.shared.open(url) }
+    }
+
+    private var continueOrPlayButton: Button<AnyView> {
+        Button(action: {
+            self.currentlyDisplayedVideoPlaybackViewModel = self.dynamicContentViewModel.videoPlaybackViewModel(
+                apiClient: self.sessionController.client,
+                dismissClosure: {
+                    self.currentlyDisplayedVideoPlaybackViewModel = nil
+                }
+            )
+        }) {
+            if case .hasData = childContentsViewModel.state {
+                if case .inProgress = dynamicContentViewModel.viewProgress {
+                    return AnyView(ContinueButtonView())
+                } else {
+                    return AnyView(PlayButtonView())
+                }
+            } else {
+                return AnyView(
+                    HStack {
+                        Spacer()
+                        ActivityIndicator()
+                        Spacer()
+                    }
+                )
+            }
+        }
+    }
+
+    private func headerImagePlayableContent(for width: CGFloat) -> some View {
+        VStack(spacing: 0, content: {
+            ZStack(alignment: .center) {
+                VerticalFadeImageView(
+                    imageUrl: content.cardArtworkUrl,
+                    blurred: false,
+                    width: width,
+                    height: min(width * imageRatio, maxImageHeight)
+                )
+
+                continueOrPlayButton
+            }
+
+            progressBar
+        })
+    }
+
+    private func headerImageLockedProContent(for width: CGFloat) -> some View {
+        ZStack {
+            VerticalFadeImageView(
+                imageUrl: content.cardArtworkUrl,
+                blurred: true,
+                width: width,
+                height: min(width * imageRatio, maxImageHeight)
+            )
+
+            ProContentLockedOverlayView()
+        }
+    }
+
+    private var progressBar: AnyView? {
+        if case let .inProgress(progress) = dynamicContentViewModel.viewProgress {
+            return AnyView(ProgressBarView(progress: progress, isRounded: false))
+        }
+        return nil
+    }
 }

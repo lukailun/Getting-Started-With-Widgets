@@ -30,205 +30,206 @@ import Combine
 import Foundation
 
 extension FileManager {
-  static func sharedContainerURL() -> URL {
-    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.lukailun.emitron.contents")!
-  }
+    static func sharedContainerURL() -> URL {
+        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.lukailun.emitron.contents")!
+    }
 }
 
 class ContentRepository: ObservableObject, ContentPaginatable {
-  let repository: Repository
-  let contentsService: ContentsService
-  let downloadAction: DownloadAction
-  weak var syncAction: SyncAction?
-  let serviceAdapter: ContentServiceAdapter!
-  
-  private (set) var currentPage: Int = 1
-  private (set) var totalContentNum: Int = 0
-  
-  // This should be @Published, but it /sometimes/ crashes the app with EXC_BAD_ACCESS
-  // when you try and reference it. Which is handy.
-  var contents: [ContentListDisplayable] = [] {
-    willSet {
-      objectWillChange.send()
-    }
-    didSet {
-      writeContents()
-    }
-  }
-  
-  func writeContents() {
-    let widgetContents = contents.map {
-      WidgetContent(name: $0.name, cardViewSubtitle: $0.cardViewSubtitle, descriptionPlainText: $0.descriptionPlainText, releasedAtDateTimeString: $0.releasedAtDateTimeString)
-    }
-    let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
-    print(">>> \(archiveURL)")
-    let encoder = JSONEncoder()
-    if let dataToSave = try? encoder.encode(widgetContents) {
-      do {
-        try dataToSave.write(to: archiveURL)
-      } catch {
-        print("Error: Can't write contents")
-        return
-      }
-    }
-  }
+    let repository: Repository
+    let contentsService: ContentsService
+    let downloadAction: DownloadAction
+    weak var syncAction: SyncAction?
+    let serviceAdapter: ContentServiceAdapter!
 
-  // This should be @Published too, but it crashes the compiler (Version 11.3 (11C29))
-  // Let's see if we actually need it to be @Published...
-  var state: DataState = .initial
-  
-  private var contentIds: [Int] = []
-  private var contentSubscription: AnyCancellable?
-  // Provide a value for this in a subclass to subscribe to invalidation notifcations
-  var invalidationPublisher: AnyPublisher<Void, Never>? { nil }
-  private var invalidationSubscription: AnyCancellable?
-  
-  var isEmpty: Bool {
-    contents.isEmpty
-  }
-  
-  var nonPaginationParameters = [Parameter]() {
-    didSet {
-      if state != .initial { reload() }
-    }
-  }
-  
-  // Initialiser
-  init(repository: Repository,
-       contentsService: ContentsService,
-       downloadAction: DownloadAction,
-       syncAction: SyncAction,
-       serviceAdapter: ContentServiceAdapter?) {
-    self.repository = repository
-    self.contentsService = contentsService
-    self.downloadAction = downloadAction
-    self.syncAction = syncAction
-    self.serviceAdapter = serviceAdapter
-    configureInvalidationSubscription()
-  }
+    private(set) var currentPage: Int = 1
+    private(set) var totalContentNum: Int = 0
 
-  func loadMore() {
-    if state == .loading || state == .loadingAdditional {
-      return
-    }
-    
-    guard contentIds.isEmpty || contentIds.count <= totalContentNum else {
-      return
-    }
-    
-    state = .loadingAdditional
-    currentPage += 1
-    
-    let pageParam = ParameterKey.pageNumber(number: currentPage).param
-    let allParams = nonPaginationParameters + [pageParam]
-    
-    serviceAdapter.findContent(parameters: allParams) { [weak self] result in
-      guard let self = self else { return }
-      
-      switch result {
-      case .failure(let error):
-        self.currentPage -= 1
-        self.state = .failed
-        self.objectWillChange.send()
-        Failure
-          .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
-          .log()
-      case .success(let (newContentIds, cacheUpdate, totalResultCount)):
-        self.contentIds += newContentIds
-        self.contentSubscription?.cancel()
-        self.repository.apply(update: cacheUpdate)
-        self.totalContentNum = totalResultCount
-        self.state = .hasData
-        self.configureContentSubscription()
-      }
-    }
-  }
-  
-  func reload() {
-    if state == .loading || state == .loadingAdditional {
-      return
-    }
-    
-    state = .loading
-    // `state` can't be @Published, so we have to do this manually
-    objectWillChange.send()
-    
-    // Reset current page to 1
-    currentPage = startingPage
-    
-    serviceAdapter.findContent(parameters: nonPaginationParameters) {  [weak self] result in
-      guard let self = self else {
-        return
-      }
-      
-      switch result {
-      case .failure(let error):
-        self.state = .failed
-        self.objectWillChange.send()
-        Failure
-          .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
-          .log()
-      case .success(let (newContentIds, cacheUpdate, totalResultCount)):
-        self.contentIds = newContentIds
-        self.contentSubscription?.cancel()
-        self.repository.apply(update: cacheUpdate)
-        self.totalContentNum = totalResultCount
-        self.state = .hasData
-        self.configureContentSubscription()
-      }
-    }
-  }
-  
-  private func configureContentSubscription() {
-    self.contentSubscription = self.repository
-      .contentSummaryState(for: self.contentIds)
-      .removeDuplicates()
-      .sink(receiveCompletion: { [weak self] error in
-        guard let self = self else { return }
-        
-        Failure
-          .repositoryLoad(from: String(describing: type(of: self)), reason: "Unable to receive content summary update: \(error)")
-          .log()
-    }, receiveValue: { [weak self] contentSummaryStates in
-      guard let self = self else { return }
-      
-      self.contents = contentSummaryStates
-    })
-  }
-  
-  private func configureInvalidationSubscription() {
-    if let invalidationPublisher = invalidationPublisher {
-      self.invalidationSubscription = invalidationPublisher
-        .sink { [weak self] in
-          guard let self = self else { return }
-          
-          // If we're invalidating the cache then we need to set this to initial status again
-          self.state = .initial
-          // We're not gonna broadcast this change. If you do it'll wreak havoc with the content
-          // list and nav view—where the nav link for the currently displayed detail view disappears
-          // from underneath us. Instead we check the state of this repo each time the content
-          // listing appears. This doesn't feel that great, but it's what seems to work.
+    // This should be @Published, but it /sometimes/ crashes the app with EXC_BAD_ACCESS
+    // when you try and reference it. Which is handy.
+    var contents: [ContentListDisplayable] = [] {
+        willSet {
+            objectWillChange.send()
+        }
+        didSet {
+            writeContents()
         }
     }
-  }
-  
-  func dynamicContentViewModel(for contentId: Int) -> DynamicContentViewModel {
-    DynamicContentViewModel(
-      contentId: contentId,
-      repository: repository,
-      downloadAction: downloadAction,
-      syncAction: syncAction
-    )
-  }
-  
-  func childContentsViewModel(for contentId: Int) -> ChildContentsViewModel {
-    // Default to using the cached version
-    DataCacheChildContentsViewModel(
-      parentContentId: contentId,
-      downloadAction: downloadAction,
-      syncAction: syncAction,
-      repository: repository,
-      service: contentsService
-    )
-  }
+
+    func writeContents() {
+        let widgetContents = contents.map {
+            WidgetContent(name: $0.name, cardViewSubtitle: $0.cardViewSubtitle, descriptionPlainText: $0.descriptionPlainText, releasedAtDateTimeString: $0.releasedAtDateTimeString)
+        }
+        let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
+        print(">>> \(archiveURL)")
+        let encoder = JSONEncoder()
+        if let dataToSave = try? encoder.encode(widgetContents) {
+            do {
+                try dataToSave.write(to: archiveURL)
+            } catch {
+                print("Error: Can't write contents")
+                return
+            }
+        }
+    }
+
+    // This should be @Published too, but it crashes the compiler (Version 11.3 (11C29))
+    // Let's see if we actually need it to be @Published...
+    var state: DataState = .initial
+
+    private var contentIds: [Int] = []
+    private var contentSubscription: AnyCancellable?
+    // Provide a value for this in a subclass to subscribe to invalidation notifcations
+    var invalidationPublisher: AnyPublisher<Void, Never>? { nil }
+    private var invalidationSubscription: AnyCancellable?
+
+    var isEmpty: Bool {
+        contents.isEmpty
+    }
+
+    var nonPaginationParameters = [Parameter]() {
+        didSet {
+            if state != .initial { reload() }
+        }
+    }
+
+    // Initialiser
+    init(repository: Repository,
+         contentsService: ContentsService,
+         downloadAction: DownloadAction,
+         syncAction: SyncAction,
+         serviceAdapter: ContentServiceAdapter?)
+    {
+        self.repository = repository
+        self.contentsService = contentsService
+        self.downloadAction = downloadAction
+        self.syncAction = syncAction
+        self.serviceAdapter = serviceAdapter
+        configureInvalidationSubscription()
+    }
+
+    func loadMore() {
+        if state == .loading || state == .loadingAdditional {
+            return
+        }
+
+        guard contentIds.isEmpty || contentIds.count <= totalContentNum else {
+            return
+        }
+
+        state = .loadingAdditional
+        currentPage += 1
+
+        let pageParam = ParameterKey.pageNumber(number: currentPage).param
+        let allParams = nonPaginationParameters + [pageParam]
+
+        serviceAdapter.findContent(parameters: allParams) { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case let .failure(error):
+                self.currentPage -= 1
+                self.state = .failed
+                self.objectWillChange.send()
+                Failure
+                    .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
+                    .log()
+            case .success(let (newContentIds, cacheUpdate, totalResultCount)):
+                self.contentIds += newContentIds
+                self.contentSubscription?.cancel()
+                self.repository.apply(update: cacheUpdate)
+                self.totalContentNum = totalResultCount
+                self.state = .hasData
+                self.configureContentSubscription()
+            }
+        }
+    }
+
+    func reload() {
+        if state == .loading || state == .loadingAdditional {
+            return
+        }
+
+        state = .loading
+        // `state` can't be @Published, so we have to do this manually
+        objectWillChange.send()
+
+        // Reset current page to 1
+        currentPage = startingPage
+
+        serviceAdapter.findContent(parameters: nonPaginationParameters) { [weak self] result in
+            guard let self = self else {
+                return
+            }
+
+            switch result {
+            case let .failure(error):
+                self.state = .failed
+                self.objectWillChange.send()
+                Failure
+                    .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
+                    .log()
+            case .success(let (newContentIds, cacheUpdate, totalResultCount)):
+                self.contentIds = newContentIds
+                self.contentSubscription?.cancel()
+                self.repository.apply(update: cacheUpdate)
+                self.totalContentNum = totalResultCount
+                self.state = .hasData
+                self.configureContentSubscription()
+            }
+        }
+    }
+
+    private func configureContentSubscription() {
+        contentSubscription = repository
+            .contentSummaryState(for: contentIds)
+            .removeDuplicates()
+            .sink(receiveCompletion: { [weak self] error in
+                guard let self = self else { return }
+
+                Failure
+                    .repositoryLoad(from: String(describing: type(of: self)), reason: "Unable to receive content summary update: \(error)")
+                    .log()
+            }, receiveValue: { [weak self] contentSummaryStates in
+                guard let self = self else { return }
+
+                self.contents = contentSummaryStates
+            })
+    }
+
+    private func configureInvalidationSubscription() {
+        if let invalidationPublisher = invalidationPublisher {
+            invalidationSubscription = invalidationPublisher
+                .sink { [weak self] in
+                    guard let self = self else { return }
+
+                    // If we're invalidating the cache then we need to set this to initial status again
+                    self.state = .initial
+                    // We're not gonna broadcast this change. If you do it'll wreak havoc with the content
+                    // list and nav view—where the nav link for the currently displayed detail view disappears
+                    // from underneath us. Instead we check the state of this repo each time the content
+                    // listing appears. This doesn't feel that great, but it's what seems to work.
+                }
+        }
+    }
+
+    func dynamicContentViewModel(for contentId: Int) -> DynamicContentViewModel {
+        DynamicContentViewModel(
+            contentId: contentId,
+            repository: repository,
+            downloadAction: downloadAction,
+            syncAction: syncAction
+        )
+    }
+
+    func childContentsViewModel(for contentId: Int) -> ChildContentsViewModel {
+        // Default to using the cached version
+        DataCacheChildContentsViewModel(
+            parentContentId: contentId,
+            downloadAction: downloadAction,
+            syncAction: syncAction,
+            repository: repository,
+            service: contentsService
+        )
+    }
 }

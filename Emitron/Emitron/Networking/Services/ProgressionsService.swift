@@ -27,26 +27,28 @@
 // THE SOFTWARE.
 
 class ProgressionsService: Service {
+    // MARK: - Internal
 
-  // MARK: - Internal
-  func progressions(parameters: [Parameter]? = nil,
-                    completion: @escaping (_ response: Result<ProgressionsRequest.Response, RWAPIError>) -> Void) {
-    let request = ProgressionsRequest()
-    makeAndProcessRequest(request: request,
-                          parameters: parameters,
-                          completion: completion)
-  }
-  
-  func update(progressions: [ProgressionUpdate],
-              completion: @escaping (_ response: Result<UpdateProgressionsRequest.Response, RWAPIError>) -> Void) {
-    let request = UpdateProgressionsRequest(progressionUpdates: progressions)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
-  
-  func delete(with id: Int, completion: @escaping (_ response: Result<DeleteProgressionRequest.Response, RWAPIError>) -> Void) {
-    let request = DeleteProgressionRequest(id: id)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    func progressions(parameters: [Parameter]? = nil,
+                      completion: @escaping (_ response: Result<ProgressionsRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = ProgressionsRequest()
+        makeAndProcessRequest(request: request,
+                              parameters: parameters,
+                              completion: completion)
+    }
+
+    func update(progressions: [ProgressionUpdate],
+                completion: @escaping (_ response: Result<UpdateProgressionsRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = UpdateProgressionsRequest(progressionUpdates: progressions)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
+
+    func delete(with id: Int, completion: @escaping (_ response: Result<DeleteProgressionRequest.Response, RWAPIError>) -> Void) {
+        let request = DeleteProgressionRequest(id: id)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

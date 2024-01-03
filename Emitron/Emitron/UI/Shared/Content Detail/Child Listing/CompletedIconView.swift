@@ -29,23 +29,23 @@
 import SwiftUI
 
 struct CompletedIconView: View {
-  var body: some View {
-    ZStack(alignment: .center) {
-      Rectangle()
-        .frame(width: .childContentButtonSide, height: .childContentButtonSide)
-        .foregroundColor(.accent)
-        .cornerRadius(6)
-      
-      Image.checkmark
-        .resizable()
-        .frame(maxWidth: 15, maxHeight: 17)
-        .foregroundColor(.buttonText)
+    var body: some View {
+        ZStack(alignment: .center) {
+            Rectangle()
+                .frame(width: .childContentButtonSide, height: .childContentButtonSide)
+                .foregroundColor(.accent)
+                .cornerRadius(6)
+
+            Image.checkmark
+                .resizable()
+                .frame(maxWidth: 15, maxHeight: 17)
+                .foregroundColor(.buttonText)
+        }
     }
-  }
 }
 
 struct CompletedIconView_Previews: PreviewProvider {
-  static var previews: some View {
-    CompletedIconView()
-  }
+    static var previews: some View {
+        CompletedIconView()
+    }
 }

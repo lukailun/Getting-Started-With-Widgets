@@ -29,42 +29,42 @@
 import SwiftUI
 
 private enum Layout {
-  enum Padding {
-    static let overall: CGFloat = 12
-    static let textTrailing: CGFloat = 2
-  }
+    enum Padding {
+        static let overall: CGFloat = 12
+        static let textTrailing: CGFloat = 2
+    }
 
-  static let cornerRadius: CGFloat = 9
-  static let imageSize: CGFloat = 15
+    static let cornerRadius: CGFloat = 9
+    static let imageSize: CGFloat = 15
 }
 
 struct TitleCheckmarkView: View {
-  var name: String
-  var isOn: Bool
-  var onChange: (Bool) -> Void
-  
-  var body: some View {
-    HStack {
-      Text(name)
-        .foregroundColor(.titleText)
-        .font(.uiLabel)
-        .padding([.trailing], Layout.Padding.textTrailing)
-      
-      Spacer()
-      
-      CheckmarkView(isOn: isOn, onChange: onChange)
-        .accessibility(label: Text("Toggle \(name)"))
+    var name: String
+    var isOn: Bool
+    var onChange: (Bool) -> Void
+
+    var body: some View {
+        HStack {
+            Text(name)
+                .foregroundColor(.titleText)
+                .font(.uiLabel)
+                .padding([.trailing], Layout.Padding.textTrailing)
+
+            Spacer()
+
+            CheckmarkView(isOn: isOn, onChange: onChange)
+                .accessibility(label: Text("Toggle \(name)"))
+        }
+        .frame(minHeight: 46)
     }
-      .frame(minHeight: 46)
-  }
 }
 
 #if DEBUG
-struct FilterView_Previews: PreviewProvider {
-  static var previews: some View {
-    TitleCheckmarkView(name: "Turned...", isOn: Filter.testFilter.isOn, onChange: { isOn in
-      print("On state changed to: \(isOn)")
-    })
-  }
-}
+    struct FilterView_Previews: PreviewProvider {
+        static var previews: some View {
+            TitleCheckmarkView(name: "Turned...", isOn: Filter.testFilter.isOn, onChange: { isOn in
+                print("On state changed to: \(isOn)")
+            })
+        }
+    }
 #endif

@@ -27,15 +27,14 @@
 // THE SOFTWARE.
 
 struct ContentDomainAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource = JSONAPIResource(), relationships: [EntityRelationship]) throws -> [ContentDomain] {
-    
-    relationships.filter {
-      $0.from.type == .content && $0.to.type == .domain
+    static func process(resource _: JSONAPIResource = JSONAPIResource(), relationships: [EntityRelationship]) throws -> [ContentDomain] {
+        relationships.filter {
+            $0.from.type == .content && $0.to.type == .domain
+        }
+        .map {
+            ContentDomain(id: nil,
+                          contentId: $0.from.id,
+                          domainId: $0.to.id)
+        }
     }
-    .map {
-      ContentDomain(id: nil,
-                    contentId: $0.from.id,
-                    domainId: $0.to.id)
-    }
-  }
 }

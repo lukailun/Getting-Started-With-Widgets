@@ -26,123 +26,123 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import SwiftyJSON
 @testable import Emitron
+import SwiftyJSON
+import XCTest
 
 class GroupAdapterTest: XCTestCase {
-  let sampleResource: JSON = [
-    "id": "1234",
-    "type": "groups",
-    "attributes": [
-      "name": "Sample Group",
-      "ordinal": 5,
-      "description": "Group description"
-    ],
-    "relationships": [
-      "contents": [
-        "data": [
-          [
-            "id": "7039",
-            "type": "contents"
-          ],
-          [
-            "id": "7042",
-            "type": "contents"
-          ]
-        ]
-      ]
+    let sampleResource: JSON = [
+        "id": "1234",
+        "type": "groups",
+        "attributes": [
+            "name": "Sample Group",
+            "ordinal": 5,
+            "description": "Group description",
+        ],
+        "relationships": [
+            "contents": [
+                "data": [
+                    [
+                        "id": "7039",
+                        "type": "contents",
+                    ],
+                    [
+                        "id": "7042",
+                        "type": "contents",
+                    ],
+                ],
+            ],
+        ],
     ]
-  ]
-  
-  let relationships = [
-    EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 1234, type: .group)),
-    EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 1235, type: .group))
-  ]
-  
-  func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
-    let json: JSON = [
-      "data": [
-        dict
-      ]
-    ]
-    
-    let document = JSONAPIDocument(json)
-    return document.data.first!
-  }
 
-  func testValidResourceProcessedCorrectly() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let group = try GroupAdapter.process(resource: resource, relationships: relationships)
-    
-    XCTAssertEqual(1234, group.id)
-    XCTAssertEqual("Sample Group", group.name)
-    XCTAssertEqual("Group description", group.description)
-    XCTAssertEqual(12, group.contentId)
-    XCTAssertEqual(5, group.ordinal)
-  }
-  
-  func testInvalidTypeThrows() throws {
-    var sample = sampleResource
-    sample["type"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+    let relationships = [
+        EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 1234, type: .group)),
+        EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 1235, type: .group)),
+    ]
+
+    func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
+        let json: JSON = [
+            "data": [
+                dict,
+            ],
+        ]
+
+        let document = JSONAPIDocument(json)
+        return document.data.first!
     }
-  }
-  
-  func testMissingNameThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testValidResourceProcessedCorrectly() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let group = try GroupAdapter.process(resource: resource, relationships: relationships)
+
+        XCTAssertEqual(1234, group.id)
+        XCTAssertEqual("Sample Group", group.name)
+        XCTAssertEqual("Group description", group.description)
+        XCTAssertEqual(12, group.contentId)
+        XCTAssertEqual(5, group.ordinal)
     }
-  }
-  
-  func testMissingOrdinalThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testInvalidTypeThrows() throws {
+        var sample = sampleResource
+        sample["type"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testMissingRelationshipThrows() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let relationships = Array(self.relationships.dropFirst())
-    
-    XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingRelationships, error as! EntityAdapterError)
+
+    func testMissingNameThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testDuplicateRelationshipChoosesFirst() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let relationships = [EntityRelationship(name: "", from: EntityIdentity(id: 15, type: .content), to: EntityIdentity(id: 1234, type: .group))] + self.relationships
-    
-    let group = try GroupAdapter.process(resource: resource, relationships: relationships)
-    
-    XCTAssertEqual(15, group.contentId)
-  }
-  
-  func testMissingDescriptionIsAcceptable() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "description")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    let group = try GroupAdapter.process(resource: resource, relationships: relationships)
-    XCTAssertNil(group.description)
-  }
+
+    func testMissingOrdinalThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testMissingRelationshipThrows() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let relationships = Array(self.relationships.dropFirst())
+
+        XCTAssertThrowsError(try GroupAdapter.process(resource: resource, relationships: relationships)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingRelationships, error as! EntityAdapterError)
+        }
+    }
+
+    func testDuplicateRelationshipChoosesFirst() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let relationships = [EntityRelationship(name: "", from: EntityIdentity(id: 15, type: .content), to: EntityIdentity(id: 1234, type: .group))] + self.relationships
+
+        let group = try GroupAdapter.process(resource: resource, relationships: relationships)
+
+        XCTAssertEqual(15, group.contentId)
+    }
+
+    func testMissingDescriptionIsAcceptable() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "description")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        let group = try GroupAdapter.process(resource: resource, relationships: relationships)
+        XCTAssertNil(group.description)
+    }
 }

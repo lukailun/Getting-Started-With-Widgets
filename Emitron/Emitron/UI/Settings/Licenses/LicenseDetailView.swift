@@ -29,36 +29,36 @@
 import SwiftUI
 
 struct LicenseDetailView: View {
-  let license: FossLicense
-  
-  var body: some View {
-    VStack(alignment: .leading, spacing: 10) {
-      Text(license.name)
-        .font(.uiTitle1)
-        .foregroundColor(.titleText)
-      Text("© \(license.copyright)")
-        .font(.uiTitle5)
-        .foregroundColor(.titleText)
-      Text(license.url.absoluteString)
-        .font(.uiCaption)
-        .foregroundColor(.accent)
-      Text(license.body)
-        .font(.uiUppercase)
-        .foregroundColor(.contentText)
-      Spacer()
+    let license: FossLicense
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(license.name)
+                .font(.uiTitle1)
+                .foregroundColor(.titleText)
+            Text("© \(license.copyright)")
+                .font(.uiTitle5)
+                .foregroundColor(.titleText)
+            Text(license.url.absoluteString)
+                .font(.uiCaption)
+                .foregroundColor(.accent)
+            Text(license.body)
+                .font(.uiUppercase)
+                .foregroundColor(.contentText)
+            Spacer()
+        }
+        .padding(10)
+        .background(Color.backgroundColor)
     }
-    .padding(10)
-    .background(Color.backgroundColor)
-  }
 }
 
 struct LicenseDetailView_Previews: PreviewProvider {
-  static let license = FossLicense.load().first!
-  
-  static var previews: some View {
-    SwiftUI.Group {
-      LicenseDetailView(license: license).colorScheme(.light)
-      LicenseDetailView(license: license).colorScheme(.dark)
+    static let license = FossLicense.load().first!
+
+    static var previews: some View {
+        SwiftUI.Group {
+            LicenseDetailView(license: license).colorScheme(.light)
+            LicenseDetailView(license: license).colorScheme(.dark)
+        }
     }
-  }
 }

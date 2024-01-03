@@ -30,99 +30,106 @@ import Foundation
 import SwiftyJSON
 
 struct ProgressionsRequest: Request {
-  typealias Response = (progressions: [Progression], cacheUpdate: DataCacheUpdate, totalNumber: Int)
+    typealias Response = (progressions: [Progression], cacheUpdate: DataCacheUpdate, totalNumber: Int)
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/progressions" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let progressions = try doc.data.map { try ProgressionAdapter.process(resource: $0) }
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
-      throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+    var method: HTTPMethod { .GET }
+    var path: String { "/progressions" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let progressions = try doc.data.map { try ProgressionAdapter.process(resource: $0) }
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+        guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
+            throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+        }
+        return (progressions: progressions, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
     }
-    return (progressions: progressions, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
-  }
 }
 
 enum ProgressionUpdateData {
-  case finished
-  case progress(Int)
-  
-  var jsonAttribute: Dictionary<String, Any>.Element {
-    switch self {
-    case .finished:
-      return ("finished", true)
-    case .progress(let progress):
-      return ("progress", progress)
+    case finished
+    case progress(Int)
+
+    var jsonAttribute: Dictionary<String, Any>.Element {
+        switch self {
+        case .finished:
+            return ("finished", true)
+        case let .progress(progress):
+            return ("progress", progress)
+        }
     }
-  }
 }
 
 protocol ProgressionUpdate {
-  var contentId: Int { get }
-  var data: ProgressionUpdateData { get }
-  var updatedAt: Date { get }
+    var contentId: Int { get }
+    var data: ProgressionUpdateData { get }
+    var updatedAt: Date { get }
 }
 
 struct UpdateProgressionsRequest: Request {
-  typealias Response = (progressions: [Progression], cacheUpdate: DataCacheUpdate)
+    typealias Response = (progressions: [Progression], cacheUpdate: DataCacheUpdate)
 
-  // MARK: - Properties
-  var method: HTTPMethod { .POST }
-  var path: String { "/progressions/bulk" }
-  var additionalHeaders: HTTPHeaders = [:]
-  var body: Data? {
-    let dataJson = progressionUpdates.map { update in
-      [
-        "type": "progressions",
-        "attributes": [
-          "content_id": update.contentId,
-          "updated_at": update.updatedAt.iso8601,
-          update.data.jsonAttribute.key: update.data.jsonAttribute.value
+    // MARK: - Properties
+
+    var method: HTTPMethod { .POST }
+    var path: String { "/progressions/bulk" }
+    var additionalHeaders: HTTPHeaders = [:]
+    var body: Data? {
+        let dataJson = progressionUpdates.map { update in
+            [
+                "type": "progressions",
+                "attributes": [
+                    "content_id": update.contentId,
+                    "updated_at": update.updatedAt.iso8601,
+                    update.data.jsonAttribute.key: update.data.jsonAttribute.value,
+                ],
+            ]
+        }
+        let json = [
+            "data": dataJson,
         ]
-      ]
-    }
-    let json = [
-      "data": dataJson
-    ]
-    
-    return try? JSONSerialization.data(withJSONObject: json)
-  }
-  
-  // MARK: - Parameters
-  let progressionUpdates: [ProgressionUpdate]
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let progressions = try doc.data.map { try ProgressionAdapter.process(resource: $0) }
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    
-    return (progressions: progressions, cacheUpdate: cacheUpdate)
-  }
+        return try? JSONSerialization.data(withJSONObject: json)
+    }
+
+    // MARK: - Parameters
+
+    let progressionUpdates: [ProgressionUpdate]
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let progressions = try doc.data.map { try ProgressionAdapter.process(resource: $0) }
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+
+        return (progressions: progressions, cacheUpdate: cacheUpdate)
+    }
 }
 
 struct DeleteProgressionRequest: Request {
-  typealias Response = Void
+    typealias Response = Void
 
-  // MARK: - Properties
-  var method: HTTPMethod { .DELETE }
-  var path: String { "/progressions/\(id)" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  
-  // MARK: - Parameters
-  let id: Int
-  
-  // MARK: - Internal
-  func handle(response: Data) throws {
-    }
+    // MARK: - Properties
+
+    var method: HTTPMethod { .DELETE }
+    var path: String { "/progressions/\(id)" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response _: Data) throws {}
 }

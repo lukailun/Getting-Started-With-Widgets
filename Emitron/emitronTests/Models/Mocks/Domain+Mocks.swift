@@ -26,33 +26,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import Foundation
-import SwiftyJSON
-import GRDB
 @testable import Emitron
+import Foundation
+import GRDB
+import SwiftyJSON
 
 extension Domain {
-  static func loadAndSaveMocks(db: DatabaseWriter) throws {
-    let domains = loadMocksFrom(filename: "Domains")
-    try db.write { db in
-      try domains.forEach { try $0.save(db) }
+    static func loadAndSaveMocks(db: DatabaseWriter) throws {
+        let domains = loadMocksFrom(filename: "Domains")
+        try db.write { db in
+            try domains.forEach { try $0.save(db) }
+        }
     }
-  }
-  
-  private static func loadMocksFrom(filename: String) -> ([Domain]) {
-    do {
-      let bundle = Bundle(for: AttachmentTest.self)
-      let fileURL = bundle.url(forResource: filename, withExtension: "json")
-      let data = try Data(contentsOf: fileURL!)
-      let json = try JSON(data: data)
-      
-      let document = JSONAPIDocument(json)
-      let domains = try document.data.map { resource in
-        try DomainAdapter.process(resource: resource)
-      }
-      return domains
-    } catch {
-      preconditionFailure("Unable to load Domain mocks: \(error)")
+
+    private static func loadMocksFrom(filename: String) -> ([Domain]) {
+        do {
+            let bundle = Bundle(for: AttachmentTest.self)
+            let fileURL = bundle.url(forResource: filename, withExtension: "json")
+            let data = try Data(contentsOf: fileURL!)
+            let json = try JSON(data: data)
+
+            let document = JSONAPIDocument(json)
+            let domains = try document.data.map { resource in
+                try DomainAdapter.process(resource: resource)
+            }
+            return domains
+        } catch {
+            preconditionFailure("Unable to load Domain mocks: \(error)")
+        }
     }
-  }
 }

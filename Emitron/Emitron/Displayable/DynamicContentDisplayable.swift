@@ -27,7 +27,7 @@
 // THE SOFTWARE.
 
 protocol DynamicContentDisplayable {
-  var viewProgress: ContentViewProgressDisplayable { get }
-  var downloadProgress: DownloadProgressDisplayable { get }
-  var bookmarked: Bool { get }
+    var viewProgress: ContentViewProgressDisplayable { get }
+    var downloadProgress: DownloadProgressDisplayable { get }
+    var bookmarked: Bool { get }
 }

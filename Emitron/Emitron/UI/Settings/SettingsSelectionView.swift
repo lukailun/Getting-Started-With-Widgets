@@ -29,64 +29,64 @@
 import SwiftUI
 
 struct SettingsSelectionView<Setting: SettingsSelectable>: View {
-  let title: String
-  @Binding var settingsOption: Setting
-  
-  var body: some View {
-    VStack(spacing: 0) {
-      ForEach(type(of: settingsOption).selectableCases, id: \.self) { option in
+    let title: String
+    @Binding var settingsOption: Setting
+
+    var body: some View {
         VStack(spacing: 0) {
-          Button(action: {
-            self.settingsOption = option
-          }) {
-            HStack {
-              Text(option.display)
-                .font(.uiBodyAppleDefault)
-                .foregroundColor(.titleText)
-                .padding([.vertical], SettingsLayout.rowSpacing)
-            
-              Spacer()
-              
-              if option == self.settingsOption {
-                Image.checkmark
-                  .foregroundColor(.iconButton)
-              }
+            ForEach(type(of: settingsOption).selectableCases, id: \.self) { option in
+                VStack(spacing: 0) {
+                    Button(action: {
+                        self.settingsOption = option
+                    }) {
+                        HStack {
+                            Text(option.display)
+                                .font(.uiBodyAppleDefault)
+                                .foregroundColor(.titleText)
+                                .padding([.vertical], SettingsLayout.rowSpacing)
+
+                            Spacer()
+
+                            if option == self.settingsOption {
+                                Image.checkmark
+                                    .foregroundColor(.iconButton)
+                            }
+                        }
+                    }
+
+                    Rectangle()
+                        .fill(Color.separator)
+                        .frame(height: 1)
+                }
             }
-          }
-          
-          Rectangle()
-            .fill(Color.separator)
-            .frame(height: 1)
+
+            Spacer()
         }
-      }
-      
-      Spacer()
-    }
-      .navigationBarTitle(
-        Text(title)
-          .font(.uiTitle5)
-          .foregroundColor(.titleText),
-        displayMode: .inline
-      )
+        .navigationBarTitle(
+            Text(title)
+                .font(.uiTitle5)
+                .foregroundColor(.titleText),
+            displayMode: .inline
+        )
         .padding(20)
         .background(Color.backgroundColor)
-  }
+    }
 }
 
 struct SettingsSelectionView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      view.colorScheme(.dark)
-      view.colorScheme(.light)
+    static var previews: some View {
+        SwiftUI.Group {
+            view.colorScheme(.dark)
+            view.colorScheme(.light)
+        }
     }
-  }
-  
-  static var view: some View {
-    VStack {
-      SettingsSelectionView(title: "Download", settingsOption: .constant(Attachment.Kind.sdVideoFile))
-      SettingsSelectionView(title: "Playback Speed", settingsOption: .constant(PlaybackSpeed.standard))
+
+    static var view: some View {
+        VStack {
+            SettingsSelectionView(title: "Download", settingsOption: .constant(Attachment.Kind.sdVideoFile))
+            SettingsSelectionView(title: "Playback Speed", settingsOption: .constant(PlaybackSpeed.standard))
+        }
+        .padding()
+        .background(Color.backgroundColor)
     }
-      .padding()
-      .background(Color.backgroundColor)
-  }
 }

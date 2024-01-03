@@ -29,31 +29,31 @@
 import SwiftUI
 
 struct NumberIconView: View {
-  let number: Int
-  
-  var body: some View {
-    ZStack {
-      Rectangle()
-        .frame(width: .childContentButtonSide, height: .childContentButtonSide, alignment: .center)
-        .foregroundColor(.secondaryButtonBackground)
-        .cornerRadius(6)
-      
-      Text("\(number)")
-        .font(.uiNumberBox)
-        .foregroundColor(.buttonText)
+    let number: Int
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .frame(width: .childContentButtonSide, height: .childContentButtonSide, alignment: .center)
+                .foregroundColor(.secondaryButtonBackground)
+                .cornerRadius(6)
+
+            Text("\(number)")
+                .font(.uiNumberBox)
+                .foregroundColor(.buttonText)
+        }
     }
-  }
 }
 
 struct NumberIconView_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack {
-      NumberIconView(number: 0)
-      NumberIconView(number: 1)
-      NumberIconView(number: 2)
-      NumberIconView(number: 3)
-      NumberIconView(number: 4)
-      NumberIconView(number: 5)
+    static var previews: some View {
+        VStack {
+            NumberIconView(number: 0)
+            NumberIconView(number: 1)
+            NumberIconView(number: 2)
+            NumberIconView(number: 3)
+            NumberIconView(number: 4)
+            NumberIconView(number: 5)
+        }
     }
-  }
 }

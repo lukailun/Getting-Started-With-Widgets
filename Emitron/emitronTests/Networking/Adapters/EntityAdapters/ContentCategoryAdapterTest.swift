@@ -26,39 +26,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 @testable import Emitron
+import XCTest
 
 class ContentCategoryAdapterTest: XCTestCase {
-  func testCorrectlyBuildsFromRelationships() throws {
-    let relationships = [
-      EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 21, type: .attachment)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 23, type: .content), to: EntityIdentity(id: 34, type: .category)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 45, type: .content), to: EntityIdentity(id: 56, type: .category)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 67, type: .content), to: EntityIdentity(id: 78, type: .domain))
-    ]
-    
-    let contentCategories = try ContentCategoryAdapter.process(relationships: relationships)
-    
-    XCTAssertEqual(2, contentCategories.count)
-    XCTAssertEqual(34, contentCategories[0].categoryId)
-    XCTAssertEqual(23, contentCategories[0].contentId)
-    XCTAssertEqual(56, contentCategories[1].categoryId)
-    XCTAssertEqual(45, contentCategories[1].contentId)
-    XCTAssertNil(contentCategories[0].id)
-    XCTAssertNil(contentCategories[1].id)
-  }
-  
-  func testDoesNotBuildContentCategoriesForInverseRelationships() throws {
-    let relationships = [
-      EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 21, type: .attachment)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 23, type: .category), to: EntityIdentity(id: 34, type: .content)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 45, type: .category), to: EntityIdentity(id: 56, type: .content)),
-      EntityRelationship(name: "", from: EntityIdentity(id: 67, type: .content), to: EntityIdentity(id: 78, type: .domain))
-    ]
-    
-    let contentCategories = try ContentCategoryAdapter.process(relationships: relationships)
-    
-    XCTAssertEqual(0, contentCategories.count)
-  }
+    func testCorrectlyBuildsFromRelationships() throws {
+        let relationships = [
+            EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 21, type: .attachment)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 23, type: .content), to: EntityIdentity(id: 34, type: .category)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 45, type: .content), to: EntityIdentity(id: 56, type: .category)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 67, type: .content), to: EntityIdentity(id: 78, type: .domain)),
+        ]
+
+        let contentCategories = try ContentCategoryAdapter.process(relationships: relationships)
+
+        XCTAssertEqual(2, contentCategories.count)
+        XCTAssertEqual(34, contentCategories[0].categoryId)
+        XCTAssertEqual(23, contentCategories[0].contentId)
+        XCTAssertEqual(56, contentCategories[1].categoryId)
+        XCTAssertEqual(45, contentCategories[1].contentId)
+        XCTAssertNil(contentCategories[0].id)
+        XCTAssertNil(contentCategories[1].id)
+    }
+
+    func testDoesNotBuildContentCategoriesForInverseRelationships() throws {
+        let relationships = [
+            EntityRelationship(name: "", from: EntityIdentity(id: 12, type: .content), to: EntityIdentity(id: 21, type: .attachment)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 23, type: .category), to: EntityIdentity(id: 34, type: .content)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 45, type: .category), to: EntityIdentity(id: 56, type: .content)),
+            EntityRelationship(name: "", from: EntityIdentity(id: 67, type: .content), to: EntityIdentity(id: 78, type: .domain)),
+        ]
+
+        let contentCategories = try ContentCategoryAdapter.process(relationships: relationships)
+
+        XCTAssertEqual(0, contentCategories.count)
+    }
 }

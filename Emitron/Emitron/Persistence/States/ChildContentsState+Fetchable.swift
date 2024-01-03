@@ -28,4 +28,4 @@
 
 import GRDB
 
-extension ChildContentsState: FetchableRecord { }
+extension ChildContentsState: FetchableRecord {}

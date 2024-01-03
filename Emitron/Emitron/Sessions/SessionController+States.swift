@@ -29,22 +29,22 @@
 import struct Foundation.Date
 
 extension SessionController {
-  enum UserState {
-    case loggedIn
-    case loggingIn
-    case notLoggedIn
-  }
-  
-  enum SessionState {
-    case unknown
-    case online
-    case offline
-  }
-  
-  enum PermissionState {
-    case notLoaded
-    case loading
-    case loaded(Date?)
-    case error
-  }
+    enum UserState {
+        case loggedIn
+        case loggingIn
+        case notLoggedIn
+    }
+
+    enum SessionState {
+        case unknown
+        case online
+        case offline
+    }
+
+    enum PermissionState {
+        case notLoaded
+        case loading
+        case loaded(Date?)
+        case error
+    }
 }

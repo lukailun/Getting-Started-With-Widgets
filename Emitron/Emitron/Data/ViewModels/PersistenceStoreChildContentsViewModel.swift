@@ -29,13 +29,13 @@
 import class Foundation.DispatchQueue
 
 final class PersistenceStoreChildContentsViewModel: ChildContentsViewModel {
-  override func loadContentDetailsIntoCache() {
-    do {
-      try repository.loadDownloadedChildContentsIntoCache(for: parentContentId)
-      DispatchQueue.main.async(execute: reload)
-    } catch {
-      self.state = .failed
-      MessageBus.current.post(message: Message(level: .error, message: Constants.downloadedContentNotFound))
+    override func loadContentDetailsIntoCache() {
+        do {
+            try repository.loadDownloadedChildContentsIntoCache(for: parentContentId)
+            DispatchQueue.main.async(execute: reload)
+        } catch {
+            state = .failed
+            MessageBus.current.post(message: Message(level: .error, message: Constants.downloadedContentNotFound))
+        }
     }
-  }
 }

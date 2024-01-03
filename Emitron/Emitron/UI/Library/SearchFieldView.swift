@@ -29,82 +29,82 @@
 import SwiftUI
 
 struct SearchFieldView: View {
-  private struct SizeKey: PreferenceKey {
-    static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
-      value = value ?? nextValue()
-    }
-  }
-  
-  @State var searchString: String = ""
-  var action: (String) -> Void = { _ in }
-  @State private var height: CGFloat?
-  
-  var body: some View {
-    HStack {
-      Image(systemName: "magnifyingglass")
-        .foregroundColor(.searchFieldIcon)
-        .frame(height: 25)
-      
-      TextField(Constants.search, text: $searchString) {
-        self.action(self.searchString)
-      }
-        .keyboardType(.webSearch)
-        .font(.uiBodyCustom)
-        .foregroundColor(.searchFieldText)
-        .contentShape(Rectangle())
-      
-      if !searchString.isEmpty {
-        Button(action: {
-          self.searchString = ""
-          self.action(self.searchString)
-        }) {
-          Image(systemName: "multiply.circle.fill")
-            // If we don't enforce a frame, the button doesn't register the tap action
-            .frame(width: 25, height: 25, alignment: .center)
-            .foregroundColor(.searchFieldIcon)
+    private struct SizeKey: PreferenceKey {
+        static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
+            value = value ?? nextValue()
         }
-      }
     }
-      .padding([.vertical], 6)
-      .padding([.horizontal], 10)
-      .background(GeometryReader { proxy in
-        Color.clear.preference(key: SizeKey.self, value: proxy.size)
-      })
-      .frame(height: height)
-      .background(background)
-      .padding(1)
-      .padding([.bottom], 2)
-      .onPreferenceChange(SizeKey.self) { size in
-        self.height = size?.height
-      }
-  }
-  
-  var background: some View {
-    RoundedRectangle(cornerRadius: 9)
-      .fill(Color.searchFieldBackground)
-      .shadow(color: .searchFieldShadow, radius: 1, x: 0, y: 2)
-      .overlay(
+
+    @State var searchString: String = ""
+    var action: (String) -> Void = { _ in }
+    @State private var height: CGFloat?
+
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.searchFieldIcon)
+                .frame(height: 25)
+
+            TextField(Constants.search, text: $searchString) {
+                self.action(self.searchString)
+            }
+            .keyboardType(.webSearch)
+            .font(.uiBodyCustom)
+            .foregroundColor(.searchFieldText)
+            .contentShape(Rectangle())
+
+            if !searchString.isEmpty {
+                Button(action: {
+                    self.searchString = ""
+                    self.action(self.searchString)
+                }) {
+                    Image(systemName: "multiply.circle.fill")
+                        // If we don't enforce a frame, the button doesn't register the tap action
+                        .frame(width: 25, height: 25, alignment: .center)
+                        .foregroundColor(.searchFieldIcon)
+                }
+            }
+        }
+        .padding([.vertical], 6)
+        .padding([.horizontal], 10)
+        .background(GeometryReader { proxy in
+            Color.clear.preference(key: SizeKey.self, value: proxy.size)
+        })
+        .frame(height: height)
+        .background(background)
+        .padding(1)
+        .padding([.bottom], 2)
+        .onPreferenceChange(SizeKey.self) { size in
+            self.height = size?.height
+        }
+    }
+
+    var background: some View {
         RoundedRectangle(cornerRadius: 9)
-          .stroke(Color.searchFieldBorder, lineWidth: 2)
-      )
-  }
+            .fill(Color.searchFieldBackground)
+            .shadow(color: .searchFieldShadow, radius: 1, x: 0, y: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 9)
+                    .stroke(Color.searchFieldBorder, lineWidth: 2)
+            )
+    }
 }
 
 struct SearchFieldView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      searchFields.colorScheme(.light)
-      searchFields.colorScheme(.dark)
+    static var previews: some View {
+        SwiftUI.Group {
+            searchFields.colorScheme(.light)
+            searchFields.colorScheme(.dark)
+        }
     }
-  }
-  
-  static var searchFields: some View {
-    VStack(spacing: 20) {
-      SearchFieldView(searchString: "")
-      SearchFieldView(searchString: "Hello")
-      SearchFieldView(searchString: "Testing")
+
+    static var searchFields: some View {
+        VStack(spacing: 20) {
+            SearchFieldView(searchString: "")
+            SearchFieldView(searchString: "Hello")
+            SearchFieldView(searchString: "Testing")
+        }
+        .padding(20)
+        .background(Color.backgroundColor)
     }
-      .padding(20)
-      .background(Color.backgroundColor)
-  }
 }

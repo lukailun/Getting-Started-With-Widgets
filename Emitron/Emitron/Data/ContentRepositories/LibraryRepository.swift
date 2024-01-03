@@ -29,28 +29,30 @@
 import Combine
 
 final class LibraryRepository: ContentRepository {
-  override init(repository: Repository,
-                contentsService: ContentsService,
-                downloadAction: DownloadAction,
-                syncAction: SyncAction,
-                serviceAdapter: ContentServiceAdapter?) {
-    filters = Filters()
-    
-    super.init(repository: repository,
-               contentsService: contentsService,
-               downloadAction: downloadAction,
-               syncAction: syncAction,
-               serviceAdapter: serviceAdapter)
-    
-    nonPaginationParameters = filters.appliedParameters
-  }
-  
-  var filters: Filters {
-    didSet {
-      nonPaginationParameters = filters.appliedParameters
+    override init(repository: Repository,
+                  contentsService: ContentsService,
+                  downloadAction: DownloadAction,
+                  syncAction: SyncAction,
+                  serviceAdapter: ContentServiceAdapter?)
+    {
+        filters = Filters()
+
+        super.init(repository: repository,
+                   contentsService: contentsService,
+                   downloadAction: downloadAction,
+                   syncAction: syncAction,
+                   serviceAdapter: serviceAdapter)
+
+        nonPaginationParameters = filters.appliedParameters
     }
-  }
-  var currentAppliedFilters: [Filter] {
-    filters.applied
-  }
+
+    var filters: Filters {
+        didSet {
+            nonPaginationParameters = filters.appliedParameters
+        }
+    }
+
+    var currentAppliedFilters: [Filter] {
+        filters.applied
+    }
 }

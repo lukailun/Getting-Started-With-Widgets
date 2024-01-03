@@ -29,24 +29,24 @@
 import Foundation
 
 struct FossLicense: Codable, Identifiable {
-  let id: Int
-  let name: String
-  let copyright: String
-  let url: URL
-  let body: String
+    let id: Int
+    let name: String
+    let copyright: String
+    let url: URL
+    let body: String
 }
 
 extension FossLicense {
-  static let decoder = JSONDecoder()
-  
-  static func load(from fileName: String = "FossLicenses") -> [FossLicense] {
-    guard let url = Bundle.main.url(forResource: fileName, withExtension: "json"),
-      let data = try? Data(contentsOf: url),
-      let licenses = try? decoder.decode([FossLicense].self, from: data)
-      else {
-        return []
+    static let decoder = JSONDecoder()
+
+    static func load(from fileName: String = "FossLicenses") -> [FossLicense] {
+        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let licenses = try? decoder.decode([FossLicense].self, from: data)
+        else {
+            return []
+        }
+
+        return licenses
     }
-    
-    return licenses
-  }
 }

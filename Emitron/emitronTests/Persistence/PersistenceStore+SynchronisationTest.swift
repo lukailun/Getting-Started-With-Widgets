@@ -28,5 +28,4 @@
 
 import XCTest
 
-class PersistenceStore_SynchronisationTest: XCTestCase {
-}
+class PersistenceStore_SynchronisationTest: XCTestCase {}

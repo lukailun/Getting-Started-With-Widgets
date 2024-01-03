@@ -29,25 +29,25 @@
 import struct Foundation.Date
 
 extension SyncRequest: ProgressionUpdate {
-  var data: ProgressionUpdateData {
-    // This doesn't consider the possibility that this sync request
-    // doesn't actually represent a progression. But that seems ok
-    // we can test that elsewhere.
-    
-    if type == .markContentComplete {
-      return .finished
+    var data: ProgressionUpdateData {
+        // This doesn't consider the possibility that this sync request
+        // doesn't actually represent a progression. But that seems ok
+        // we can test that elsewhere.
+
+        if type == .markContentComplete {
+            return .finished
+        }
+
+        return .progress(
+            attributes.reduce(into: 0) { seconds, attribute in
+                if case let .progress(attributeSeconds) = attribute {
+                    seconds = attributeSeconds
+                }
+            }
+        )
     }
 
-    return .progress(
-      attributes.reduce(into: 0) { seconds, attribute in
-        if case .progress(let attributeSeconds) = attribute {
-          seconds = attributeSeconds
-        }
-      }
-    )
-  }
-  
-  var updatedAt: Date {
-    date
-  }
+    var updatedAt: Date {
+        date
+    }
 }

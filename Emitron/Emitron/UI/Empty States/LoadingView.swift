@@ -29,21 +29,21 @@
 import SwiftUI
 
 struct LoadingView: View {
-  var body: some View {
-    VStack {
-      ActivityIndicator()
-        .padding([.bottom], 10)
-      Text("Loading...")
-        .font(.uiHeadline)
+    var body: some View {
+        VStack {
+            ActivityIndicator()
+                .padding([.bottom], 10)
+            Text("Loading...")
+                .font(.uiHeadline)
+        }
     }
-  }
 }
 
 struct LoadingView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      LoadingView().colorScheme(.dark)
-      LoadingView().colorScheme(.light)
+    static var previews: some View {
+        SwiftUI.Group {
+            LoadingView().colorScheme(.dark)
+            LoadingView().colorScheme(.light)
+        }
     }
-  }
 }

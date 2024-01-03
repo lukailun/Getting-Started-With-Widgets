@@ -27,12 +27,12 @@
 // THE SOFTWARE.
 
 protocol SettingsSelectable: Hashable {
-  static var selectableCases: [Self] { get }
-  var display: String { get }
+    static var selectableCases: [Self] { get }
+    var display: String { get }
 }
 
 extension SettingsSelectable {
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(display)
-  }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(display)
+    }
 }

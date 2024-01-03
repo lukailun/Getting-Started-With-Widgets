@@ -29,21 +29,21 @@
 import UIKit
 
 struct Icon: Identifiable, Equatable {
-  let name: String?
-  let imageName: String
-  let ordinal: Int
-  
-  var id: String {
-    imageName
-  }
-  
-  var uiImage: UIImage {
-    UIImage(named: imageName) ?? .init()
-  }
+    let name: String?
+    let imageName: String
+    let ordinal: Int
+
+    var id: String {
+        imageName
+    }
+
+    var uiImage: UIImage {
+        UIImage(named: imageName) ?? .init()
+    }
 }
 
 extension Icon: Comparable {
-  static func < (lhs: Icon, rhs: Icon) -> Bool {
-    lhs.ordinal < rhs.ordinal
-  }
+    static func < (lhs: Icon, rhs: Icon) -> Bool {
+        lhs.ordinal < rhs.ordinal
+    }
 }

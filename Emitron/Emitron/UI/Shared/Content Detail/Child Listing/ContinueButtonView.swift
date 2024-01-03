@@ -29,18 +29,18 @@
 import SwiftUI
 
 struct ContinueButtonView: View {
-  var body: some View {
-    VideoOverlayButtonView(text: "Continue")
-  }
+    var body: some View {
+        VideoOverlayButtonView(text: "Continue")
+    }
 }
 
 struct ContinueButtonView_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack(spacing: 20) {
-      ContinueButtonView().colorScheme(.dark)
-      ContinueButtonView().colorScheme(.light)
+    static var previews: some View {
+        VStack(spacing: 20) {
+            ContinueButtonView().colorScheme(.dark)
+            ContinueButtonView().colorScheme(.light)
+        }
+        .padding(20)
+        .background(Color.blue)
     }
-    .padding(20)
-    .background(Color.blue)
-  }
 }

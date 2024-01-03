@@ -29,95 +29,96 @@
 import SwiftUI
 
 extension CGFloat {
-  static let childContentHorizontalSpacing: CGFloat = 15
-  static let childContentButtonSide: CGFloat = 30
+    static let childContentHorizontalSpacing: CGFloat = 15
+    static let childContentButtonSide: CGFloat = 30
 }
 
 struct TextListItemView: View {
-  @EnvironmentObject var sessionController: SessionController
-  @State private var deletionConfirmation: DownloadDeletionConfirmation?
-  
-  @ObservedObject var dynamicContentViewModel: DynamicContentViewModel
-  var content: ChildContentListDisplayable
-  
-  var canStreamPro: Bool {
-    sessionController.user?.canStreamPro ?? false
-  }
-  var canDownload: Bool {
-    sessionController.user?.canDownload ?? false
-  }
-  
-  var body: some View {
-    dynamicContentViewModel.initialiseIfRequired()
-    return HStack(alignment: .top, spacing: .childContentHorizontalSpacing) {
-      doneCheckbox
-      
-      VStack(spacing: 15) {
-        HStack {
-          VStack(alignment: .leading, spacing: 5) {
-            Text(content.name)
-              .font(.uiTitle5)
-              .lineSpacing(3)
-              .foregroundColor(.titleText)
-            
-            Text(content.duration.minuteSecondTimeFromSeconds)
-              .font(.uiFootnote)
-              .foregroundColor(.contentText)
-          }
-            
-          Spacer()
-            
-          if canDownload {
-            DownloadIcon(downloadProgress: dynamicContentViewModel.downloadProgress)
-              .onTapGesture {
-                self.download()
-              }
-              .alert(item: $deletionConfirmation, content: \.alert)
-          }
+    @EnvironmentObject var sessionController: SessionController
+    @State private var deletionConfirmation: DownloadDeletionConfirmation?
+
+    @ObservedObject var dynamicContentViewModel: DynamicContentViewModel
+    var content: ChildContentListDisplayable
+
+    var canStreamPro: Bool {
+        sessionController.user?.canStreamPro ?? false
+    }
+
+    var canDownload: Bool {
+        sessionController.user?.canDownload ?? false
+    }
+
+    var body: some View {
+        dynamicContentViewModel.initialiseIfRequired()
+        return HStack(alignment: .top, spacing: .childContentHorizontalSpacing) {
+            doneCheckbox
+
+            VStack(spacing: 15) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(content.name)
+                            .font(.uiTitle5)
+                            .lineSpacing(3)
+                            .foregroundColor(.titleText)
+
+                        Text(content.duration.minuteSecondTimeFromSeconds)
+                            .font(.uiFootnote)
+                            .foregroundColor(.contentText)
+                    }
+
+                    Spacer()
+
+                    if canDownload {
+                        DownloadIcon(downloadProgress: dynamicContentViewModel.downloadProgress)
+                            .onTapGesture {
+                                self.download()
+                            }
+                            .alert(item: $deletionConfirmation, content: \.alert)
+                    }
+                }
+                progressBar
+            }
         }
-        progressBar
-      }
     }
-  }
-  
-  private var progressBar: AnyView {
-    guard case .inProgress(let progress) = dynamicContentViewModel.viewProgress else {
-      return AnyView(Rectangle()
-        .frame(height: 1)
-        .foregroundColor(.borderColor))
+
+    private var progressBar: AnyView {
+        guard case let .inProgress(progress) = dynamicContentViewModel.viewProgress else {
+            return AnyView(Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.borderColor))
+        }
+        return AnyView(
+            ProgressBarView(progress: progress, isRounded: true)
+        )
     }
-    return AnyView(
-      ProgressBarView(progress: progress, isRounded: true)
-    )
-  }
-  
-  private var doneCheckbox: AnyView {
-    if !canStreamPro && content.professional {
-      return AnyView(LockedIconView())
+
+    private var doneCheckbox: AnyView {
+        if !canStreamPro && content.professional {
+            return AnyView(LockedIconView())
+        }
+
+        if case .completed = dynamicContentViewModel.viewProgress {
+            return AnyView(
+                CompletedIconView()
+                    .onTapGesture {
+                        self.toggleCompleteness()
+                    }
+            )
+        } else {
+            return AnyView(
+                NumberIconView(number: content.ordinal ?? 0)
+                    .onTapGesture {
+                        self.toggleCompleteness()
+                    }
+            )
+        }
     }
-    
-    if case .completed = dynamicContentViewModel.viewProgress {
-      return AnyView(
-        CompletedIconView()
-          .onTapGesture {
-            self.toggleCompleteness()
-          }
-      )
-    } else {
-      return AnyView(
-        NumberIconView(number: content.ordinal ?? 0)
-          .onTapGesture {
-            self.toggleCompleteness()
-          }
-      )
+
+    private func download() {
+        deletionConfirmation = dynamicContentViewModel.downloadTapped()
     }
-  }
-  
-  private func download() {
-    deletionConfirmation = dynamicContentViewModel.downloadTapped()
-  }
-  
-  private func toggleCompleteness() {
-    dynamicContentViewModel.completedTapped()
-  }
+
+    private func toggleCompleteness() {
+        dynamicContentViewModel.completedTapped()
+    }
 }

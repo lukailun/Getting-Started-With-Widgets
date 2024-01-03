@@ -27,11 +27,11 @@
 // THE SOFTWARE.
 
 class CategoriesService: Service {
+    // MARK: - Internal
 
-  // MARK: - Internal
-  func allCategories(completion: @escaping (_ response: Result<CategoriesRequest.Response, RWAPIError>) -> Void) {
-    let request = CategoriesRequest()
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    func allCategories(completion: @escaping (_ response: Result<CategoriesRequest.Response, RWAPIError>) -> Void) {
+        let request = CategoriesRequest()
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

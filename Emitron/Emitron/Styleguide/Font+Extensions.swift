@@ -29,62 +29,76 @@
 import SwiftUI
 
 extension Font {
-  static var uiLargeTitle: Font {
-    Font.custom("Bitter-Bold", size: 34.0)
-  }
-  static var uiTitle1: Font {
-    Font.custom("Bitter-Bold", size: 28.0)
-  }
-  static var uiTitle2: Font {
-    Font.custom("Bitter-Bold", size: 23.0)
-  }
-  static var uiTitle3: Font {
-    Font.custom("Bitter-Bold", size: 20.0)
-  }
-  static var uiTitle4: Font {
-    Font.custom("Bitter-Bold", size: 19.0)
-  }
-  static var uiTitle5: Font {
-    Font.custom("Bitter-Regular", size: 17.0)
-  }
-  static var uiHeadline: Font {
-    Font.system(size: 18.0).weight(.semibold)
-  }
-  
-  static var uiNumberBox: Font {
-    Font.custom("Bitter-Bold", size: 13.0)
-  }
+    static var uiLargeTitle: Font {
+        Font.custom("Bitter-Bold", size: 34.0)
+    }
 
-  static var uiBodyAppleDefault: Font {
-    Font.body
-  }
+    static var uiTitle1: Font {
+        Font.custom("Bitter-Bold", size: 28.0)
+    }
 
-  // Can't have bold Font's
-  static var uiButtonLabel: Font {
-    Font.system(size: 17.0).bold()
-  }
-  static var uiBodyCustom: Font {
-    Font.system(size: 15.0)
-  }
-  static var uiLabelBold: Font {
-    Font.system(size: 16.0).weight(.semibold)
-  }
-  static var uiLabel: Font {
-    Font.system(size: 16.0)
-  }
-  static var uiButtonLabelSmall: Font {
-    Font.system(size: 13.0).weight(.semibold)
-  }
-  static var uiFootnote: Font {
-    Font.footnote
-  }
-  static var uiCaption: Font {
-    Font.system(size: 14.0)
-  }
-  static var uiUppercase: Font {
-    Font.system(size: 12.0).weight(.semibold)
-  }
-  static var uiUppercaseTag: Font {
-    Font.system(size: 10.0).weight(.semibold)
-  }
+    static var uiTitle2: Font {
+        Font.custom("Bitter-Bold", size: 23.0)
+    }
+
+    static var uiTitle3: Font {
+        Font.custom("Bitter-Bold", size: 20.0)
+    }
+
+    static var uiTitle4: Font {
+        Font.custom("Bitter-Bold", size: 19.0)
+    }
+
+    static var uiTitle5: Font {
+        Font.custom("Bitter-Regular", size: 17.0)
+    }
+
+    static var uiHeadline: Font {
+        Font.system(size: 18.0).weight(.semibold)
+    }
+
+    static var uiNumberBox: Font {
+        Font.custom("Bitter-Bold", size: 13.0)
+    }
+
+    static var uiBodyAppleDefault: Font {
+        Font.body
+    }
+
+    // Can't have bold Font's
+    static var uiButtonLabel: Font {
+        Font.system(size: 17.0).bold()
+    }
+
+    static var uiBodyCustom: Font {
+        Font.system(size: 15.0)
+    }
+
+    static var uiLabelBold: Font {
+        Font.system(size: 16.0).weight(.semibold)
+    }
+
+    static var uiLabel: Font {
+        Font.system(size: 16.0)
+    }
+
+    static var uiButtonLabelSmall: Font {
+        Font.system(size: 13.0).weight(.semibold)
+    }
+
+    static var uiFootnote: Font {
+        Font.footnote
+    }
+
+    static var uiCaption: Font {
+        Font.system(size: 14.0)
+    }
+
+    static var uiUppercase: Font {
+        Font.system(size: 12.0).weight(.semibold)
+    }
+
+    static var uiUppercaseTag: Font {
+        Font.system(size: 10.0).weight(.semibold)
+    }
 }

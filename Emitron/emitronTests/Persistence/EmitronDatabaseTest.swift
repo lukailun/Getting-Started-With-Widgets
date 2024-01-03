@@ -26,19 +26,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import GRDB
 @testable import Emitron
+import GRDB
 
 extension EmitronDatabase {
-  static func testDatabase() throws -> DatabaseWriter {
-    // In memory database
-    let dbQueue = DatabaseQueue()
-    // And migrate
-    try migrator.migrate(dbQueue)
-    // Load important mocks
-    try Emitron.Category.loadAndSaveMocks(db: dbQueue)
-    try Domain.loadAndSaveMocks(db: dbQueue)
-    
-    return dbQueue
-  }
+    static func testDatabase() throws -> DatabaseWriter {
+        // In memory database
+        let dbQueue = DatabaseQueue()
+        // And migrate
+        try migrator.migrate(dbQueue)
+        // Load important mocks
+        try Emitron.Category.loadAndSaveMocks(db: dbQueue)
+        try Domain.loadAndSaveMocks(db: dbQueue)
+
+        return dbQueue
+    }
 }

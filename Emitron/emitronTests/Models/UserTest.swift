@@ -26,75 +26,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 @testable import Emitron
+import XCTest
 
 class UserTest: XCTestCase {
-
-  override func setUp() {
-    super.setUp()
-  }
-  
-  let userDictionary = [
-    "external_id": "sample_external_id",
-    "email": "email@example.com",
-    "username": "sample_username",
-    "avatar_url": "http://example.com/avatar.jpg",
-    "name": "Sample Name",
-    "token": "Samaple.Token"
-  ]
-  
-  func testUserCorrectlyPopulatesWithDictionary() {
-    guard let user = User(dictionary: userDictionary) else {
-      XCTFail("User should be correctly populated")
-      return
+    override func setUp() {
+        super.setUp()
     }
-    
-    XCTAssertEqual(userDictionary["external_id"], user.externalId)
-    XCTAssertEqual(userDictionary["email"], user.email)
-    XCTAssertEqual(userDictionary["username"], user.username)
-    XCTAssertEqual(userDictionary["avatar_url"], user.avatarUrl.absoluteString)
-    XCTAssertEqual(userDictionary["name"], user.name)
-    XCTAssertEqual(userDictionary["token"], user.token)
-  }
-  
-  func testUserDictionaryHasRequiredFields() {
-    var invalidDictionary = userDictionary
-    invalidDictionary.removeValue(forKey: "external_id")
-    let user = User(dictionary: invalidDictionary)
-    
-    XCTAssertNil(user)
-  }
-  
-  func testAdditionalEntriesInTheDictionaryAreIgnored() {
-    var overSpecifiedDictionary = userDictionary
-    overSpecifiedDictionary["extra_field"] = "some-guff"
-    let user = User(dictionary: overSpecifiedDictionary)
-    
-    XCTAssertNotNil(user)
-  }
-  
-  func testAvatarURLMustBeAURL() {
-    var invalidDictionary = userDictionary
-    invalidDictionary["avatar_url"] = "not a url"
-    let user = User(dictionary: invalidDictionary)
-    
-    XCTAssertNil(user)
-  }
-  
-  func testNoPermissionsWorksAsExpected() {
-    let user = User.noPermissions
-    
-    XCTAssert(!user.canDownload)
-    XCTAssert(!user.canStream)
-    XCTAssert(!user.canStreamPro)
-  }
-  
-  func testWithDownloadsMockWorksAsExpected() {
-    let user = User.withDownloads
-    
-    XCTAssert(user.canDownload)
-    XCTAssert(!user.canStream)
-    XCTAssert(!user.canStreamPro)
-  }
+
+    let userDictionary = [
+        "external_id": "sample_external_id",
+        "email": "email@example.com",
+        "username": "sample_username",
+        "avatar_url": "http://example.com/avatar.jpg",
+        "name": "Sample Name",
+        "token": "Samaple.Token",
+    ]
+
+    func testUserCorrectlyPopulatesWithDictionary() {
+        guard let user = User(dictionary: userDictionary) else {
+            XCTFail("User should be correctly populated")
+            return
+        }
+
+        XCTAssertEqual(userDictionary["external_id"], user.externalId)
+        XCTAssertEqual(userDictionary["email"], user.email)
+        XCTAssertEqual(userDictionary["username"], user.username)
+        XCTAssertEqual(userDictionary["avatar_url"], user.avatarUrl.absoluteString)
+        XCTAssertEqual(userDictionary["name"], user.name)
+        XCTAssertEqual(userDictionary["token"], user.token)
+    }
+
+    func testUserDictionaryHasRequiredFields() {
+        var invalidDictionary = userDictionary
+        invalidDictionary.removeValue(forKey: "external_id")
+        let user = User(dictionary: invalidDictionary)
+
+        XCTAssertNil(user)
+    }
+
+    func testAdditionalEntriesInTheDictionaryAreIgnored() {
+        var overSpecifiedDictionary = userDictionary
+        overSpecifiedDictionary["extra_field"] = "some-guff"
+        let user = User(dictionary: overSpecifiedDictionary)
+
+        XCTAssertNotNil(user)
+    }
+
+    func testAvatarURLMustBeAURL() {
+        var invalidDictionary = userDictionary
+        invalidDictionary["avatar_url"] = "not a url"
+        let user = User(dictionary: invalidDictionary)
+
+        XCTAssertNil(user)
+    }
+
+    func testNoPermissionsWorksAsExpected() {
+        let user = User.noPermissions
+
+        XCTAssert(!user.canDownload)
+        XCTAssert(!user.canStream)
+        XCTAssert(!user.canStreamPro)
+    }
+
+    func testWithDownloadsMockWorksAsExpected() {
+        let user = User.withDownloads
+
+        XCTAssert(user.canDownload)
+        XCTAssert(!user.canStream)
+        XCTAssert(!user.canStreamPro)
+    }
 }

@@ -27,15 +27,15 @@
 // THE SOFTWARE.
 
 struct CachedContentSummaryState: Equatable {
-  let content: Content
-  let contentDomains: [ContentDomain]
-  let contentCategories: [ContentCategory]
-  let parentContent: Content?
+    let content: Content
+    let contentDomains: [ContentDomain]
+    let contentCategories: [ContentCategory]
+    let parentContent: Content?
 }
 
 struct ContentSummaryState: Decodable, Equatable {
-  let content: Content
-  let domains: [Domain]
-  let categories: [Category]
-  let parentContent: Content?
+    let content: Content
+    let domains: [Domain]
+    let categories: [Category]
+    let parentContent: Content?
 }

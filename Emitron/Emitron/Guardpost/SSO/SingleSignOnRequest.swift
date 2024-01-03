@@ -30,56 +30,58 @@ import CryptoKit
 import Foundation
 
 struct SingleSignOnRequest {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  private let callbackUrl: String
-  let secret: String
-  let nonce: String
-  private let endpoint: String
-  var url: URL? {
-    var components = URLComponents(string: endpoint)
-    components?.queryItems = payload
-    return components?.url
-  }
+    private let callbackUrl: String
+    let secret: String
+    let nonce: String
+    private let endpoint: String
+    var url: URL? {
+        var components = URLComponents(string: endpoint)
+        components?.queryItems = payload
+        return components?.url
+    }
 
-  // MARK: - Initializers
-  init(endpoint: String,
-       secret: String,
-       callbackUrl: String) {
-    self.endpoint = endpoint
-    self.secret = secret
-    self.callbackUrl = callbackUrl
-    self.nonce = randomHexString(length: 40)
-  }
+    // MARK: - Initializers
+
+    init(endpoint: String,
+         secret: String,
+         callbackUrl: String)
+    {
+        self.endpoint = endpoint
+        self.secret = secret
+        self.callbackUrl = callbackUrl
+        nonce = randomHexString(length: 40)
+    }
 }
 
 // MARK: - Private
-private extension SingleSignOnRequest {
 
-  var payload: [URLQueryItem]? {
-    guard let unsignedPayload = unsignedPayload else {
-      return nil
+private extension SingleSignOnRequest {
+    var payload: [URLQueryItem]? {
+        guard let unsignedPayload = unsignedPayload else {
+            return nil
+        }
+
+        let contents = unsignedPayload.toBase64()
+        let symmetricKey = SymmetricKey(data: Data(secret.utf8))
+        let signature = HMAC<SHA256>.authenticationCode(for: Data(contents.utf8),
+                                                        using: symmetricKey)
+            .description
+            .replacingOccurrences(of: String.hmacToRemove, with: "")
+
+        return [
+            URLQueryItem(name: "sso", value: contents),
+            URLQueryItem(name: "sig", value: signature),
+        ]
     }
 
-    let contents = unsignedPayload.toBase64()
-    let symmetricKey = SymmetricKey(data: Data(secret.utf8))
-    let signature = HMAC<SHA256>.authenticationCode(for: Data(contents.utf8),
-                                                    using: symmetricKey)
-      .description
-      .replacingOccurrences(of: String.hmacToRemove, with: "")
-
-    return [
-      URLQueryItem(name: "sso", value: contents),
-      URLQueryItem(name: "sig", value: signature)
-    ]
-  }
-
-  var unsignedPayload: String? {
-    var components = URLComponents()
-    components.queryItems = [
-      URLQueryItem(name: "callback_url", value: callbackUrl),
-      URLQueryItem(name: "nonce", value: nonce)
-    ]
-    return components.query
-  }
+    var unsignedPayload: String? {
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "callback_url", value: callbackUrl),
+            URLQueryItem(name: "nonce", value: nonce),
+        ]
+        return components.query
+    }
 }

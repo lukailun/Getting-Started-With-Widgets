@@ -26,16 +26,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 import CoreData
 @testable import Emitron
+import XCTest
 
 class DownloadProcessorTest: XCTestCase {
-  
-  private var downloadProcessor: DownloadProcessor!
-  
-  override func setUp() {
-    super.setUp()
-    downloadProcessor = DownloadProcessor()
-  }
+    private var downloadProcessor: DownloadProcessor!
+
+    override func setUp() {
+        super.setUp()
+        downloadProcessor = DownloadProcessor()
+    }
 }

@@ -29,15 +29,17 @@
 import SwiftyJSON
 
 public class JSONAPIErrorSource {
-  // MARK: - Properties
-  var pointer: String = ""
-  var parameter: String = ""
+    // MARK: - Properties
 
-  // MARK: - Initializers
-  convenience init(_ json: JSON) {
-    self.init()
+    var pointer: String = ""
+    var parameter: String = ""
 
-    pointer = json["pointer"].stringValue
-    parameter = json["parameter"].stringValue
-  }
+    // MARK: - Initializers
+
+    convenience init(_ json: JSON) {
+        self.init()
+
+        pointer = json["pointer"].stringValue
+        parameter = json["parameter"].stringValue
+    }
 }

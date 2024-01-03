@@ -26,26 +26,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 extension FileManager {
-  static func sharedContainerURL() -> URL {
-    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.lukailun.emitron.contents")!
-  }
+    static func sharedContainerURL() -> URL {
+        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.lukailun.emitron.contents")!
+    }
 }
 
 let snapshotEntry = WidgetContent(
-  name: "iOS Concurrency with GCD and Operations",
-  cardViewSubtitle: "iOS & Swift",
-  descriptionPlainText: """
+    name: "iOS Concurrency with GCD and Operations",
+    cardViewSubtitle: "iOS & Swift",
+    descriptionPlainText: """
     Learn how to add concurrency to your apps! \
     Keep your app's UI responsive to give your \
     users a great user experience.
     """,
-  releasedAtDateTimeString: "Jun 23 2020 • Video Course (3 hrs, 21 mins)")
+    releasedAtDateTimeString: "Jun 23 2020 • Video Course (3 hrs, 21 mins)"
+)
 
-//struct Provider: TimelineProvider {
+// struct Provider: TimelineProvider {
 //    func placeholder(in context: Context) -> WidgetContent {
 //      snapshotEntry
 //    }
@@ -54,12 +55,12 @@ let snapshotEntry = WidgetContent(
 //        let entry = snapshotEntry
 //        completion(entry)
 //    }
-//  
+//
 //  func readContents() -> [WidgetContent] {
 //    var contents: [WidgetContent] = []
 //    let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
 //    print(">>> \(archiveURL)")
-//    
+//
 //    let decoder = JSONDecoder()
 //    if let codeData = try? Data(contentsOf: archiveURL) {
 //      do {
@@ -84,9 +85,9 @@ let snapshotEntry = WidgetContent(
 //        let timeline = Timeline(entries: entries, policy: .atEnd)
 //        completion(timeline)
 //    }
-//}
+// }
 //
-//struct EmitronWidget: Widget {
+// struct EmitronWidget: Widget {
 //    private let kind: String = "EmitronWidget"
 //
 //    var body: some WidgetConfiguration {
@@ -100,70 +101,70 @@ let snapshotEntry = WidgetContent(
 //        .description("See the latest video tutorials.")
 //        .supportedFamilies([.systemMedium])
 //    }
-//}
+// }
 
 // MARK: - Intent Widget
 
 struct Provider: IntentTimelineProvider {
-  func placeholder(in context: Context) -> WidgetContent {
-    snapshotEntry
-  }
-
-  public func getSnapshot(
-    for configuration: TimelineIntervalIntent, in context: Context, completion: @escaping (WidgetContent) -> Void
-  ) {
-    let entry = snapshotEntry
-    completion(entry)
-  }
-
-  func readContents() -> [WidgetContent] {
-    var contents: [WidgetContent] = []
-    let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
-    print(">>> \(archiveURL)")
-
-    let decoder = JSONDecoder()
-    if let codeData = try? Data(contentsOf: archiveURL) {
-      do {
-        contents = try decoder.decode([WidgetContent].self, from: codeData)
-      } catch {
-        print("Error: Can't decode contents")
-      }
-    }
-    return contents
-  }
-
-  public func getTimeline(
-    for configuration: TimelineIntervalIntent,
-    in context: Context,
-    completion: @escaping (Timeline<WidgetContent>) -> Void
-  ) {
-    var entries = readContents()
-    let interval = configuration.interval as! Int
-
-    // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-    let currentDate = Date()
-    for index in 0 ..< entries.count {
-      entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
+    func placeholder(in _: Context) -> WidgetContent {
+        snapshotEntry
     }
 
-    let timeline = Timeline(entries: entries, policy: .atEnd)
-    completion(timeline)
-  }
+    public func getSnapshot(
+        for _: TimelineIntervalIntent, in _: Context, completion: @escaping (WidgetContent) -> Void
+    ) {
+        let entry = snapshotEntry
+        completion(entry)
+    }
+
+    func readContents() -> [WidgetContent] {
+        var contents: [WidgetContent] = []
+        let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
+        print(">>> \(archiveURL)")
+
+        let decoder = JSONDecoder()
+        if let codeData = try? Data(contentsOf: archiveURL) {
+            do {
+                contents = try decoder.decode([WidgetContent].self, from: codeData)
+            } catch {
+                print("Error: Can't decode contents")
+            }
+        }
+        return contents
+    }
+
+    public func getTimeline(
+        for configuration: TimelineIntervalIntent,
+        in _: Context,
+        completion: @escaping (Timeline<WidgetContent>) -> Void
+    ) {
+        var entries = readContents()
+        let interval = configuration.interval as! Int
+
+        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+        let currentDate = Date()
+        for index in 0 ..< entries.count {
+            entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
+        }
+
+        let timeline = Timeline(entries: entries, policy: .atEnd)
+        completion(timeline)
+    }
 }
 
 struct EmitronWidget: Widget {
-  private let kind: String = "EmitronWidget"
+    private let kind: String = "EmitronWidget"
 
-  public var body: some WidgetConfiguration {
-    IntentConfiguration(
-      kind: kind,
-      intent: TimelineIntervalIntent.self,
-      provider: Provider()
-    ) { entry in
-      EntryView(model: entry)
+    public var body: some WidgetConfiguration {
+        IntentConfiguration(
+            kind: kind,
+            intent: TimelineIntervalIntent.self,
+            provider: Provider()
+        ) { entry in
+            EntryView(model: entry)
+        }
+        .configurationDisplayName("RW Tutorials")
+        .description("See the latest video tutorials.")
+        .supportedFamilies([.systemMedium])
     }
-    .configurationDisplayName("RW Tutorials")
-    .description("See the latest video tutorials.")
-    .supportedFamilies([.systemMedium])
-  }
 }

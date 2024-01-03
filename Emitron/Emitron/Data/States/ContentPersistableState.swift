@@ -27,14 +27,14 @@
 // THE SOFTWARE.
 
 struct ContentPersistableState: Equatable {
-  let content: Content
-  let contentDomains: [ContentDomain]
-  let contentCategories: [ContentCategory]
-  let bookmark: Bookmark?
-  let parentContent: Content?
-  let progression: Progression?
-  let groups: [Group]
-  let childContents: [Content]
+    let content: Content
+    let contentDomains: [ContentDomain]
+    let contentCategories: [ContentCategory]
+    let bookmark: Bookmark?
+    let parentContent: Content?
+    let progression: Progression?
+    let groups: [Group]
+    let childContents: [Content]
 }
 
 typealias ContentLookup = (_ contentId: Int) -> ContentPersistableState?

@@ -31,166 +31,167 @@ import Foundation
 import Network
 
 enum ProgressEngineError: Error {
-  case simultaneousStreamsNotAllowed
-  case upstreamError(Error)
-  case notImplemented
-  
-  var localizedDescription: String {
-    switch self {
-    case .simultaneousStreamsNotAllowed:
-      return "ProgressEngineError::SimulataneousStreamsNotAllowed"
-    case .upstreamError(let error):
-      return "ProgressEngineError::UpstreamError:: \(error)"
-    case .notImplemented:
-      return "ProgressEngineError::NotImplemented"
+    case simultaneousStreamsNotAllowed
+    case upstreamError(Error)
+    case notImplemented
+
+    var localizedDescription: String {
+        switch self {
+        case .simultaneousStreamsNotAllowed:
+            return "ProgressEngineError::SimulataneousStreamsNotAllowed"
+        case let .upstreamError(error):
+            return "ProgressEngineError::UpstreamError:: \(error)"
+        case .notImplemented:
+            return "ProgressEngineError::NotImplemented"
+        }
     }
-  }
 }
 
 final class ProgressEngine {
-  enum Mode {
-    case online
-    case offline
-  }
-  
-  private let contentsService: ContentsService
-  private let repository: Repository
-  private weak var syncAction: SyncAction?
-  private var mode: Mode = .offline
-  private let networkMonitor = NWPathMonitor()
-  
-  private var playbackToken: String?
-  
-  init(contentsService: ContentsService, repository: Repository, syncAction: SyncAction?) {
-    self.contentsService = contentsService
-    self.repository = repository
-    self.syncAction = syncAction
-  }
-  
-  deinit {
-    networkMonitor.cancel()
-    networkMonitor.pathUpdateHandler = nil
-  }
-  
-  func start() {
-    networkMonitor.start(queue: DispatchQueue.global(qos: .utility))
-    setupSubscriptions()
-  }
-  
-  func playbackStarted() {
-    // Don't especially care if we're in offline mode
-    guard mode == .online else { return }
-    self.playbackToken = nil
-    // Need to refresh the plaback token
-    contentsService.getBeginPlaybackToken { [weak self] result in
-      guard let self = self else { return }
-      switch result {
-      case .failure(let error):
-        Failure
-          .fetch(from: String(describing: type(of: self)), reason: "Unable to fetch playback token: \(error)")
-          .log()
-      case .success(let token):
-        self.playbackToken = token
-      }
+    enum Mode {
+        case online
+        case offline
     }
-  }
-  
-  func updateProgress(for contentId: Int, progress: Int) -> Future<Progression, ProgressEngineError> {
-    let progression = updateCacheWithProgress(for: contentId, progress: progress)
-    
-    switch mode {
-    case .offline:
-      do {
-        try syncAction?.updateProgress(for: contentId, progress: progress)
-        try syncAction?.recordWatchStats(for: contentId, secondsWatched: Constants.videoPlaybackProgressTrackingInterval)
-        
-        return Future { promise in
-          promise(.success(progression))
-        }
-      } catch {
-        return Future { promise in
-          promise(.failure(.upstreamError(error)))
-        }
-      }
-      
-    case .online:
-      return Future { promise in
-        // Don't bother trying if the playback token is empty.
-        guard let playbackToken = self.playbackToken else { return }
-        self.contentsService.reportPlaybackUsage(for: contentId, progress: progress, playbackToken: playbackToken) { [weak self] response in
-          guard let self = self else { return promise(.failure(.notImplemented)) }
-          switch response {
-          case .failure(let error):
-            if case .requestFailed(_, let statusCode) = error, statusCode == 400 {
-              // This is an invalid token
-              return promise(.failure(.simultaneousStreamsNotAllowed))
+
+    private let contentsService: ContentsService
+    private let repository: Repository
+    private weak var syncAction: SyncAction?
+    private var mode: Mode = .offline
+    private let networkMonitor = NWPathMonitor()
+
+    private var playbackToken: String?
+
+    init(contentsService: ContentsService, repository: Repository, syncAction: SyncAction?) {
+        self.contentsService = contentsService
+        self.repository = repository
+        self.syncAction = syncAction
+    }
+
+    deinit {
+        networkMonitor.cancel()
+        networkMonitor.pathUpdateHandler = nil
+    }
+
+    func start() {
+        networkMonitor.start(queue: DispatchQueue.global(qos: .utility))
+        setupSubscriptions()
+    }
+
+    func playbackStarted() {
+        // Don't especially care if we're in offline mode
+        guard mode == .online else { return }
+        playbackToken = nil
+        // Need to refresh the plaback token
+        contentsService.getBeginPlaybackToken { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case let .failure(error):
+                Failure
+                    .fetch(from: String(describing: type(of: self)), reason: "Unable to fetch playback token: \(error)")
+                    .log()
+            case let .success(token):
+                self.playbackToken = token
             }
-            // Some other error. Let's just send it back
-            return promise(.failure(.upstreamError(error)))
-          case .success(let (progression, cacheUpdate)):
-            // Update the cache and return the updated progression
-            self.repository.apply(update: cacheUpdate)
-            // Do we need to update the parent?
-            if let parentContent = self.repository.parentContent(for: contentId),
-              let childProgressUpdate = self.repository.childProgress(for: parentContent.id),
-              var existingProgression = self.repository.progression(for: parentContent.id) {
-              existingProgression.progress = childProgressUpdate.completed
-              let parentCacheUpdate = DataCacheUpdate(progressions: [existingProgression])
-              self.repository.apply(update: parentCacheUpdate)
-            }
-            
-            return promise(.success(progression))
-          }
         }
-      }
     }
-  }
-  
-  private func setupSubscriptions() {
-    if networkMonitor.currentPath.status == .satisfied {
-      self.mode = .online
+
+    func updateProgress(for contentId: Int, progress: Int) -> Future<Progression, ProgressEngineError> {
+        let progression = updateCacheWithProgress(for: contentId, progress: progress)
+
+        switch mode {
+        case .offline:
+            do {
+                try syncAction?.updateProgress(for: contentId, progress: progress)
+                try syncAction?.recordWatchStats(for: contentId, secondsWatched: Constants.videoPlaybackProgressTrackingInterval)
+
+                return Future { promise in
+                    promise(.success(progression))
+                }
+            } catch {
+                return Future { promise in
+                    promise(.failure(.upstreamError(error)))
+                }
+            }
+
+        case .online:
+            return Future { promise in
+                // Don't bother trying if the playback token is empty.
+                guard let playbackToken = self.playbackToken else { return }
+                self.contentsService.reportPlaybackUsage(for: contentId, progress: progress, playbackToken: playbackToken) { [weak self] response in
+                    guard let self = self else { return promise(.failure(.notImplemented)) }
+                    switch response {
+                    case let .failure(error):
+                        if case let .requestFailed(_, statusCode) = error, statusCode == 400 {
+                            // This is an invalid token
+                            return promise(.failure(.simultaneousStreamsNotAllowed))
+                        }
+                        // Some other error. Let's just send it back
+                        return promise(.failure(.upstreamError(error)))
+                    case .success(let (progression, cacheUpdate)):
+                        // Update the cache and return the updated progression
+                        self.repository.apply(update: cacheUpdate)
+                        // Do we need to update the parent?
+                        if let parentContent = self.repository.parentContent(for: contentId),
+                           let childProgressUpdate = self.repository.childProgress(for: parentContent.id),
+                           var existingProgression = self.repository.progression(for: parentContent.id)
+                        {
+                            existingProgression.progress = childProgressUpdate.completed
+                            let parentCacheUpdate = DataCacheUpdate(progressions: [existingProgression])
+                            self.repository.apply(update: parentCacheUpdate)
+                        }
+
+                        return promise(.success(progression))
+                    }
+                }
+            }
+        }
     }
-    networkMonitor.pathUpdateHandler = { [weak self] path in
-      guard let self = self else { return }
-      if path.status == .satisfied {
-        self.mode = .online
-      } else {
-        self.mode = .offline
-      }
+
+    private func setupSubscriptions() {
+        if networkMonitor.currentPath.status == .satisfied {
+            mode = .online
+        }
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
+            if path.status == .satisfied {
+                self.mode = .online
+            } else {
+                self.mode = .offline
+            }
+        }
     }
-  }
-  
-  private func updateCacheWithProgress(for contentId: Int, progress: Int, target: Int? = nil) -> Progression {
-    let content = repository.content(for: contentId)
-    let progression: Progression
-    
-    if var existingProgression = repository.progression(for: contentId) {
-      existingProgression.progress = progress
-      progression = existingProgression
-    } else {
-      progression = Progression(
-        id: -1,
-        target: target ?? content?.duration ?? 0,
-        progress: progress,
-        createdAt: Date(),
-        updatedAt: Date(),
-        contentId: contentId
-      )
+
+    private func updateCacheWithProgress(for contentId: Int, progress: Int, target: Int? = nil) -> Progression {
+        let content = repository.content(for: contentId)
+        let progression: Progression
+
+        if var existingProgression = repository.progression(for: contentId) {
+            existingProgression.progress = progress
+            progression = existingProgression
+        } else {
+            progression = Progression(
+                id: -1,
+                target: target ?? content?.duration ?? 0,
+                progress: progress,
+                createdAt: Date(),
+                updatedAt: Date(),
+                contentId: contentId
+            )
+        }
+
+        let cacheUpdate = DataCacheUpdate(progressions: [progression])
+        repository.apply(update: cacheUpdate)
+
+        // See whether we need to update parent content
+        if progression.finished,
+           let parentContent = repository.parentContent(for: contentId),
+           let childProgress = repository.childProgress(for: parentContent.id)
+        {
+            _ = updateCacheWithProgress(for: parentContent.id,
+                                        progress: childProgress.completed,
+                                        target: childProgress.total)
+        }
+
+        return progression
     }
-    
-    let cacheUpdate = DataCacheUpdate(progressions: [progression])
-    repository.apply(update: cacheUpdate)
-    
-    // See whether we need to update parent content
-    if progression.finished,
-      let parentContent = repository.parentContent(for: contentId),
-      let childProgress = repository.childProgress(for: parentContent.id) {
-      
-      _ = updateCacheWithProgress(for: parentContent.id,
-                                  progress: childProgress.completed,
-                                  target: childProgress.total)
-    }
-    
-    return progression
-  }
 }

@@ -30,121 +30,132 @@ import Foundation
 import SwiftyJSON
 
 struct ContentsRequest: Request {
-  typealias Response = (contents: [Content], cacheUpdate: DataCacheUpdate, totalNumber: Int)
+    typealias Response = (contents: [Content], cacheUpdate: DataCacheUpdate, totalNumber: Int)
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/contents" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let contents = try doc.data.map { try ContentAdapter.process(resource: $0) }
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
-      throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+    var method: HTTPMethod { .GET }
+    var path: String { "/contents" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let contents = try doc.data.map { try ContentAdapter.process(resource: $0) }
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+        guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
+            throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+        }
+
+        return (contents: contents, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
     }
-
-    return (contents: contents, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
-  }
 }
 
 struct ContentDetailsRequest: Request {
-  typealias Response = (content: Content, cacheUpdate: DataCacheUpdate)
+    typealias Response = (content: Content, cacheUpdate: DataCacheUpdate)
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/contents/\(id)" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  
-  // MARK: - Parameters
-  let id: Int
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    let contents = try doc.data.map { try ContentAdapter.process(resource: $0, relationships: cacheUpdate.relationships) }
-    
-    guard let content = contents.first,
-      contents.count == 1 else {
-        throw RWAPIError.processingError(nil)
+    var method: HTTPMethod { .GET }
+    var path: String { "/contents/\(id)" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+        let contents = try doc.data.map { try ContentAdapter.process(resource: $0, relationships: cacheUpdate.relationships) }
+
+        guard let content = contents.first,
+              contents.count == 1
+        else {
+            throw RWAPIError.processingError(nil)
+        }
+
+        return (content: content, cacheUpdate: cacheUpdate)
     }
-    
-    return (content: content, cacheUpdate: cacheUpdate)
-  }
 }
 
 struct BeginPlaybackTokenRequest: Request {
-  typealias Response = String
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .POST }
-  var path: String { "/contents/begin_playback" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  
-  func handle(response: Data) throws -> String {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
+    typealias Response = String
 
-    guard let token = doc.data.first,
-      let tokenString = token["video_playback_token"] as? String,
-      !tokenString.isEmpty
-      else {
-        throw RWAPIError.processingError(nil)
+    // MARK: - Properties
+
+    var method: HTTPMethod { .POST }
+    var path: String { "/contents/begin_playback" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    func handle(response: Data) throws -> String {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+
+        guard let token = doc.data.first,
+              let tokenString = token["video_playback_token"] as? String,
+              !tokenString.isEmpty
+        else {
+            throw RWAPIError.processingError(nil)
+        }
+
+        return tokenString
     }
-    
-    return tokenString
-  }
 }
 
 // This needs to get called every 5 seconds to report usage statistics
 struct PlaybackUsageRequest: Request {
-  typealias Response = (progression: Progression, cacheUpdate: DataCacheUpdate)
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .POST }
-  var path: String { "/contents/\(id)/playback" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { 
-    let json: [String: Any] = [
-      "video_playback_token": token,
-      "progress": progress,
-      "seconds": Constants.videoPlaybackProgressTrackingInterval
-    ]
-    
-    return try? JSONSerialization.data(withJSONObject: json)
-  }
-  
-  // MARK: - Parameters
-  let token: String
-  let id: Int
-  let progress: Int
+    typealias Response = (progression: Progression, cacheUpdate: DataCacheUpdate)
 
-  // MARK: - Initializers
-  init(id: Int, progress: Int, token: String) {
-    self.id = id
-    self.progress = progress
-    self.token = token
-  }
-  
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let progressions = try doc.data.compactMap { try ProgressionAdapter.process(resource: $0) }
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    
-    guard let progression = progressions.first,
-      progressions.count == 1 else {
-        throw RWAPIError.responseHasIncorrectNumberOfElements
+    // MARK: - Properties
+
+    var method: HTTPMethod { .POST }
+    var path: String { "/contents/\(id)/playback" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? {
+        let json: [String: Any] = [
+            "video_playback_token": token,
+            "progress": progress,
+            "seconds": Constants.videoPlaybackProgressTrackingInterval,
+        ]
+
+        return try? JSONSerialization.data(withJSONObject: json)
     }
-    
-    return (progression: progression, cacheUpdate: cacheUpdate)
-  }
+
+    // MARK: - Parameters
+
+    let token: String
+    let id: Int
+    let progress: Int
+
+    // MARK: - Initializers
+
+    init(id: Int, progress: Int, token: String) {
+        self.id = id
+        self.progress = progress
+        self.token = token
+    }
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let progressions = try doc.data.compactMap { try ProgressionAdapter.process(resource: $0) }
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+
+        guard let progression = progressions.first,
+              progressions.count == 1
+        else {
+            throw RWAPIError.responseHasIncorrectNumberOfElements
+        }
+
+        return (progression: progression, cacheUpdate: cacheUpdate)
+    }
 }

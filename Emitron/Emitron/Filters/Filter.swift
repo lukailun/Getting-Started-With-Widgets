@@ -27,65 +27,71 @@
 // THE SOFTWARE.
 
 class Filter: Codable {
-  // MARK: - Properties
-  var parameter: Parameter
-  var isOn: Bool
-  
-  var groupType: FilterGroupType
-  
-  var groupName: String {
-    groupType.name
-  }
-  
-  var filterName: String {
-    parameter.displayName
-  }
-  
-  var sortOrdinal: Int {
-    parameter.sortOrdinal
-  }
-  
-  var isSearch: Bool {
-    groupType == .search
-  }
-  
-  // MARK: - Initializers
-  init(groupType: FilterGroupType, param: Parameter, isOn: Bool = false) {
-    self.groupType = groupType
-    self.parameter = param
-    self.isOn = isOn
-  }
+    // MARK: - Properties
+
+    var parameter: Parameter
+    var isOn: Bool
+
+    var groupType: FilterGroupType
+
+    var groupName: String {
+        groupType.name
+    }
+
+    var filterName: String {
+        parameter.displayName
+    }
+
+    var sortOrdinal: Int {
+        parameter.sortOrdinal
+    }
+
+    var isSearch: Bool {
+        groupType == .search
+    }
+
+    // MARK: - Initializers
+
+    init(groupType: FilterGroupType, param: Parameter, isOn: Bool = false) {
+        self.groupType = groupType
+        parameter = param
+        self.isOn = isOn
+    }
 }
 
 // MARK: - Equatable
+
 extension Filter: Equatable {
-  static func == (lhs: Filter, rhs: Filter) -> Bool {
-    lhs.groupType == rhs.groupType && lhs.filterName == rhs.filterName
-  }
+    static func == (lhs: Filter, rhs: Filter) -> Bool {
+        lhs.groupType == rhs.groupType && lhs.filterName == rhs.filterName
+    }
 }
 
 // MARK: - Hashable
+
 extension Filter: Hashable {
-  // In order for Set equality operations to work on a Class, we have to make sure that the reference hashes are the same between filters, so we implement our own hashing function
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(filterName)
-    hasher.combine(groupType)
-  }
+    // In order for Set equality operations to work on a Class, we have to make sure that the reference hashes are the same between filters, so we implement our own hashing function
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(filterName)
+        hasher.combine(groupType)
+    }
 }
 
 // MARK: - Comparable
+
 extension Filter: Comparable {
-  static func < (lhs: Filter, rhs: Filter) -> Bool {
-    if lhs.groupType == .categories && rhs.groupType == .categories {
-      return lhs.filterName < rhs.filterName
+    static func < (lhs: Filter, rhs: Filter) -> Bool {
+        if lhs.groupType == .categories && rhs.groupType == .categories {
+            return lhs.filterName < rhs.filterName
+        }
+        return lhs.sortOrdinal < rhs.sortOrdinal
     }
-    return lhs.sortOrdinal < rhs.sortOrdinal
-  }
 }
 
 // MARK: - For Testing
+
 extension Filter {
-  static var testFilter: Filter {
-    Filter(groupType: .contentTypes, param: Parameter(key: "", value: "", displayName: "", sortOrdinal: 0))
-  }
+    static var testFilter: Filter {
+        Filter(groupType: .contentTypes, param: Parameter(key: "", value: "", displayName: "", sortOrdinal: 0))
+    }
 }

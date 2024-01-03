@@ -29,56 +29,56 @@
 import SwiftUI
 
 struct TabNavView: View {
-  @EnvironmentObject var tabViewModel: TabViewModel
-  var libraryView: AnyView
-  var myTutorialsView: AnyView
-  var downloadsView: AnyView
+    @EnvironmentObject var tabViewModel: TabViewModel
+    var libraryView: AnyView
+    var myTutorialsView: AnyView
+    var downloadsView: AnyView
 
-  var body: some View {
-    TabView(selection: $tabViewModel.selectedTab) {
-      NavigationView {
-        libraryView
-      }
-        .tabItem {
-          Text(Constants.library)
-          Image("library")
-        }
-        .tag(MainTab.library)
-        .navigationViewStyle(StackNavigationViewStyle())
-        .accessibility(label: Text(Constants.library))
+    var body: some View {
+        TabView(selection: $tabViewModel.selectedTab) {
+            NavigationView {
+                libraryView
+            }
+            .tabItem {
+                Text(Constants.library)
+                Image("library")
+            }
+            .tag(MainTab.library)
+            .navigationViewStyle(StackNavigationViewStyle())
+            .accessibility(label: Text(Constants.library))
 
-      NavigationView {
-        downloadsView
-      }
-        .tabItem {
-          Text(Constants.downloads)
-          Image("downloadTabInactive")
-        }
-        .tag(MainTab.downloads)
-        .navigationViewStyle(StackNavigationViewStyle())
-        .accessibility(label: Text(Constants.downloads))
+            NavigationView {
+                downloadsView
+            }
+            .tabItem {
+                Text(Constants.downloads)
+                Image("downloadTabInactive")
+            }
+            .tag(MainTab.downloads)
+            .navigationViewStyle(StackNavigationViewStyle())
+            .accessibility(label: Text(Constants.downloads))
 
-      NavigationView {
-        myTutorialsView
-      }
-        .tabItem {
-          Text(Constants.myTutorials)
-          Image("myTutorials")
+            NavigationView {
+                myTutorialsView
+            }
+            .tabItem {
+                Text(Constants.myTutorials)
+                Image("myTutorials")
+            }
+            .tag(MainTab.myTutorials)
+            .navigationViewStyle(StackNavigationViewStyle())
+            .accessibility(label: Text(Constants.myTutorials))
         }
-        .tag(MainTab.myTutorials)
-        .navigationViewStyle(StackNavigationViewStyle())
-        .accessibility(label: Text(Constants.myTutorials))
+        .accentColor(.accent)
     }
-    .accentColor(.accent)
-  }
 }
 
 struct TabNavView_Previews: PreviewProvider {
-  static var previews: some View {
-    TabNavView(
-      libraryView: AnyView(Text("LIBRARY")),
-      myTutorialsView: AnyView(Text("MY TUTORIALS")),
-      downloadsView: AnyView(Text("DOWNLOADS"))
-    ).environmentObject(TabViewModel())
-  }
+    static var previews: some View {
+        TabNavView(
+            libraryView: AnyView(Text("LIBRARY")),
+            myTutorialsView: AnyView(Text("MY TUTORIALS")),
+            downloadsView: AnyView(Text("DOWNLOADS"))
+        ).environmentObject(TabViewModel())
+    }
 }

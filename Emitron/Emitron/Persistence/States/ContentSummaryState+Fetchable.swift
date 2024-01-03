@@ -28,4 +28,4 @@
 
 import GRDB
 
-extension ContentSummaryState: FetchableRecord { }
+extension ContentSummaryState: FetchableRecord {}

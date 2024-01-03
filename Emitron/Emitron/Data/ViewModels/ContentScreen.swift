@@ -27,78 +27,78 @@
 // THE SOFTWARE.
 
 enum ContentScreen {
-  case library
-  case downloads(permitted: Bool)
-  case inProgress
-  case completed
-  case bookmarked
+    case library
+    case downloads(permitted: Bool)
+    case inProgress
+    case completed
+    case bookmarked
 
-  var isMyTutorials: Bool {
-    switch self {
-    case .bookmarked, .inProgress, .completed:
-      return true
-    default:
-      return false
+    var isMyTutorials: Bool {
+        switch self {
+        case .bookmarked, .inProgress, .completed:
+            return true
+        default:
+            return false
+        }
     }
-  }
 
-  var titleMessage: String {
-    switch self {
-    case .library:
-      return "We couldn't find anything"
-    case .downloads(permitted: true):
-      return "You haven't downloaded any tutorials yet"
-    case .downloads(permitted: false):
-      return "Upgrade your account to download videos"
-    case .bookmarked:
-      return "You haven't bookmarked any tutorials yet"
-    case .inProgress:
-      return "You don't have any tutorials in progress yet"
-    case .completed:
-      return "You haven't completed any tutorials yet"
+    var titleMessage: String {
+        switch self {
+        case .library:
+            return "We couldn't find anything"
+        case .downloads(permitted: true):
+            return "You haven't downloaded any tutorials yet"
+        case .downloads(permitted: false):
+            return "Upgrade your account to download videos"
+        case .bookmarked:
+            return "You haven't bookmarked any tutorials yet"
+        case .inProgress:
+            return "You don't have any tutorials in progress yet"
+        case .completed:
+            return "You haven't completed any tutorials yet"
+        }
     }
-  }
 
-  var detailMesage: String {
-    switch self {
-    case .library:
-      return "Try removing some filters."
-    case .bookmarked:
-      return "Tap the bookmark icon to bookmark a video course or screencast."
-    case .inProgress:
-      return "When you start a video course you can quickly resume it from here."
-    case .completed:
-      return "Watch all the episodes of a video course or screencast to complete it."
-    case .downloads(permitted: true):
-      return "Tap the download icon to download a video course or episode to watch offline."
-    case .downloads(permitted: false):
-      return "Members on the Professional plan are able to download videos and watch them offline."
+    var detailMesage: String {
+        switch self {
+        case .library:
+            return "Try removing some filters."
+        case .bookmarked:
+            return "Tap the bookmark icon to bookmark a video course or screencast."
+        case .inProgress:
+            return "When you start a video course you can quickly resume it from here."
+        case .completed:
+            return "Watch all the episodes of a video course or screencast to complete it."
+        case .downloads(permitted: true):
+            return "Tap the download icon to download a video course or episode to watch offline."
+        case .downloads(permitted: false):
+            return "Members on the Professional plan are able to download videos and watch them offline."
+        }
     }
-  }
-  
-  var showExploreButton: Bool {
-    switch self {
-    case .downloads(permitted: true), .inProgress, .completed, .bookmarked:
-      return true
-    case .downloads(permitted: false), .library:
-      return false
-    }
-  }
 
-  var emptyImageName: String {
-    switch self {
-    case .downloads(permitted: true):
-      return "artworkEmptySuitcase"
-    case .downloads(permitted: false):
-      return "artworkDownloadSwitch"
-    case .bookmarked:
-      return "artworkBookmarks"
-    case .inProgress:
-      return "artworkInProgress"
-    case .completed:
-      return "artworkCompleted"
-    case .library:
-      return "emojiCrying"
+    var showExploreButton: Bool {
+        switch self {
+        case .downloads(permitted: true), .inProgress, .completed, .bookmarked:
+            return true
+        case .downloads(permitted: false), .library:
+            return false
+        }
     }
-  }
+
+    var emptyImageName: String {
+        switch self {
+        case .downloads(permitted: true):
+            return "artworkEmptySuitcase"
+        case .downloads(permitted: false):
+            return "artworkDownloadSwitch"
+        case .bookmarked:
+            return "artworkBookmarks"
+        case .inProgress:
+            return "artworkInProgress"
+        case .completed:
+            return "artworkCompleted"
+        case .library:
+            return "emojiCrying"
+        }
+    }
 }

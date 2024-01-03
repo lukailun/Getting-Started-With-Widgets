@@ -29,39 +29,39 @@
 import SwiftUI
 
 struct PagingIndicatorView: View {
-  let pageCount: Int
-  @Binding var currentIndex: Int
-  
-  var body: some View {
-    HStack(spacing: 9) {
-      ForEach(0...pageCount - 1, id: \.self) { index in
-        Circle()
-          .fill(index == self.currentIndex ? Color.accent : .borderColor)
-          .frame(width: 9, height: 9)
-      }
+    let pageCount: Int
+    @Binding var currentIndex: Int
+
+    var body: some View {
+        HStack(spacing: 9) {
+            ForEach(0 ... pageCount - 1, id: \.self) { index in
+                Circle()
+                    .fill(index == self.currentIndex ? Color.accent : .borderColor)
+                    .frame(width: 9, height: 9)
+            }
+        }
     }
-  }
 }
 
 #if DEBUG
-struct PagingIndicatorView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      pagers.colorScheme(.dark)
-      pagers.colorScheme(.light)
+    struct PagingIndicatorView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                pagers.colorScheme(.dark)
+                pagers.colorScheme(.light)
+            }
+        }
+
+        static var pagers: some View {
+            VStack(spacing: 20) {
+                PagingIndicatorView(pageCount: 5, currentIndex: .constant(0))
+                PagingIndicatorView(pageCount: 5, currentIndex: .constant(1))
+                PagingIndicatorView(pageCount: 5, currentIndex: .constant(2))
+                PagingIndicatorView(pageCount: 5, currentIndex: .constant(3))
+                PagingIndicatorView(pageCount: 5, currentIndex: .constant(4))
+            }
+            .padding()
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var pagers: some View {
-    VStack(spacing: 20) {
-      PagingIndicatorView(pageCount: 5, currentIndex: .constant(0))
-      PagingIndicatorView(pageCount: 5, currentIndex: .constant(1))
-      PagingIndicatorView(pageCount: 5, currentIndex: .constant(2))
-      PagingIndicatorView(pageCount: 5, currentIndex: .constant(3))
-      PagingIndicatorView(pageCount: 5, currentIndex: .constant(4))
-    }
-      .padding()
-      .background(Color.backgroundColor)
-  }
-}
 #endif

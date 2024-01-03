@@ -30,26 +30,26 @@ import class Foundation.DispatchQueue
 import GRDB
 
 enum PersistenceStoreError: Error {
-  case argumentError
-  case notFound
+    case argumentError
+    case notFound
 }
 
 // The object responsible for managing and accessing cached content
 final class PersistenceStore {
-  let db: DatabaseWriter
-  let workerQueue = DispatchQueue(label: "com.razeware.emitron.persistence", qos: .background)
-  
-  init(db: DatabaseWriter) {
-    self.db = db
-  }
+    let db: DatabaseWriter
+    let workerQueue = DispatchQueue(label: "com.razeware.emitron.persistence", qos: .background)
+
+    init(db: DatabaseWriter) {
+        self.db = db
+    }
 }
 
 extension PersistenceStore {
-  /// Completely erase the database. Used for logout.
-  func erase() throws {
-    // Empty it
-    try db.erase()
-    // Repopulate the structure
-    try EmitronDatabase.migrator.migrate(db)
-  }
+    /// Completely erase the database. Used for logout.
+    func erase() throws {
+        // Empty it
+        try db.erase()
+        // Repopulate the structure
+        try EmitronDatabase.migrator.migrate(db)
+    }
 }

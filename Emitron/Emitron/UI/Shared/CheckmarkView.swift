@@ -28,54 +28,53 @@
 
 import SwiftUI
 
-//TODO: Refactor layout properties here
+// TODO: Refactor layout properties here
 struct CheckmarkView: View {
-  var isOn: Bool
-  
-  var outerSide: CGFloat = 24
-  var innerSide: CGFloat = 20
-  var outerRadius: CGFloat = 9
-  var radiusRatio: CGFloat {
-    outerRadius / outerSide
-  }
-  
-  var onChange: (Bool) -> Void
-  
-  var body: some View {
-        
-    Button(action: {
-      self.onChange(!self.isOn)
-    }) {
-      if isOn {
-        ZStack(alignment: .center) {
-          Rectangle()
+    var isOn: Bool
 
-            .frame(maxWidth: outerSide, maxHeight: outerSide)
-            .foregroundColor(.checkmarkBackground)
-          
-          Image.checkmark
-            .resizable()
-            .frame(maxWidth: innerSide - 1, maxHeight: innerSide + 1)
-            .foregroundColor(.checkmarkColor)
-        }
-        .cornerRadius(outerRadius)
-      } else {
-        ZStack {
-          RoundedRectangle(cornerRadius: outerRadius)
-            .stroke(Color.checkmarkBorder, lineWidth: 2)
-            .frame(maxWidth: outerSide, maxHeight: outerSide)
-        }
-      }
+    var outerSide: CGFloat = 24
+    var innerSide: CGFloat = 20
+    var outerRadius: CGFloat = 9
+    var radiusRatio: CGFloat {
+        outerRadius / outerSide
     }
-  }
+
+    var onChange: (Bool) -> Void
+
+    var body: some View {
+        Button(action: {
+            self.onChange(!self.isOn)
+        }) {
+            if isOn {
+                ZStack(alignment: .center) {
+                    Rectangle()
+
+                        .frame(maxWidth: outerSide, maxHeight: outerSide)
+                        .foregroundColor(.checkmarkBackground)
+
+                    Image.checkmark
+                        .resizable()
+                        .frame(maxWidth: innerSide - 1, maxHeight: innerSide + 1)
+                        .foregroundColor(.checkmarkColor)
+                }
+                .cornerRadius(outerRadius)
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: outerRadius)
+                        .stroke(Color.checkmarkBorder, lineWidth: 2)
+                        .frame(maxWidth: outerSide, maxHeight: outerSide)
+                }
+            }
+        }
+    }
 }
 
 #if DEBUG
-struct CheckmarkView_Previews: PreviewProvider {
-  static var previews: some View {
-    CheckmarkView(isOn: true, onChange: { change in
-      print("Changed to: \(change)")
-    })
-  }
-}
+    struct CheckmarkView_Previews: PreviewProvider {
+        static var previews: some View {
+            CheckmarkView(isOn: true, onChange: { change in
+                print("Changed to: \(change)")
+            })
+        }
+    }
 #endif

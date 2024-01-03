@@ -27,73 +27,73 @@
 // THE SOFTWARE.
 
 protocol EntityAdapter {
-  associatedtype Response
-  
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship]) throws -> Response
+    associatedtype Response
+
+    static func process(resource: JSONAPIResource, relationships: [EntityRelationship]) throws -> Response
 }
 
 enum EntityType {
-  case attachment
-  case bookmark
-  case category
-  case content
-  case domain
-  case group
-  case permission
-  case progression
-  case video
-  
-  init?(from string: String) {
-    switch string {
-    case "attachments":
-      self = .attachment
-    case "bookmarks":
-      self = .bookmark
-    case "categories":
-      self = .category
-    case "contents":
-      self = .content
-    case "domains":
-      self = .domain
-    case "groups":
-      self = .group
-    case "permissions":
-      self = .permission
-    case "progressions":
-      self = .progression
-    case "videos":
-      self = .video
-    default:
-      return nil
+    case attachment
+    case bookmark
+    case category
+    case content
+    case domain
+    case group
+    case permission
+    case progression
+    case video
+
+    init?(from string: String) {
+        switch string {
+        case "attachments":
+            self = .attachment
+        case "bookmarks":
+            self = .bookmark
+        case "categories":
+            self = .category
+        case "contents":
+            self = .content
+        case "domains":
+            self = .domain
+        case "groups":
+            self = .group
+        case "permissions":
+            self = .permission
+        case "progressions":
+            self = .progression
+        case "videos":
+            self = .video
+        default:
+            return nil
+        }
     }
-  }
 }
 
 struct EntityIdentity: Identifiable {
-  let id: Int
-  let type: EntityType
+    let id: Int
+    let type: EntityType
 }
 
 struct EntityRelationship {
-  let name: String
-  let from: EntityIdentity
-  let to: EntityIdentity // swiftlint:disable:this identifier_name
+    let name: String
+    let from: EntityIdentity
+    let to: EntityIdentity // swiftlint:disable:this identifier_name
 }
 
 enum EntityAdapterError: Error {
-  case invalidResourceTypeForAdapter
-  case invalidOrMissingAttributes
-  case invalidOrMissingRelationships
-  
-  var localizedDescription: String {
-    let prefix = "EntityAdapterError::"
-    switch self {
-    case .invalidResourceTypeForAdapter:
-      return "\(prefix)InvalidResourceTypeForAdapter"
-    case .invalidOrMissingAttributes:
-      return "\(prefix)InvalidOrMissingAttributes"
-    case .invalidOrMissingRelationships:
-      return "\(prefix)InvalidOrMissingRelationships"
+    case invalidResourceTypeForAdapter
+    case invalidOrMissingAttributes
+    case invalidOrMissingRelationships
+
+    var localizedDescription: String {
+        let prefix = "EntityAdapterError::"
+        switch self {
+        case .invalidResourceTypeForAdapter:
+            return "\(prefix)InvalidResourceTypeForAdapter"
+        case .invalidOrMissingAttributes:
+            return "\(prefix)InvalidOrMissingAttributes"
+        case .invalidOrMissingRelationships:
+            return "\(prefix)InvalidOrMissingRelationships"
+        }
     }
-  }
 }

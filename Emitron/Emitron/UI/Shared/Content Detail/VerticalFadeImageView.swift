@@ -26,38 +26,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import SwiftUI
 import KingfisherSwiftUI
+import SwiftUI
 
 struct VerticalFadeImageView: View {
-  var imageUrl: URL?
-  var blurred: Bool = false
-  var width: CGFloat?
-  var height: CGFloat?
-  
-  var body: some View {
-    ZStack {
-      KFImage(imageUrl)
-        .resizable()
-        .aspectRatio(contentMode: .fill)
-        .frame(width: width, height: height, alignment: .top)
-        .blur(radius: blurred ? Constants.blurRadius : 0)
-        .clipped()
-      
-      LinearGradient(gradient: Gradient(colors: [Color.backgroundColor.opacity(0), .backgroundColor]),
-                     startPoint: .top,
-                     endPoint: .bottom)
+    var imageUrl: URL?
+    var blurred: Bool = false
+    var width: CGFloat?
+    var height: CGFloat?
+
+    var body: some View {
+        ZStack {
+            KFImage(imageUrl)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: width, height: height, alignment: .top)
+                .blur(radius: blurred ? Constants.blurRadius : 0)
+                .clipped()
+
+            LinearGradient(gradient: Gradient(colors: [Color.backgroundColor.opacity(0), .backgroundColor]),
+                           startPoint: .top,
+                           endPoint: .bottom)
+        }
     }
-  }
 }
 
 struct VerticalFadeImageView_Previews: PreviewProvider {
-  
-  static var previews: some View {
-    VerticalFadeImageView(imageUrl: sampleImageUrl)
-  }
-  
-  static var sampleImageUrl: URL? {
-    Bundle.main.url(forResource: "sampleCardImage", withExtension: "png")
-  }
+    static var previews: some View {
+        VerticalFadeImageView(imageUrl: sampleImageUrl)
+    }
+
+    static var sampleImageUrl: URL? {
+        Bundle.main.url(forResource: "sampleCardImage", withExtension: "png")
+    }
 }

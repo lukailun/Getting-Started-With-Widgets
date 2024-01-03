@@ -31,88 +31,87 @@ import SwiftUI
 // These views could really do with a refactor. The data flow is a mess
 
 enum SettingsLayout {
-  static let rowSpacing: CGFloat = 11
+    static let rowSpacing: CGFloat = 11
 }
 
 struct SettingsView: View {
-  @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-  @EnvironmentObject var sessionController: SessionController
-  @EnvironmentObject var tabViewModel: TabViewModel
-  @ObservedObject private var settingsManager = SettingsManager.current
-  @State private var licensesPresented: Bool = false
-  var showLogoutButton: Bool
-  
-  var body: some View {
-    NavigationView {
-      VStack {
-        
-        SettingsList(settingsManager: _settingsManager)
-          .navigationBarTitle(Constants.settings)
-          .navigationBarItems(trailing: dismissButton)
-          .padding([.horizontal], 20)
-        
-        Section(header:
-          HStack {
-            Text("App Icon")
-              .font(.uiTitle4)
-              .foregroundColor(.titleText)
-            
-            Spacer()
-          }
-            .padding([.top], 20)
-        ) {
-          IconChooserView()
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject var sessionController: SessionController
+    @EnvironmentObject var tabViewModel: TabViewModel
+    @ObservedObject private var settingsManager = SettingsManager.current
+    @State private var licensesPresented: Bool = false
+    var showLogoutButton: Bool
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                SettingsList(settingsManager: _settingsManager)
+                    .navigationBarTitle(Constants.settings)
+                    .navigationBarItems(trailing: dismissButton)
+                    .padding([.horizontal], 20)
+
+                Section(header:
+                    HStack {
+                        Text("App Icon")
+                            .font(.uiTitle4)
+                            .foregroundColor(.titleText)
+
+                        Spacer()
+                    }
+                    .padding([.top], 20)
+                ) {
+                    IconChooserView()
+                }
+                .padding([.horizontal], 20)
+
+                Spacer()
+
+                Button(action: {
+                    self.licensesPresented.toggle()
+                }) {
+                    Text("Software Licenses")
+                }
+                .sheet(isPresented: $licensesPresented) {
+                    LicenseListView(visible: self.$licensesPresented)
+                }
+                .padding([.bottom], 25)
+
+                if showLogoutButton {
+                    VStack {
+                        if sessionController.user != nil {
+                            Text("Logged in as \(sessionController.user?.username ?? "")")
+                                .font(.uiCaption)
+                                .foregroundColor(.contentText)
+                        }
+                        MainButtonView(title: "Sign Out", type: .destructive(withArrow: true)) {
+                            self.presentationMode.wrappedValue.dismiss()
+                            // This is hacky. But without it, the sheet doesn't actually dismiss.
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                self.sessionController.logout()
+                                self.tabViewModel.selectedTab = .library
+                            }
+                        }
+                    }
+                    .padding([.bottom, .horizontal], 18)
+                }
+            }
+            .background(Color.backgroundColor)
         }
-        .padding([.horizontal], 20)
-        
-        Spacer()
-        
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+
+    var dismissButton: some View {
         Button(action: {
-          self.licensesPresented.toggle()
+            self.presentationMode.wrappedValue.dismiss()
         }) {
-          Text("Software Licenses")
+            Image.close
+                .foregroundColor(.iconButton)
         }
-          .sheet(isPresented: $licensesPresented) {
-            LicenseListView(visible: self.$licensesPresented)
-          }
-          .padding([.bottom], 25)
-        
-        if showLogoutButton {
-          VStack {
-            if sessionController.user != nil {
-              Text("Logged in as \(sessionController.user?.username ?? "")")
-                .font(.uiCaption)
-                .foregroundColor(.contentText)
-            }
-            MainButtonView(title: "Sign Out", type: .destructive(withArrow: true)) {
-              self.presentationMode.wrappedValue.dismiss()
-              // This is hacky. But without it, the sheet doesn't actually dismiss.
-              DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.sessionController.logout()
-                self.tabViewModel.selectedTab = .library
-              }
-            }
-          }
-          .padding([.bottom, .horizontal], 18)
-        }
-      }
-        .background(Color.backgroundColor)
     }
-      .navigationViewStyle(StackNavigationViewStyle())
-  }
-  
-  var dismissButton: some View {
-    Button(action: {
-      self.presentationMode.wrappedValue.dismiss()
-    }) {
-      Image.close
-        .foregroundColor(.iconButton)
-    }
-  }
 }
 
-//#if DEBUG
-//struct SettingsView_Previews: PreviewProvider {
+// #if DEBUG
+// struct SettingsView_Previews: PreviewProvider {
 //  static var previews: some View {
 //    SwiftUI.Group {
 //      settingsView.colorScheme(.dark)
@@ -124,5 +123,5 @@ struct SettingsView: View {
 //    SettingsView(showLogoutButton: true)
 //      .background(Color.backgroundColor)
 //  }
-//}
-//#endif
+// }
+// #endif

@@ -29,67 +29,67 @@
 import SwiftUI
 
 struct VideoOverlayButtonView: View {
-  private struct SizeKey: PreferenceKey {
-    static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
-      value = value ?? nextValue()
-    }
-  }
-  
-  @State private var size: CGSize?
-  var text: String?
-  
-  var body: some View {
-    HStack { // This container is a hack to centre it on a navigation link
-      Spacer()
-      HStack {
-        Image.materialIconPlay
-          .resizable()
-          .frame(width: 40, height: 40)
-          .foregroundColor(.white)
-        
-        if text != nil {
-          Text(text!)
-            .foregroundColor(.white)
-            .font(.uiButtonLabel)
-            .fixedSize()
-            .padding([.trailing], 8)
+    private struct SizeKey: PreferenceKey {
+        static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
+            value = value ?? nextValue()
         }
-      }
-        .padding(10)
-        .background(GeometryReader { proxy in
-          Color.clear.preference(key: SizeKey.self, value: proxy.size)
-        })
-        .frame(width: size?.width, height: size?.height)
-        .background(
-          RoundedRectangle(cornerRadius: 13)
-            .fill(Color.appBlack)
-          .overlay(
-            RoundedRectangle(cornerRadius: 13)
-              .stroke(Color.white, lineWidth: 5)
-          )
-        )
-        .onPreferenceChange(SizeKey.self) { size in
-          self.size = size
-        }
-      Spacer()
     }
-  }
+
+    @State private var size: CGSize?
+    var text: String?
+
+    var body: some View {
+        HStack { // This container is a hack to centre it on a navigation link
+            Spacer()
+            HStack {
+                Image.materialIconPlay
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+
+                if text != nil {
+                    Text(text!)
+                        .foregroundColor(.white)
+                        .font(.uiButtonLabel)
+                        .fixedSize()
+                        .padding([.trailing], 8)
+                }
+            }
+            .padding(10)
+            .background(GeometryReader { proxy in
+                Color.clear.preference(key: SizeKey.self, value: proxy.size)
+            })
+            .frame(width: size?.width, height: size?.height)
+            .background(
+                RoundedRectangle(cornerRadius: 13)
+                    .fill(Color.appBlack)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 13)
+                            .stroke(Color.white, lineWidth: 5)
+                    )
+            )
+            .onPreferenceChange(SizeKey.self) { size in
+                self.size = size
+            }
+            Spacer()
+        }
+    }
 }
 
 struct VideoOverlayButtonView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      buttons.colorScheme(.dark)
-      buttons.colorScheme(.light)
+    static var previews: some View {
+        SwiftUI.Group {
+            buttons.colorScheme(.dark)
+            buttons.colorScheme(.light)
+        }
     }
-  }
-  
-  static var buttons: some View {
-    HStack {
-      VideoOverlayButtonView()
-      VideoOverlayButtonView(text: "Continue")
+
+    static var buttons: some View {
+        HStack {
+            VideoOverlayButtonView()
+            VideoOverlayButtonView(text: "Continue")
+        }
+        .padding()
+        .background(Color.backgroundColor)
     }
-      .padding()
-      .background(Color.backgroundColor)
-  }
 }

@@ -29,31 +29,31 @@
 import SwiftUI
 
 struct ArrowInCircleView: View {
-  let fillColour: Color
-  
-  var body: some View {
-    Image.download
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-      .frame(width: DownloadIconLayout.size)
-      .foregroundColor(fillColour)
-  }
+    let fillColour: Color
+
+    var body: some View {
+        Image.download
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: DownloadIconLayout.size)
+            .foregroundColor(fillColour)
+    }
 }
 
 struct ArrowInCircleView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      circles.colorScheme(.dark)
-      circles.colorScheme(.light)
+    static var previews: some View {
+        SwiftUI.Group {
+            circles.colorScheme(.dark)
+            circles.colorScheme(.light)
+        }
     }
-  }
-  
-  static var circles: some View {
-    HStack(spacing: 20) {
-      ArrowInCircleView(fillColour: .accent)
-      ArrowInCircleView(fillColour: .activeIcon)
+
+    static var circles: some View {
+        HStack(spacing: 20) {
+            ArrowInCircleView(fillColour: .accent)
+            ArrowInCircleView(fillColour: .activeIcon)
+        }
+        .padding(20)
+        .background(Color.backgroundColor)
     }
-      .padding(20)
-      .background(Color.backgroundColor)
-  }
 }

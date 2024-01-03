@@ -27,56 +27,56 @@
 // THE SOFTWARE.
 
 enum ContentType: Int, Codable {
-  case collection
-  case episode
-  case screencast
-  case article
-  case product
-  
-  init?(string: String) {
-    switch string {
-    case "collection":
-      self = .collection
-    case "episode":
-      self = .episode
-    case "screencast":
-      self = .screencast
-    case "article":
-      self = .article
-    case "product":
-      self = .product
-    default:
-      return nil
+    case collection
+    case episode
+    case screencast
+    case article
+    case product
+
+    init?(string: String) {
+        switch string {
+        case "collection":
+            self = .collection
+        case "episode":
+            self = .episode
+        case "screencast":
+            self = .screencast
+        case "article":
+            self = .article
+        case "product":
+            self = .product
+        default:
+            return nil
+        }
     }
-  }
-  
-  var displayString: String {
-    switch self {
-    case .collection:
-      return "Video Course"
-    case .episode:
-      return "Episode"
-    case .screencast:
-      return "Screencast"
-    case .article:
-      return "Article"
-    case .product:
-      return "Book"
+
+    var displayString: String {
+        switch self {
+        case .collection:
+            return "Video Course"
+        case .episode:
+            return "Episode"
+        case .screencast:
+            return "Screencast"
+        case .article:
+            return "Article"
+        case .product:
+            return "Book"
+        }
     }
-  }
-  
-  var sortOrdinal: Int {
-    switch self {
-    case .collection:
-      return 0
-    case .screencast:
-      return 1
-    case .episode:
-      return 2
-    case .article:
-      return 3
-    case .product:
-      return 4
+
+    var sortOrdinal: Int {
+        switch self {
+        case .collection:
+            return 0
+        case .screencast:
+            return 1
+        case .episode:
+            return 2
+        case .article:
+            return 3
+        case .product:
+            return 4
+        }
     }
-  }
 }

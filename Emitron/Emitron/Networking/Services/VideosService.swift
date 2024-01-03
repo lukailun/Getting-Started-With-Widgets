@@ -27,20 +27,23 @@
 // THE SOFTWARE.
 
 class VideosService: Service {
-  typealias Provider = (RWAPI) -> VideosService
+    typealias Provider = (RWAPI) -> VideosService
 
-  // MARK: - Internal
-  func getVideoStream(for id: Int,
-                      completion: @escaping (_ response: Result<StreamVideoRequest.Response, RWAPIError>) -> Void) {
-    let request = StreamVideoRequest(id: id)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    // MARK: - Internal
 
-  func getVideoDownload(for id: Int,
-                        completion: @escaping (_ response: Result<DownloadVideoRequest.Response, RWAPIError>) -> Void) {
-    let request = DownloadVideoRequest(id: id)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    func getVideoStream(for id: Int,
+                        completion: @escaping (_ response: Result<StreamVideoRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = StreamVideoRequest(id: id)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
+
+    func getVideoDownload(for id: Int,
+                          completion: @escaping (_ response: Result<DownloadVideoRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = DownloadVideoRequest(id: id)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

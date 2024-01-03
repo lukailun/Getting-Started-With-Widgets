@@ -29,39 +29,40 @@
 import Foundation
 
 protocol WatchStat {
-  var contentId: Int { get }
-  var secondsWatched: Int { get }
-  var dateWatched: Date { get }
+    var contentId: Int { get }
+    var secondsWatched: Int { get }
+    var dateWatched: Date { get }
 }
 
 struct WatchStatsUpdateRequest: Request {
-  typealias Response = Void
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .POST }
-  var path: String { "/watch_stats/bulk" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? {
-    let dataJson = watchStats.map { stat in
-      [
-        "type": "watch_stats",
-        "attributes": [
-          "content_id": stat.contentId,
-          "seconds": stat.secondsWatched,
-          "watched_on": stat.dateWatched.iso8601
+    typealias Response = Void
+
+    // MARK: - Properties
+
+    var method: HTTPMethod { .POST }
+    var path: String { "/watch_stats/bulk" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? {
+        let dataJson = watchStats.map { stat in
+            [
+                "type": "watch_stats",
+                "attributes": [
+                    "content_id": stat.contentId,
+                    "seconds": stat.secondsWatched,
+                    "watched_on": stat.dateWatched.iso8601,
+                ],
+            ]
+        }
+        let json = [
+            "data": dataJson,
         ]
-      ]
+
+        return try? JSONSerialization.data(withJSONObject: json)
     }
-    let json = [
-      "data": dataJson
-    ]
-    
-    return try? JSONSerialization.data(withJSONObject: json)
-  }
-  
-  let watchStats: [WatchStat]
-  
-  // MARK: - Internal
-  func handle(response: Data) throws {
-    }
+
+    let watchStats: [WatchStat]
+
+    // MARK: - Internal
+
+    func handle(response _: Data) throws {}
 }

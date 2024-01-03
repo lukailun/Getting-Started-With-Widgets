@@ -29,20 +29,20 @@
 import Combine
 
 final class CompletedRepository: ContentRepository {
-  override var nonPaginationParameters: [Parameter] {
-    get {
-      let filters = Param.filters(for: [.contentTypes(types: [.collection, .screencast])])
-      let completionStatus = CompletionStatus.completed
-      let completionFilter = Param.filter(for: .completionStatus(status: completionStatus))
-      let sortOrder = Param.sort(for: .updatedAt, descending: true)
-      return filters + [completionFilter, sortOrder]
+    override var nonPaginationParameters: [Parameter] {
+        get {
+            let filters = Param.filters(for: [.contentTypes(types: [.collection, .screencast])])
+            let completionStatus = CompletionStatus.completed
+            let completionFilter = Param.filter(for: .completionStatus(status: completionStatus))
+            let sortOrder = Param.sort(for: .updatedAt, descending: true)
+            return filters + [completionFilter, sortOrder]
+        }
+        set {
+            preconditionFailure("Not allowed to use setter on this variable. [Value: \(newValue)]")
+        }
     }
-    set {
-      preconditionFailure("Not allowed to use setter on this variable. [Value: \(newValue)]")
+
+    override var invalidationPublisher: AnyPublisher<Void, Never>? {
+        repository.cachedProgressionsInvalidated
     }
-  }
-  
-  override var invalidationPublisher: AnyPublisher<Void, Never>? {
-    repository.cachedProgressionsInvalidated
-  }
 }

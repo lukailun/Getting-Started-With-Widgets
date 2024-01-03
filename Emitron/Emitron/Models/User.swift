@@ -29,71 +29,71 @@
 import struct Foundation.URL
 
 public struct User: Equatable, Codable {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  public let externalId: String
-  public let email: String
-  public let username: String
-  public let avatarUrl: URL
-  public let name: String
-  public let token: String
-  let permissions: [Permission]?
-  
-  public var canStreamPro: Bool {
-    guard let permissions = permissions else { return false }
-    
-    return !permissions.filter { $0.tag == .streamPro }.isEmpty
-  }
-  
-  public var canStream: Bool {
-    guard let permissions = permissions else { return false }
-    
-    return !permissions.filter { $0.tag == .streamBeginner }.isEmpty
-  }
-  
-  public var canDownload: Bool {
-    guard let permissions = permissions else { return false }
-    
-    return !permissions.filter { $0.tag == .download }.isEmpty
-  }
-  
-  public var hasPermissionToUseApp: Bool {
-    canStreamPro || canStream || canDownload
-  }
-  
-  // MARK: - Initializers
-  init?(dictionary: [String: String]) {
-    guard
-      let externalId = dictionary["external_id"],
-      let email = dictionary["email"],
-      let username = dictionary["username"],
-      let avatarUrlString = dictionary["avatar_url"],
-      let avatarUrl = URL(string: avatarUrlString),
-      let name = dictionary["name"]?.replacingOccurrences(of: "+", with: " "),
-      let token = dictionary["token"]
-      else
-    { return nil }
+    public let externalId: String
+    public let email: String
+    public let username: String
+    public let avatarUrl: URL
+    public let name: String
+    public let token: String
+    let permissions: [Permission]?
 
-    self.externalId = externalId
-    self.email = email
-    self.username = username
-    self.avatarUrl = avatarUrl
-    self.name = name
-    self.token = token
-    self.permissions = .none
-  }
-  
-  private init(user: User, permissions: [Permission]) {
-    self.externalId = user.externalId
-    self.email = user.email
-    self.username = user.username
-    self.avatarUrl = user.avatarUrl
-    self.name = user.name
-    self.token = user.token
-    self.permissions = permissions
-  }
-  
-  func with(permissions: [Permission]) -> User {
-    User(user: self, permissions: permissions)
-  }
+    public var canStreamPro: Bool {
+        guard let permissions = permissions else { return false }
+
+        return !permissions.filter { $0.tag == .streamPro }.isEmpty
+    }
+
+    public var canStream: Bool {
+        guard let permissions = permissions else { return false }
+
+        return !permissions.filter { $0.tag == .streamBeginner }.isEmpty
+    }
+
+    public var canDownload: Bool {
+        guard let permissions = permissions else { return false }
+
+        return !permissions.filter { $0.tag == .download }.isEmpty
+    }
+
+    public var hasPermissionToUseApp: Bool {
+        canStreamPro || canStream || canDownload
+    }
+
+    // MARK: - Initializers
+
+    init?(dictionary: [String: String]) {
+        guard
+            let externalId = dictionary["external_id"],
+            let email = dictionary["email"],
+            let username = dictionary["username"],
+            let avatarUrlString = dictionary["avatar_url"],
+            let avatarUrl = URL(string: avatarUrlString),
+            let name = dictionary["name"]?.replacingOccurrences(of: "+", with: " "),
+            let token = dictionary["token"]
+        else { return nil }
+
+        self.externalId = externalId
+        self.email = email
+        self.username = username
+        self.avatarUrl = avatarUrl
+        self.name = name
+        self.token = token
+        permissions = .none
+    }
+
+    private init(user: User, permissions: [Permission]) {
+        externalId = user.externalId
+        email = user.email
+        username = user.username
+        avatarUrl = user.avatarUrl
+        name = user.name
+        token = user.token
+        self.permissions = permissions
+    }
+
+    func with(permissions: [Permission]) -> User {
+        User(user: self, permissions: permissions)
+    }
 }

@@ -32,45 +32,48 @@ typealias HTTPHeaders = [String: String]
 typealias HTTPHeader = HTTPHeaders.Element
 
 enum RWAPIError: Error {
-  case requestFailed(Error?, Int)
-  case processingError(Error?)
-  case responseMissingRequiredMeta(field: String?)
-  case responseHasIncorrectNumberOfElements
-  case noData
+    case requestFailed(Error?, Int)
+    case processingError(Error?)
+    case responseMissingRequiredMeta(field: String?)
+    case responseHasIncorrectNumberOfElements
+    case noData
 
-  var localizedDescription: String {
-    switch self {
-    case .requestFailed(let error, let statusCode):
-      return "RWAPIError::RequestFailed[Status: \(statusCode) | Error: \(error?.localizedDescription ?? "UNKNOWN")]"
-    case .processingError(let error):
-      return "RWAPIError::ProcessingError[Error: \(error?.localizedDescription ?? "UNKNOWN")]"
-    case .responseMissingRequiredMeta(field: let field):
-      return "RWAPIError::ResponseMissingRequiredMeta[Field: \(field ?? "UNKNOWN")]"
-    case .responseHasIncorrectNumberOfElements:
-      return "RWAPIError::ResponseHasIncorrectNumberOfElements"
-    case .noData:
-      return "RWAPIError::NoData"
+    var localizedDescription: String {
+        switch self {
+        case let .requestFailed(error, statusCode):
+            return "RWAPIError::RequestFailed[Status: \(statusCode) | Error: \(error?.localizedDescription ?? "UNKNOWN")]"
+        case let .processingError(error):
+            return "RWAPIError::ProcessingError[Error: \(error?.localizedDescription ?? "UNKNOWN")]"
+        case let .responseMissingRequiredMeta(field: field):
+            return "RWAPIError::ResponseMissingRequiredMeta[Field: \(field ?? "UNKNOWN")]"
+        case .responseHasIncorrectNumberOfElements:
+            return "RWAPIError::ResponseHasIncorrectNumberOfElements"
+        case .noData:
+            return "RWAPIError::NoData"
+        }
     }
-  }
 }
 
 struct RWAPI {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  let environment: RWEnvironment
-  let session: URLSession
-  let authToken: String
+    let environment: RWEnvironment
+    let session: URLSession
+    let authToken: String
 
-  // MARK: - HTTP Headers
-  let contentTypeHeader: HTTPHeader = ("Content-Type", "application/vnd.api+json; charset=utf-8")
-  var additionalHeaders: HTTPHeaders = ["RW-App-Token": Configuration.appToken]
+    // MARK: - HTTP Headers
 
-  // MARK: - Initializers
-  init(session: URLSession = URLSession(configuration: .default),
-       environment: RWEnvironment = .prod,
-       authToken: String) {
-    self.session = session
-    self.environment = environment
-    self.authToken = authToken
-  }
+    let contentTypeHeader: HTTPHeader = ("Content-Type", "application/vnd.api+json; charset=utf-8")
+    var additionalHeaders: HTTPHeaders = ["RW-App-Token": Configuration.appToken]
+
+    // MARK: - Initializers
+
+    init(session: URLSession = URLSession(configuration: .default),
+         environment: RWEnvironment = .prod,
+         authToken: String)
+    {
+        self.session = session
+        self.environment = environment
+        self.authToken = authToken
+    }
 }

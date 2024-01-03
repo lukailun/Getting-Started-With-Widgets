@@ -29,73 +29,72 @@
 import SwiftUI
 
 struct LoginView: View {
-  @EnvironmentObject var sessionController: SessionController
-  
-  var body: some View {
-    VStack {
-      
-      Image("logo")
-        .padding([.top], 88)
-      
-      Spacer()
-      
-      PagerView(pageCount: 2, showIndicator: true) {
+    @EnvironmentObject var sessionController: SessionController
+
+    var body: some View {
         VStack {
-          Image("welcomeArtwork1")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 265)
-            .padding([.bottom], 40)
-          
-          Text("Watch anytime,\nanywhere")
-            .font(.uiTitle1)
-            .foregroundColor(.titleText)
-            .multilineTextAlignment(.center)
-            .padding([.bottom], 15)
-          
-          Text("Watch over 3,000+ video tutorials\non iPhone and iPad.")
-            .font(.uiLabel)
-            .foregroundColor(.contentText)
-            .multilineTextAlignment(.center)
+            Image("logo")
+                .padding([.top], 88)
+
+            Spacer()
+
+            PagerView(pageCount: 2, showIndicator: true) {
+                VStack {
+                    Image("welcomeArtwork1")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 265)
+                        .padding([.bottom], 40)
+
+                    Text("Watch anytime,\nanywhere")
+                        .font(.uiTitle1)
+                        .foregroundColor(.titleText)
+                        .multilineTextAlignment(.center)
+                        .padding([.bottom], 15)
+
+                    Text("Watch over 3,000+ video tutorials\non iPhone and iPad.")
+                        .font(.uiLabel)
+                        .foregroundColor(.contentText)
+                        .multilineTextAlignment(.center)
+                }
+                .background(Color.backgroundColor)
+
+                VStack {
+                    Image("welcomeArtwork2")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 265)
+                        .padding([.bottom], 40)
+
+                    Text("Take your videos on\nthe go")
+                        .font(.uiTitle1)
+                        .foregroundColor(.titleText)
+                        .multilineTextAlignment(.center)
+                        .padding([.bottom], 15)
+
+                    Text("Download and watch videos — even\nwhen you’re offline.")
+                        .font(.uiLabel)
+                        .foregroundColor(.contentText)
+                        .multilineTextAlignment(.center)
+                }
+                .background(Color.backgroundColor)
+            }
+
+            Spacer()
+
+            MainButtonView(title: "Sign In", type: .primary(withArrow: true)) {
+                self.sessionController.login()
+            }
+            .padding([.leading, .trailing], 18)
+            .padding([.bottom], 38)
         }
         .background(Color.backgroundColor)
-        
-        VStack {
-          Image("welcomeArtwork2")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 265)
-            .padding([.bottom], 40)
-          
-          Text("Take your videos on\nthe go")
-            .font(.uiTitle1)
-            .foregroundColor(.titleText)
-            .multilineTextAlignment(.center)
-            .padding([.bottom], 15)
-          
-          Text("Download and watch videos — even\nwhen you’re offline.")
-            .font(.uiLabel)
-            .foregroundColor(.contentText)
-            .multilineTextAlignment(.center)
-        }
-          .background(Color.backgroundColor)
-      }
-      
-      Spacer()
-      
-      MainButtonView(title: "Sign In", type: .primary(withArrow: true)) {
-        self.sessionController.login()
-      }
-      .padding([.leading, .trailing], 18)
-      .padding([.bottom], 38)
+        .edgesIgnoringSafeArea([.all])
     }
-    .background(Color.backgroundColor)
-    .edgesIgnoringSafeArea([.all])
-  }
 }
 
 struct LoginView_Previews: PreviewProvider {
-  static var previews: some View {
-    LoginView()
-  }
+    static var previews: some View {
+        LoginView()
+    }
 }

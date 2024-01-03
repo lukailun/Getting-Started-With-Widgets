@@ -26,15 +26,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import struct Foundation.Date
 @testable import Emitron
+import struct Foundation.Date
 
 extension Permission {
-  static var downloadVideos: Permission {
-    Permission(id: 431,
-               name: "Download Videos",
-               tag: .download,
-               createdAt: Date(),
-               updatedAt: Date())
-  }
+    static var downloadVideos: Permission {
+        Permission(id: 431,
+                   name: "Download Videos",
+                   tag: .download,
+                   createdAt: Date(),
+                   updatedAt: Date())
+    }
 }

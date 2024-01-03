@@ -29,13 +29,13 @@
 import SwiftUI
 
 extension View {
-  func `if`<T: View>(_ conditional: Bool, transform: (Self) -> T) -> some View {
-    SwiftUI.Group {
-      if conditional {
-        transform(self)
-      } else {
-        self
-      }
+    func `if`<T: View>(_ conditional: Bool, transform: (Self) -> T) -> some View {
+        SwiftUI.Group {
+            if conditional {
+                transform(self)
+            } else {
+                self
+            }
+        }
     }
-  }
 }

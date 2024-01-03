@@ -29,41 +29,41 @@
 import SwiftUI
 
 struct SettingsToggleRow: View {
-  let title: String
-  @Binding var isOn: Bool
-  
-  var body: some View {
-    VStack(spacing: 0) {
-      Toggle(isOn: $isOn) {
-        Text(title)
-          .foregroundColor(.titleText)
-          .font(.uiBodyAppleDefault)
-          .padding([.vertical], SettingsLayout.rowSpacing)
-      }
-      
-      Rectangle()
-        .fill(Color.separator)
-        .frame(height: 1)
+    let title: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Toggle(isOn: $isOn) {
+                Text(title)
+                    .foregroundColor(.titleText)
+                    .font(.uiBodyAppleDefault)
+                    .padding([.vertical], SettingsLayout.rowSpacing)
+            }
+
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 1)
+        }
     }
-  }
 }
 
 #if DEBUG
-struct SettingsToggleRow_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      rows.colorScheme(.dark)
-      rows.colorScheme(.light)
+    struct SettingsToggleRow_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                rows.colorScheme(.dark)
+                rows.colorScheme(.light)
+            }
+        }
+
+        static var rows: some View {
+            VStack(spacing: 0) {
+                SettingsToggleRow(title: "Boolean Row [Off]", isOn: .constant(false))
+                SettingsToggleRow(title: "Boolean Row [On]", isOn: .constant(true))
+            }
+            .padding()
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var rows: some View {
-    VStack(spacing: 0) {
-      SettingsToggleRow(title: "Boolean Row [Off]", isOn: .constant(false))
-      SettingsToggleRow(title: "Boolean Row [On]", isOn: .constant(true))
-    }
-    .padding()
-    .background(Color.backgroundColor)
-  }
-}
 #endif

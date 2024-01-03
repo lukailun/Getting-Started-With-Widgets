@@ -27,12 +27,13 @@
 // THE SOFTWARE.
 
 class WatchStatsService: Service {
-  typealias Provider = (RWAPI) -> WatchStatsService
-  
-  func update(watchStats: [WatchStat],
-              completion: @escaping (_ response: Result<WatchStatsUpdateRequest.Response, RWAPIError>) -> Void) {
-    let request = WatchStatsUpdateRequest(watchStats: watchStats)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    typealias Provider = (RWAPI) -> WatchStatsService
+
+    func update(watchStats: [WatchStat],
+                completion: @escaping (_ response: Result<WatchStatsUpdateRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = WatchStatsUpdateRequest(watchStats: watchStats)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

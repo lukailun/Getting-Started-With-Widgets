@@ -27,8 +27,8 @@
 // THE SOFTWARE.
 
 struct ChildContentsState: Decodable, Equatable {
-  let contents: [Content]
-  let groups: [Group]
+    let contents: [Content]
+    let groups: [Group]
 }
 
 typealias CachedChildContentsState = ChildContentsState

@@ -29,45 +29,45 @@
 import SwiftUI
 
 struct SettingsDisclosureRow: View {
-  let title: String
-  let value: String
-  
-  var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      HStack {
-        Text(title)
-          .font(.uiBodyAppleDefault)
-          .foregroundColor(.titleText)
-          .padding([.vertical], SettingsLayout.rowSpacing)
-        
-        Spacer()
-        
-        Text(value)
-          .font(.uiBodyAppleDefault)
-          .foregroundColor(.contentText)
-        
-        Image(systemName: "chevron.right")
-          .foregroundColor(.iconButton)
-      }
+    let title: String
+    let value: String
 
-      Rectangle()
-        .fill(Color.separator)
-        .frame(height: 1)
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(title)
+                    .font(.uiBodyAppleDefault)
+                    .foregroundColor(.titleText)
+                    .padding([.vertical], SettingsLayout.rowSpacing)
+
+                Spacer()
+
+                Text(value)
+                    .font(.uiBodyAppleDefault)
+                    .foregroundColor(.contentText)
+
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.iconButton)
+            }
+
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 1)
+        }
     }
-  }
 }
 
 struct SettingsDisclosureRow_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      rows.colorScheme(.dark)
-      rows.colorScheme(.light)
+    static var previews: some View {
+        SwiftUI.Group {
+            rows.colorScheme(.dark)
+            rows.colorScheme(.light)
+        }
     }
-  }
-  
-  static var rows: some View {
-    SettingsDisclosureRow(title: "Disclosure", value: "HELLO")
-      .padding()
-      .background(Color.backgroundColor)
-  }
+
+    static var rows: some View {
+        SettingsDisclosureRow(title: "Disclosure", value: "HELLO")
+            .padding()
+            .background(Color.backgroundColor)
+    }
 }

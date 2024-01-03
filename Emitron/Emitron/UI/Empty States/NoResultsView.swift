@@ -29,57 +29,58 @@
 import SwiftUI
 
 struct NoResultsView: View {
-  @EnvironmentObject var tabViewModel: TabViewModel
-  var contentScreen: ContentScreen
-  var headerView: AnyView?
-  
-  var body: some View {
-    VStack {
-      headerView
-      
-      Spacer()
+    @EnvironmentObject var tabViewModel: TabViewModel
+    var contentScreen: ContentScreen
+    var headerView: AnyView?
 
-      Image(contentScreen.emptyImageName)
-        .padding([.bottom], 30)
+    var body: some View {
+        VStack {
+            headerView
 
-      Text(contentScreen.titleMessage)
-        .font(.uiTitle2)
-        .foregroundColor(.titleText)
-        .multilineTextAlignment(.center)
-        .padding([.bottom], 20)
-        .padding([.leading, .trailing], 20)
+            Spacer()
 
-      Text(contentScreen.detailMesage)
-        .lineSpacing(5)
-        .font(.uiLabel)
-        .foregroundColor(.contentText)
-        .multilineTextAlignment(.center)
-        .padding([.bottom], 20)
-        .padding([.leading, .trailing], 20)
-      
-      Spacer()
-      
-      if contentScreen.showExploreButton {
-        MainButtonView(
-          title: "Explore Tutorials",
-          type: .primary(withArrow: true)) {
-            self.tabViewModel.selectedTab = .library
+            Image(contentScreen.emptyImageName)
+                .padding([.bottom], 30)
+
+            Text(contentScreen.titleMessage)
+                .font(.uiTitle2)
+                .foregroundColor(.titleText)
+                .multilineTextAlignment(.center)
+                .padding([.bottom], 20)
+                .padding([.leading, .trailing], 20)
+
+            Text(contentScreen.detailMesage)
+                .lineSpacing(5)
+                .font(.uiLabel)
+                .foregroundColor(.contentText)
+                .multilineTextAlignment(.center)
+                .padding([.bottom], 20)
+                .padding([.leading, .trailing], 20)
+
+            Spacer()
+
+            if contentScreen.showExploreButton {
+                MainButtonView(
+                    title: "Explore Tutorials",
+                    type: .primary(withArrow: true)
+                ) {
+                    self.tabViewModel.selectedTab = .library
+                }
+                .padding([.horizontal, .bottom], 20)
+            }
         }
-        .padding([.horizontal, .bottom], 20)
-      }
     }
-  }
 }
 
 struct NoResultsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      NoResultsView(contentScreen: .bookmarked)
-      NoResultsView(contentScreen: .completed)
-      NoResultsView(contentScreen: .downloads(permitted: true))
-      NoResultsView(contentScreen: .downloads(permitted: false))
-      NoResultsView(contentScreen: .inProgress)
-      NoResultsView(contentScreen: .library)
+    static var previews: some View {
+        SwiftUI.Group {
+            NoResultsView(contentScreen: .bookmarked)
+            NoResultsView(contentScreen: .completed)
+            NoResultsView(contentScreen: .downloads(permitted: true))
+            NoResultsView(contentScreen: .downloads(permitted: false))
+            NoResultsView(contentScreen: .inProgress)
+            NoResultsView(contentScreen: .library)
+        }
     }
-  }
 }

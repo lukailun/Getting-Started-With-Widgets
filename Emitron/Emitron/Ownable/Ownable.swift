@@ -27,6 +27,6 @@
 // THE SOFTWARE.
 
 protocol Ownable {
-  var free: Bool { get }
-  var professional: Bool { get }
+    var free: Bool { get }
+    var professional: Bool { get }
 }

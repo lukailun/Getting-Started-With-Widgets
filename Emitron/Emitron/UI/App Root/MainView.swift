@@ -29,67 +29,67 @@
 import SwiftUI
 
 struct MainView: View {
-  @EnvironmentObject var sessionController: SessionController
-  @EnvironmentObject var dataManager: DataManager
-  private let tabViewModel = TabViewModel()
-  
-  var body: some View {
-    contentView
-      .background(Color.backgroundColor)
-      .overlay(MessageBarView(messageBus: MessageBus.current), alignment: .bottom)
-  }
-  
-  private var contentView: AnyView {
-    if !sessionController.isLoggedIn {
-      return AnyView(LoginView())
+    @EnvironmentObject var sessionController: SessionController
+    @EnvironmentObject var dataManager: DataManager
+    private let tabViewModel = TabViewModel()
+
+    var body: some View {
+        contentView
+            .background(Color.backgroundColor)
+            .overlay(MessageBarView(messageBus: MessageBus.current), alignment: .bottom)
     }
-    
-    if case .loaded = sessionController.permissionState {
-      if sessionController.hasPermissionToUseApp {
-        return tabBarView()
-      } else {
-        return AnyView(LogoutView())
-      }
+
+    private var contentView: AnyView {
+        if !sessionController.isLoggedIn {
+            return AnyView(LoginView())
+        }
+
+        if case .loaded = sessionController.permissionState {
+            if sessionController.hasPermissionToUseApp {
+                return tabBarView()
+            } else {
+                return AnyView(LogoutView())
+            }
+        }
+
+        return AnyView(PermissionsLoadingView())
     }
-    
-    return AnyView(PermissionsLoadingView())
-  }
-  
-  private func tabBarView() -> AnyView {
-    let downloadsView = DownloadsView(
-      contentScreen: .downloads(permitted: sessionController.user?.canDownload ?? false),
-      downloadRepository: dataManager.downloadRepository
-    )
-    
-    if case .online = sessionController.sessionState {
-      let libraryView = LibraryView(
-        filters: dataManager.filters,
-        libraryRepository: dataManager.libraryRepository
-      )
-      
-      let myTutorialsView = MyTutorialView(
-        state: .inProgress,
-        inProgressRepository: dataManager.inProgressRepository,
-        completedRepository: dataManager.completedRepository,
-        bookmarkRepository: dataManager.bookmarkRepository,
-        domainRepository: dataManager.domainRepository
-      )
-    
-      return AnyView(
-        TabNavView(libraryView: AnyView(libraryView),
-                   myTutorialsView: AnyView(myTutorialsView),
-                   downloadsView: AnyView(downloadsView))
-          .environmentObject(tabViewModel)
-      )
-    } else if case .offline = sessionController.sessionState {
-      return AnyView(
-        TabNavView(libraryView: AnyView(OfflineView()),
-                   myTutorialsView: AnyView(OfflineView()),
-                   downloadsView: AnyView(downloadsView))
-          .environmentObject(tabViewModel)
-      )
-    } else {
-      return AnyView(LoadingView())
+
+    private func tabBarView() -> AnyView {
+        let downloadsView = DownloadsView(
+            contentScreen: .downloads(permitted: sessionController.user?.canDownload ?? false),
+            downloadRepository: dataManager.downloadRepository
+        )
+
+        if case .online = sessionController.sessionState {
+            let libraryView = LibraryView(
+                filters: dataManager.filters,
+                libraryRepository: dataManager.libraryRepository
+            )
+
+            let myTutorialsView = MyTutorialView(
+                state: .inProgress,
+                inProgressRepository: dataManager.inProgressRepository,
+                completedRepository: dataManager.completedRepository,
+                bookmarkRepository: dataManager.bookmarkRepository,
+                domainRepository: dataManager.domainRepository
+            )
+
+            return AnyView(
+                TabNavView(libraryView: AnyView(libraryView),
+                           myTutorialsView: AnyView(myTutorialsView),
+                           downloadsView: AnyView(downloadsView))
+                    .environmentObject(tabViewModel)
+            )
+        } else if case .offline = sessionController.sessionState {
+            return AnyView(
+                TabNavView(libraryView: AnyView(OfflineView()),
+                           myTutorialsView: AnyView(OfflineView()),
+                           downloadsView: AnyView(downloadsView))
+                    .environmentObject(tabViewModel)
+            )
+        } else {
+            return AnyView(LoadingView())
+        }
     }
-  }
 }

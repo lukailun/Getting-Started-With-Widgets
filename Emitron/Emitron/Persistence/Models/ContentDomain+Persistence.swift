@@ -28,15 +28,15 @@
 
 import GRDB
 
-extension ContentDomain: FetchableRecord, TableRecord { }
+extension ContentDomain: FetchableRecord, TableRecord {}
 
 extension ContentDomain: MutablePersistableRecord {
-  mutating func didInsert(with rowID: Int64, for column: String?) {
-    id = rowID
-  }
+    mutating func didInsert(with rowID: Int64, for _: String?) {
+        id = rowID
+    }
 }
 
 extension ContentDomain {
-  static let content = belongsTo(Content.self)
-  static let domain = belongsTo(Domain.self)
+    static let content = belongsTo(Content.self)
+    static let domain = belongsTo(Domain.self)
 }

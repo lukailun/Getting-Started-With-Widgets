@@ -27,40 +27,40 @@
 // THE SOFTWARE.
 
 struct Domain: Codable, Equatable {
-  enum Level: Int, Codable {
-    case production, beta, blog, retired, archive
-    
-    init?(from string: String) {
-      switch string {
-      case "production":
-        self = .production
-      case "beta":
-        self = .beta
-      case "blog":
-        self = .blog
-      case "retired":
-        self = .retired
-      case "archived":
-        self = .archive
-      default:
-        return nil
-      }
+    enum Level: Int, Codable {
+        case production, beta, blog, retired, archive
+
+        init?(from string: String) {
+            switch string {
+            case "production":
+                self = .production
+            case "beta":
+                self = .beta
+            case "blog":
+                self = .blog
+            case "retired":
+                self = .retired
+            case "archived":
+                self = .archive
+            default:
+                return nil
+            }
+        }
+
+        var userFacing: Bool {
+            switch self {
+            case .production, .beta:
+                return true
+            case .blog, .retired, .archive:
+                return false
+            }
+        }
     }
-    
-    var userFacing: Bool {
-      switch self {
-      case .production, .beta:
-        return true
-      case .blog, .retired, .archive:
-        return false
-      }
-    }
-  }
-  
-  var id: Int
-  var name: String
-  var slug: String
-  var description: String?
-  var level: Level
-  var ordinal: Int
+
+    var id: Int
+    var name: String
+    var slug: String
+    var description: String?
+    var level: Level
+    var ordinal: Int
 }

@@ -30,67 +30,69 @@ import struct Foundation.URL
 import SwiftyJSON
 
 public class JSONAPIResource {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  weak var parent: JSONAPIDocument?
-  var id: Int = 0
-  var type: String = ""
-  var relationships: [JSONAPIRelationship] = []
-  var attributes: [String: Any] = [:]
-  var links: [String: URL] = [:]
-  var meta: [String: Any] = [:]
-  var entityType: EntityType? {
-    EntityType(from: type)
-  }
-  
-  var entityId: EntityIdentity? {
-    guard let entityType = entityType else { return nil }
-    
-    return EntityIdentity(id: id, type: entityType)
-  }
-
-  public subscript(key: String) -> Any? {
-    attributes[key]
-  }
-
-  // MARK: - Initializers
-  convenience init(_ json: JSON,
-                   parent: JSONAPIDocument?) {
-
-    self.init()
-
-    if let doc = parent {
-      self.parent = doc
+    weak var parent: JSONAPIDocument?
+    var id: Int = 0
+    var type: String = ""
+    var relationships: [JSONAPIRelationship] = []
+    var attributes: [String: Any] = [:]
+    var links: [String: URL] = [:]
+    var meta: [String: Any] = [:]
+    var entityType: EntityType? {
+        EntityType(from: type)
     }
 
-    id = json["id"].intValue
-    type = json["type"].stringValue
+    var entityId: EntityIdentity? {
+        guard let entityType = entityType else { return nil }
 
-    for relationship in json["relationships"].dictionaryValue {
-      relationships.append(
-        JSONAPIRelationship(relationship.value,
-                            type: relationship.key,
-                            parent: nil)
-      )
+        return EntityIdentity(id: id, type: entityType)
     }
 
-    attributes = json["attributes"].dictionaryObject ?? [:]
+    public subscript(key: String) -> Any? {
+        attributes[key]
+    }
 
-    if let linksDict = json["links"].dictionaryObject {
-      for link in linksDict {
-        if let strValue = link.value as? String,
-          let url = URL(string: strValue) {
-            links[link.key] = url
+    // MARK: - Initializers
+
+    convenience init(_ json: JSON,
+                     parent: JSONAPIDocument?)
+    {
+        self.init()
+
+        if let doc = parent {
+            self.parent = doc
         }
-      }
-    }
 
-    meta = json["meta"].dictionaryValue
-  }
+        id = json["id"].intValue
+        type = json["type"].stringValue
+
+        for relationship in json["relationships"].dictionaryValue {
+            relationships.append(
+                JSONAPIRelationship(relationship.value,
+                                    type: relationship.key,
+                                    parent: nil)
+            )
+        }
+
+        attributes = json["attributes"].dictionaryObject ?? [:]
+
+        if let linksDict = json["links"].dictionaryObject {
+            for link in linksDict {
+                if let strValue = link.value as? String,
+                   let url = URL(string: strValue)
+                {
+                    links[link.key] = url
+                }
+            }
+        }
+
+        meta = json["meta"].dictionaryValue
+    }
 }
 
 extension JSONAPIResource {
-  subscript<K: CustomStringConvertible, T>(key: K) -> T? {
-    self[key.description] as? T
-  }
+    subscript<K: CustomStringConvertible, T>(key: K) -> T? {
+        self[key.description] as? T
+    }
 }

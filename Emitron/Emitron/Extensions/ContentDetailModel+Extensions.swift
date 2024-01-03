@@ -28,13 +28,13 @@
 
 import UIKit
 
-extension Content {  
-  var contentSummaryMetadataString: String {
-    var start = releasedAt.cardString
-    if Calendar.current.isDate(Date(), inSameDayAs: releasedAt) {
-      start = Constants.today
+extension Content {
+    var contentSummaryMetadataString: String {
+        var start = releasedAt.cardString
+        if Calendar.current.isDate(Date(), inSameDayAs: releasedAt) {
+            start = Constants.today
+        }
+
+        return "\(start) • \(difficulty.displayString) • \(contentType.displayString) (\(duration.timeFromSeconds))"
     }
-    
-    return "\(start) • \(difficulty.displayString) • \(contentType.displayString) (\(duration.timeFromSeconds))"
-  }
 }

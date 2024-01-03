@@ -27,25 +27,26 @@
 // THE SOFTWARE.
 
 class BookmarksService: Service {
+    // MARK: - Internal
 
-  // MARK: - Internal
-  func bookmarks(parameters: [Parameter]? = nil,
-                 completion: @escaping (_ response: Result<GetBookmarksRequest.Response, RWAPIError>) -> Void) {
-    let request = GetBookmarksRequest()
-    makeAndProcessRequest(request: request,
-                          parameters: parameters,
-                          completion: completion)
-  }
-  
-  func makeBookmark(for id: Int, completion: @escaping (_ response: Result<MakeBookmark.Response, RWAPIError>) -> Void) {
-    let request = MakeBookmark(id: id)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
-  
-  func destroyBookmark(for id: Int, completion: @escaping (_ response: Result<DestroyBookmarkRequest.Response, RWAPIError>) -> Void) {
-    let request = DestroyBookmarkRequest(id: id)
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    func bookmarks(parameters: [Parameter]? = nil,
+                   completion: @escaping (_ response: Result<GetBookmarksRequest.Response, RWAPIError>) -> Void)
+    {
+        let request = GetBookmarksRequest()
+        makeAndProcessRequest(request: request,
+                              parameters: parameters,
+                              completion: completion)
+    }
+
+    func makeBookmark(for id: Int, completion: @escaping (_ response: Result<MakeBookmark.Response, RWAPIError>) -> Void) {
+        let request = MakeBookmark(id: id)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
+
+    func destroyBookmark(for id: Int, completion: @escaping (_ response: Result<DestroyBookmarkRequest.Response, RWAPIError>) -> Void) {
+        let request = DestroyBookmarkRequest(id: id)
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

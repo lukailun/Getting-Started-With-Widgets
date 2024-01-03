@@ -29,45 +29,45 @@
 import SwiftUI
 
 struct ReloadView: View {
-  var headerView: AnyView?
-  var reloadHandler: () -> Void
-  
-  var body: some View {
-    VStack {
-      
-      headerView
-      
-      Spacer()
-      
-      Image("emojiCrying")
-        .padding([.bottom], 30)
-      
-      Text("Something went wrong.")
-        .font(.uiTitle2)
-        .foregroundColor(.titleText)
-        .multilineTextAlignment(.center)
-        .padding([.leading, .trailing, .bottom], 20)
-      
-      Text("Please try again.")
-        .lineSpacing(8)
-        .font(.uiLabel)
-        .foregroundColor(.contentText)
-        .multilineTextAlignment(.center)
-        .padding([.leading, .trailing], 20)
-      
-      Spacer()
-      
-      MainButtonView(
-        title: "Reload",
-        type: .primary(withArrow: false),
-        callback: reloadHandler)
-        .padding([.horizontal, .bottom], 20)
+    var headerView: AnyView?
+    var reloadHandler: () -> Void
+
+    var body: some View {
+        VStack {
+            headerView
+
+            Spacer()
+
+            Image("emojiCrying")
+                .padding([.bottom], 30)
+
+            Text("Something went wrong.")
+                .font(.uiTitle2)
+                .foregroundColor(.titleText)
+                .multilineTextAlignment(.center)
+                .padding([.leading, .trailing, .bottom], 20)
+
+            Text("Please try again.")
+                .lineSpacing(8)
+                .font(.uiLabel)
+                .foregroundColor(.contentText)
+                .multilineTextAlignment(.center)
+                .padding([.leading, .trailing], 20)
+
+            Spacer()
+
+            MainButtonView(
+                title: "Reload",
+                type: .primary(withArrow: false),
+                callback: reloadHandler
+            )
+            .padding([.horizontal, .bottom], 20)
+        }
     }
-  }
 }
 
 struct ErrorView_Previews: PreviewProvider {
-  static var previews: some View {
-    ReloadView(headerView: nil, reloadHandler: {})
-  }
+    static var previews: some View {
+        ReloadView(headerView: nil, reloadHandler: {})
+    }
 }

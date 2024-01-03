@@ -26,74 +26,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import class Foundation.Timer
 import Combine
+import class Foundation.Timer
 
 struct Message {
-  enum Level {
-    case error, warning, success
-  }
-  
-  let level: Level
-  let message: String
-  var autoDismiss: Bool = true
+    enum Level {
+        case error, warning, success
+    }
+
+    let level: Level
+    let message: String
+    var autoDismiss: Bool = true
 }
 
 extension Message {
-  var snackbarState: SnackbarState {
-    SnackbarState(status: level.snackbarStatus, message: message)
-  }
+    var snackbarState: SnackbarState {
+        SnackbarState(status: level.snackbarStatus, message: message)
+    }
 }
 
 extension Message.Level {
-  var snackbarStatus: SnackbarState.Status {
-    switch self {
-    case .error:
-      return .error
-    case .warning:
-      return .warning
-    case .success:
-      return .success
+    var snackbarStatus: SnackbarState.Status {
+        switch self {
+        case .error:
+            return .error
+        case .warning:
+            return .warning
+        case .success:
+            return .success
+        }
     }
-  }
 }
 
 final class MessageBus: ObservableObject {
-  @Published private(set) var currentMessage: Message?
-  @Published var messageVisible: Bool = false
-  
-  private var currentTimer: AnyCancellable?
-  
-  func post(message: Message) {
-    invalidateTimer()
-    
-    currentMessage = message
-    messageVisible = true
-    
-    if message.autoDismiss {
-      currentTimer = createAndStartAutoDismissTimer()
+    @Published private(set) var currentMessage: Message?
+    @Published var messageVisible: Bool = false
+
+    private var currentTimer: AnyCancellable?
+
+    func post(message: Message) {
+        invalidateTimer()
+
+        currentMessage = message
+        messageVisible = true
+
+        if message.autoDismiss {
+            currentTimer = createAndStartAutoDismissTimer()
+        }
     }
-  }
-  
-  func dismiss() {
-    invalidateTimer()
-    self.messageVisible = false
-  }
-  
-  private func createAndStartAutoDismissTimer() -> AnyCancellable {
-    Timer
-      .publish(every: Constants.autoDismissTime, on: .main, in: .common)
-      .autoconnect()
-      .sink { [weak self] _ in
-        guard let self = self else { return }
-        
-        self.messageVisible = false
-        self.invalidateTimer()
-      }
-  }
-  
-  private func invalidateTimer() {
-    currentTimer?.cancel()
-    currentTimer = nil
-  }
+
+    func dismiss() {
+        invalidateTimer()
+        messageVisible = false
+    }
+
+    private func createAndStartAutoDismissTimer() -> AnyCancellable {
+        Timer
+            .publish(every: Constants.autoDismissTime, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+
+                self.messageVisible = false
+                self.invalidateTimer()
+            }
+    }
+
+    private func invalidateTimer() {
+        currentTimer?.cancel()
+        currentTimer = nil
+    }
 }

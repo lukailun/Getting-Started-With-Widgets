@@ -29,28 +29,28 @@
 import SwiftUI
 
 struct PermissionsLoadingView: View {
-  @EnvironmentObject var sessionController: SessionController
-  @State var showLogoutAlert: Bool = false
-  
-  var body: some View {
-    LoadingView()
-      .onTapGesture(count: 5) {
-        self.showLogoutAlert.toggle()
-      }
-    .alert(isPresented: $showLogoutAlert) {
-      Alert(
-        title: Text("Force Logout?"),
-        primaryButton: .destructive(Text("Logout"), action: {
-          self.sessionController.logout()
-        }),
-        secondaryButton: .cancel()
-      )
+    @EnvironmentObject var sessionController: SessionController
+    @State var showLogoutAlert: Bool = false
+
+    var body: some View {
+        LoadingView()
+            .onTapGesture(count: 5) {
+                self.showLogoutAlert.toggle()
+            }
+            .alert(isPresented: $showLogoutAlert) {
+                Alert(
+                    title: Text("Force Logout?"),
+                    primaryButton: .destructive(Text("Logout"), action: {
+                        self.sessionController.logout()
+                    }),
+                    secondaryButton: .cancel()
+                )
+            }
     }
-  }
 }
 
 struct PermissionsLoadingView_Previews: PreviewProvider {
-  static var previews: some View {
-    PermissionsLoadingView()
-  }
+    static var previews: some View {
+        PermissionsLoadingView()
+    }
 }

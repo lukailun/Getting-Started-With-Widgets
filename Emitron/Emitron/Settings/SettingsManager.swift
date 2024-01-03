@@ -30,150 +30,156 @@ import Combine
 import Foundation
 
 final class SettingsManager: ObservableObject {
-  // MARK: Internal Properties
-  private let jsonEncoder = JSONEncoder()
-  private let jsonDecoder = JSONDecoder()
-  private let userDefaults: UserDefaults
-  private let userModelController: UserModelController
-  
-  private var subscriptions = Set<AnyCancellable>()
-  
-  // MARK: Subjects
-  private let playbackSpeedSubject = PassthroughSubject<PlaybackSpeed, Never>()
-  private let closedCaptionOnSubject = PassthroughSubject<Bool, Never>()
-  private let wifiOnlyDownloadsSubject = PassthroughSubject<Bool, Never>()
-  private let downloadQualitySubject = PassthroughSubject<Attachment.Kind, Never>()
-  
-  // MARK: Initialisers
-  init(userDefaults: UserDefaults = .standard, userModelController: UserModelController) {
-    self.userDefaults = userDefaults
-    self.userModelController = userModelController
-    
-    self.configureSubscriptions()
-  }
-  
-  // MARK: Methods
-  func resetAll() {
-    SettingsKey.allCases.forEach(userDefaults.removeObject)
-  }
+    // MARK: Internal Properties
+
+    private let jsonEncoder = JSONEncoder()
+    private let jsonDecoder = JSONDecoder()
+    private let userDefaults: UserDefaults
+    private let userModelController: UserModelController
+
+    private var subscriptions = Set<AnyCancellable>()
+
+    // MARK: Subjects
+
+    private let playbackSpeedSubject = PassthroughSubject<PlaybackSpeed, Never>()
+    private let closedCaptionOnSubject = PassthroughSubject<Bool, Never>()
+    private let wifiOnlyDownloadsSubject = PassthroughSubject<Bool, Never>()
+    private let downloadQualitySubject = PassthroughSubject<Attachment.Kind, Never>()
+
+    // MARK: Initialisers
+
+    init(userDefaults: UserDefaults = .standard, userModelController: UserModelController) {
+        self.userDefaults = userDefaults
+        self.userModelController = userModelController
+
+        configureSubscriptions()
+    }
+
+    // MARK: Methods
+
+    func resetAll() {
+        SettingsKey.allCases.forEach(userDefaults.removeObject)
+    }
 }
 
 extension SettingsManager {
-  private func configureSubscriptions() {
-    userModelController.objectDidChange.sink { [weak self] _ in
-      guard let self = self else { return }
-      
-      // Reset all settings if the user is blank—i.e. not logged in
-      if self.userModelController.user == nil {
-        self.resetAll()
-      }
+    private func configureSubscriptions() {
+        userModelController.objectDidChange.sink { [weak self] _ in
+            guard let self = self else { return }
+
+            // Reset all settings if the user is blank—i.e. not logged in
+            if self.userModelController.user == nil {
+                self.resetAll()
+            }
+        }
+        .store(in: &subscriptions)
     }
-    .store(in: &subscriptions)
-  }
 }
 
-// We'll store all these settings inside 
+// We'll store all these settings inside
 extension SettingsManager: EmitronSettings {
-  var filters: Set<Filter> {
-    get {
-      guard let data: [Data] = userDefaults[.filters] else {
-        return []
-      }
-      return Set(data.compactMap { try? jsonDecoder.decode(Filter.self, from: $0) })
+    var filters: Set<Filter> {
+        get {
+            guard let data: [Data] = userDefaults[.filters] else {
+                return []
+            }
+            return Set(data.compactMap { try? jsonDecoder.decode(Filter.self, from: $0) })
+        }
+        set {
+            objectWillChange.send()
+            let encodedFilters = newValue.compactMap { try? jsonEncoder.encode($0) }
+            userDefaults[.filters] = encodedFilters
+        }
     }
-    set {
-      objectWillChange.send()
-      let encodedFilters = newValue.compactMap { try? jsonEncoder.encode($0) }
-      userDefaults[.filters] = encodedFilters
+
+    var sortFilter: SortFilter {
+        get {
+            guard let data: Data = userDefaults[.sortFilters],
+                  let sortFilter = try? jsonDecoder.decode(SortFilter.self, from: data)
+            else {
+                return .newest
+            }
+            return sortFilter
+        }
+        set {
+            objectWillChange.send()
+            let encodedFilter = try? jsonEncoder.encode(newValue)
+            userDefaults[.sortFilters] = encodedFilter
+        }
     }
-  }
-  
-  var sortFilter: SortFilter {
-    get {
-      guard let data: Data = userDefaults[.sortFilters],
-        let sortFilter = try? jsonDecoder.decode(SortFilter.self, from: data) else {
-        return .newest
-      }
-      return sortFilter
+
+    var playbackToken: String? {
+        get {
+            userDefaults[.playbackToken]
+        }
+        set {
+            objectWillChange.send()
+            userDefaults[.playbackToken] = newValue
+        }
     }
-    set {
-      objectWillChange.send()
-      let encodedFilter = try? jsonEncoder.encode(newValue)
-      userDefaults[.sortFilters] = encodedFilter
+
+    var playbackSpeed: PlaybackSpeed {
+        get {
+            userDefaults[.playbackSpeed].flatMap(PlaybackSpeed.init) ?? .standard
+        }
+        set {
+            objectWillChange.send()
+            userDefaults[.playbackSpeed] = newValue.rawValue
+            playbackSpeedSubject.send(newValue)
+        }
     }
-  }
-  
-  var playbackToken: String? {
-    get {
-      userDefaults[.playbackToken]
+
+    var closedCaptionOn: Bool {
+        get {
+            userDefaults[.closedCaptionOn] ?? false
+        }
+        set {
+            objectWillChange.send()
+            userDefaults[.closedCaptionOn] = newValue
+            closedCaptionOnSubject.send(newValue)
+        }
     }
-    set {
-      objectWillChange.send()
-      userDefaults[.playbackToken] = newValue
+
+    var downloadQuality: Attachment.Kind {
+        get {
+            guard let downloadQuality = userDefaults[.downloadQuality].flatMap(Attachment.Kind.init(rawValue:)),
+                  Attachment.Kind.downloads.contains(downloadQuality)
+            else {
+                return .hdVideoFile
+            }
+            return downloadQuality
+        }
+        set {
+            objectWillChange.send()
+            userDefaults[.downloadQuality] = newValue.rawValue
+            downloadQualitySubject.send(newValue)
+        }
     }
-  }
-  
-  var playbackSpeed: PlaybackSpeed {
-    get {
-      userDefaults[.playbackSpeed].flatMap(PlaybackSpeed.init) ?? .standard
+
+    var wifiOnlyDownloads: Bool {
+        get {
+            userDefaults[.wifiOnlyDownloads] ?? false
+        }
+        set {
+            objectWillChange.send()
+            userDefaults[.wifiOnlyDownloads] = newValue
+            wifiOnlyDownloadsSubject.send(newValue)
+        }
     }
-    set {
-      objectWillChange.send()
-      userDefaults[.playbackSpeed] = newValue.rawValue
-      playbackSpeedSubject.send(newValue)
+
+    var playbackSpeedPublisher: AnyPublisher<PlaybackSpeed, Never> {
+        playbackSpeedSubject.eraseToAnyPublisher()
     }
-  }
-  
-  var closedCaptionOn: Bool {
-    get {
-      userDefaults[.closedCaptionOn] ?? false
+
+    var closedCaptionOnPublisher: AnyPublisher<Bool, Never> {
+        closedCaptionOnSubject.eraseToAnyPublisher()
     }
-    set {
-      objectWillChange.send()
-      userDefaults[.closedCaptionOn] = newValue
-      closedCaptionOnSubject.send(newValue)
+
+    var downloadQualityPublisher: AnyPublisher<Attachment.Kind, Never> {
+        downloadQualitySubject.eraseToAnyPublisher()
     }
-  }
-  
-  var downloadQuality: Attachment.Kind {
-    get {
-      guard let downloadQuality = userDefaults[.downloadQuality].flatMap( Attachment.Kind.init(rawValue:) ),
-        Attachment.Kind.downloads.contains(downloadQuality) else {
-        return .hdVideoFile
-      }
-      return downloadQuality
+
+    var wifiOnlyDownloadsPublisher: AnyPublisher<Bool, Never> {
+        wifiOnlyDownloadsSubject.eraseToAnyPublisher()
     }
-    set {
-      objectWillChange.send()
-      userDefaults[.downloadQuality] = newValue.rawValue
-      downloadQualitySubject.send(newValue)
-    }
-  }
-  
-  var wifiOnlyDownloads: Bool {
-    get {
-      userDefaults[.wifiOnlyDownloads] ?? false
-    }
-    set {
-      objectWillChange.send()
-      userDefaults[.wifiOnlyDownloads] = newValue
-      wifiOnlyDownloadsSubject.send(newValue)
-    }
-  }
-  
-  var playbackSpeedPublisher: AnyPublisher<PlaybackSpeed, Never> {
-    playbackSpeedSubject.eraseToAnyPublisher()
-  }
-  
-  var closedCaptionOnPublisher: AnyPublisher<Bool, Never> {
-    closedCaptionOnSubject.eraseToAnyPublisher()
-  }
-  
-  var downloadQualityPublisher: AnyPublisher<Attachment.Kind, Never> {
-    downloadQualitySubject.eraseToAnyPublisher()
-  }
-  
-  var wifiOnlyDownloadsPublisher: AnyPublisher<Bool, Never> {
-    wifiOnlyDownloadsSubject.eraseToAnyPublisher()
-  }
 }

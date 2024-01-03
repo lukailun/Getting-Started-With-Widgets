@@ -27,19 +27,19 @@
 // THE SOFTWARE.
 
 struct CategoryAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Category {
-    guard resource.entityType == .category else { throw EntityAdapterError.invalidResourceTypeForAdapter }
-    
-    guard let name = resource.attributes["name"] as? String,
-      let uri = resource.attributes["uri"] as? String,
-      let ordinal = resource.attributes["ordinal"] as? Int
-    else {
-      throw EntityAdapterError.invalidOrMissingAttributes
+    static func process(resource: JSONAPIResource, relationships _: [EntityRelationship] = []) throws -> Category {
+        guard resource.entityType == .category else { throw EntityAdapterError.invalidResourceTypeForAdapter }
+
+        guard let name = resource.attributes["name"] as? String,
+              let uri = resource.attributes["uri"] as? String,
+              let ordinal = resource.attributes["ordinal"] as? Int
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        return Category(id: resource.id,
+                        name: name,
+                        uri: uri,
+                        ordinal: ordinal)
     }
-    
-    return Category(id: resource.id,
-                    name: name,
-                    uri: uri,
-                    ordinal: ordinal)
-  }
 }

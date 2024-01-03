@@ -29,9 +29,9 @@
 import WidgetKit
 
 struct WidgetContent: Codable, TimelineEntry {
-  var date = Date()
-  let name: String
-  let cardViewSubtitle: String
-  let descriptionPlainText: String
-  let releasedAtDateTimeString: String
+    var date = Date()
+    let name: String
+    let cardViewSubtitle: String
+    let descriptionPlainText: String
+    let releasedAtDateTimeString: String
 }

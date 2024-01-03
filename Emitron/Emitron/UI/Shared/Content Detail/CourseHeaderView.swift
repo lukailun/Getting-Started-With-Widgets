@@ -29,39 +29,39 @@
 import SwiftUI
 
 struct CourseHeaderView: View {
-  let name: String
-  
-  var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text(name)
-        .font(.uiTitle3)
-        .foregroundColor(.titleText)
-      
-      Rectangle()
-        .fill(Color.borderColor)
-        .frame(height: 1)
+    let name: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(name)
+                .font(.uiTitle3)
+                .foregroundColor(.titleText)
+
+            Rectangle()
+                .fill(Color.borderColor)
+                .frame(height: 1)
+        }
+        .padding([.bottom], 16)
     }
-    .padding([.bottom], 16)
-  }
 }
 
 #if DEBUG
-struct CourseHeaderView_Previews: PreviewProvider {
-  static var previews: some View {
-    SwiftUI.Group {
-      headers.colorScheme(.light)
-      headers.colorScheme(.dark)
+    struct CourseHeaderView_Previews: PreviewProvider {
+        static var previews: some View {
+            SwiftUI.Group {
+                headers.colorScheme(.light)
+                headers.colorScheme(.dark)
+            }
+        }
+
+        static var headers: some View {
+            VStack(spacing: 20) {
+                CourseHeaderView(name: "Intro")
+                CourseHeaderView(name: "Middle Part")
+                CourseHeaderView(name: "Conclusion")
+            }
+            .padding()
+            .background(Color.backgroundColor)
+        }
     }
-  }
-  
-  static var headers: some View {
-    VStack(spacing: 20) {
-      CourseHeaderView(name: "Intro")
-      CourseHeaderView(name: "Middle Part")
-      CourseHeaderView(name: "Conclusion")
-    }
-      .padding()
-      .background(Color.backgroundColor)
-  }
-}
 #endif

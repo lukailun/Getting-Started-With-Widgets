@@ -32,30 +32,30 @@ import class Foundation.UserDefaults
 /// - Note: Use the `UserDefaults` extensions in `SettingsKey.swift`
 /// to avoid having to use `.rawValue` with these.
 enum SettingsKey: String, CaseIterable {
-  // Filters
-  case filters
-  case sortFilters
-  // Playback
-  case playbackToken
-  // User settings
-  case playbackSpeed
-  case closedCaptionOn
-  case wifiOnlyDownloads
-  case downloadQuality
+    // Filters
+    case filters
+    case sortFilters
+    // Playback
+    case playbackToken
+    // User settings
+    case playbackSpeed
+    case closedCaptionOn
+    case wifiOnlyDownloads
+    case downloadQuality
 }
 
 extension UserDefaults {
-  func removeObject(forKey settingsKey: SettingsKey) {
-    removeObject(forKey: settingsKey.rawValue)
-  }
-  
-  /// Get or set a value for a `SettingsKey`.
-  ///
-  /// `get`: `nil` if a retrieved object cannot be cast to `Value`.
-  ///
-  /// `set`: Equivalent to calling `removeObject`  if `newValue` is `nil`.
-  subscript<Value>(key: SettingsKey) -> Value? {
-    get { object(forKey: key.rawValue) as? Value }
-    set { set(newValue, forKey: key.rawValue) }
-  }
+    func removeObject(forKey settingsKey: SettingsKey) {
+        removeObject(forKey: settingsKey.rawValue)
+    }
+
+    /// Get or set a value for a `SettingsKey`.
+    ///
+    /// `get`: `nil` if a retrieved object cannot be cast to `Value`.
+    ///
+    /// `set`: Equivalent to calling `removeObject`  if `newValue` is `nil`.
+    subscript<Value>(key: SettingsKey) -> Value? {
+        get { object(forKey: key.rawValue) as? Value }
+        set { set(newValue, forKey: key.rawValue) }
+    }
 }

@@ -29,35 +29,34 @@
 @testable import Emitron
 
 extension ContentPersistableState {
-  static func persistableState(for content: Content, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
-    persistableState(for: content.id, with: cacheUpdate)
-  }
-  
-  static func persistableState(for contentId: Int, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
-    
-    guard let content = cacheUpdate.contents.first(where: { $0.id == contentId }) else { preconditionFailure("Invalid cache update") }
-    
-    var parentContent: Content?
-    if let groupId = content.groupId {
-      // There must be parent content
-      if let parentGroup = cacheUpdate.groups.first(where: { $0.id == groupId }) {
-        parentContent = cacheUpdate.contents.first { $0.id == parentGroup.contentId }
-      }
+    static func persistableState(for content: Content, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
+        persistableState(for: content.id, with: cacheUpdate)
     }
-    
-    let groups = cacheUpdate.groups.filter { $0.contentId == content.id }
-    let groupIds = groups.map(\.id)
-    let childContent = cacheUpdate.contents.filter { groupIds.contains($0.groupId ?? -1) }
-    
-    return ContentPersistableState(
-      content: content,
-      contentDomains: cacheUpdate.contentDomains.filter({ $0.contentId == content.id }),
-      contentCategories: cacheUpdate.contentCategories.filter({ $0.contentId == content.id }),
-      bookmark: cacheUpdate.bookmarks.first(where: { $0.contentId == content.id }),
-      parentContent: parentContent,
-      progression: cacheUpdate.progressions.first(where: { $0.contentId == content.id }),
-      groups: groups,
-      childContents: childContent
-    )
-  }
+
+    static func persistableState(for contentId: Int, with cacheUpdate: DataCacheUpdate) -> ContentPersistableState {
+        guard let content = cacheUpdate.contents.first(where: { $0.id == contentId }) else { preconditionFailure("Invalid cache update") }
+
+        var parentContent: Content?
+        if let groupId = content.groupId {
+            // There must be parent content
+            if let parentGroup = cacheUpdate.groups.first(where: { $0.id == groupId }) {
+                parentContent = cacheUpdate.contents.first { $0.id == parentGroup.contentId }
+            }
+        }
+
+        let groups = cacheUpdate.groups.filter { $0.contentId == content.id }
+        let groupIds = groups.map(\.id)
+        let childContent = cacheUpdate.contents.filter { groupIds.contains($0.groupId ?? -1) }
+
+        return ContentPersistableState(
+            content: content,
+            contentDomains: cacheUpdate.contentDomains.filter { $0.contentId == content.id },
+            contentCategories: cacheUpdate.contentCategories.filter { $0.contentId == content.id },
+            bookmark: cacheUpdate.bookmarks.first(where: { $0.contentId == content.id }),
+            parentContent: parentContent,
+            progression: cacheUpdate.progressions.first(where: { $0.contentId == content.id }),
+            groups: groups,
+            childContents: childContent
+        )
+    }
 }

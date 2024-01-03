@@ -29,133 +29,135 @@
 import Foundation
 
 // MARK: - Shared
+
 // These are used every time we see content.
 
 /// The progress the current user has made through this item of content
 enum ContentViewProgressDisplayable {
-  case notStarted
-  case inProgress(progress: Double)
-  case completed
-  
-  init(progression: Progression?) {
-    switch progression {
-    case .none:
-      self = .notStarted
-    case .some(let prog) where prog.finished:
-      self = .completed
-    case .some(let prog):
-      self = .inProgress(progress: prog.progressProportion)
+    case notStarted
+    case inProgress(progress: Double)
+    case completed
+
+    init(progression: Progression?) {
+        switch progression {
+        case .none:
+            self = .notStarted
+        case let .some(prog) where prog.finished:
+            self = .completed
+        case let .some(prog):
+            self = .inProgress(progress: prog.progressProportion)
+        }
     }
-  }
 }
 
 /// Whether or not this item of content has been downloaded, or is downloading
 enum DownloadProgressDisplayable: CustomStringConvertible {
-  case notDownloadable
-  case downloadable
-  case enqueued
-  case inProgress(progress: Double)
-  case downloaded
-  
-  init(download: Download?) {
-    guard let download = download else {
-      self = .downloadable
-      return
+    case notDownloadable
+    case downloadable
+    case enqueued
+    case inProgress(progress: Double)
+    case downloaded
+
+    init(download: Download?) {
+        guard let download = download else {
+            self = .downloadable
+            return
+        }
+
+        switch download.state {
+        case .cancelled, .error, .failed:
+            self = .notDownloadable
+        case .enqueued, .pending, .urlRequested, .readyForDownload:
+            self = .enqueued
+        case .inProgress:
+            self = .inProgress(progress: download.progress)
+        case .complete:
+            self = .downloaded
+        case .paused:
+            self = .downloadable
+        }
     }
 
-    switch download.state {
-    case .cancelled, .error, .failed:
-      self = .notDownloadable
-    case .enqueued, .pending, .urlRequested, .readyForDownload:
-      self = .enqueued
-    case .inProgress:
-      self = .inProgress(progress: download.progress)
-    case .complete:
-      self = .downloaded
-    case .paused:
-      self = .downloadable
+    var description: String {
+        switch self {
+        case .notDownloadable:
+            return "notDownloadable"
+        case .downloadable:
+            return "downloadable"
+        case .enqueued:
+            return "enqueued"
+        case let .inProgress(progress: progress):
+            return "inProgress(\(progress))"
+        case .downloaded:
+            return "downloaded"
+        }
     }
-  }
-  
-  var description: String {
-    switch self {
-    case .notDownloadable:
-      return "notDownloadable"
-    case .downloadable:
-      return "downloadable"
-    case .enqueued:
-      return "enqueued"
-    case .inProgress(progress: let progress):
-      return "inProgress(\(progress))"
-    case .downloaded:
-      return "downloaded"
+
+    var accessibilityDescription: String {
+        switch self {
+        case .notDownloadable:
+            return "Reset download"
+        case .downloadable:
+            return "Download"
+        case .enqueued, .inProgress:
+            return "Cancel download"
+        case .downloaded:
+            return "Delete download"
+        }
     }
-  }
-  
-  var accessibilityDescription: String {
-    switch self {
-    case .notDownloadable:
-      return "Reset download"
-    case .downloadable:
-      return "Download"
-    case .enqueued, .inProgress:
-      return "Cancel download"
-    case .downloaded:
-      return "Delete download"
-    }
-  }
 }
 
 // MARK: - Content Listing
 
 /// Suitable for content listing view, and the summary section of the content details view
 protocol ContentListDisplayable: Ownable {
-  var id: Int { get }
-  var name: String { get }
-  var cardViewSubtitle: String { get }
-  var descriptionPlainText: String { get }
-  var releasedAt: Date { get }
-  var duration: Int { get }
-  var releasedAtDateTimeString: String { get }
-  var parentName: String? { get }
-  var contentType: ContentType { get }
-  var cardArtworkUrl: URL? { get }
-  var ordinal: Int? { get }
-  var technologyTripleString: String { get }
-  var contentSummaryMetadataString: String { get }
-  var contributorString: String { get }
-  // Probably only populated for screencasts
-  var videoIdentifier: Int? { get }
+    var id: Int { get }
+    var name: String { get }
+    var cardViewSubtitle: String { get }
+    var descriptionPlainText: String { get }
+    var releasedAt: Date { get }
+    var duration: Int { get }
+    var releasedAtDateTimeString: String { get }
+    var parentName: String? { get }
+    var contentType: ContentType { get }
+    var cardArtworkUrl: URL? { get }
+    var ordinal: Int? { get }
+    var technologyTripleString: String { get }
+    var contentSummaryMetadataString: String { get }
+    var contributorString: String { get }
+    // Probably only populated for screencasts
+    var videoIdentifier: Int? { get }
 }
 
 extension ContentListDisplayable {
-  var releasedAtDateTimeString: String {
-    var start = releasedAt.cardString
-    if Calendar.current.isDate(Date(), inSameDayAs: releasedAt) {
-      start = Constants.today
+    var releasedAtDateTimeString: String {
+        var start = releasedAt.cardString
+        if Calendar.current.isDate(Date(), inSameDayAs: releasedAt) {
+            start = Constants.today
+        }
+
+        return "\(start) • \(contentType.displayString) (\(duration.timeFromSeconds))"
     }
-    
-    return "\(start) • \(contentType.displayString) (\(duration.timeFromSeconds))"
-  }
 }
 
 // MARK: - Child Contents Table
+
 // For display on the content details view page
 
 /// Required to display a line item in the table. These should all be .episode
 protocol ChildContentListDisplayable: Ownable {
-  var id: Int { get }
-  var name: String { get }
-  var ordinal: Int? { get }
-  var duration: Int { get }
-  var groupId: Int? { get }
-  var videoIdentifier: Int? { get }
+    var id: Int { get }
+    var name: String { get }
+    var ordinal: Int? { get }
+    var duration: Int { get }
+    var groupId: Int? { get }
+    var videoIdentifier: Int? { get }
 }
 
 /// Group the contents appropriately
 protocol GroupDisplayable {
-  var id: Int { get }
-  var name: String { get }
-  var description: String? { get }
-  var ordinal: Int { get }
+    var id: Int { get }
+    var name: String { get }
+    var description: String? { get }
+    var ordinal: Int { get }
 }

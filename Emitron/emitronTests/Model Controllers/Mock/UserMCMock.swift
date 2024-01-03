@@ -30,12 +30,12 @@ import Combine
 @testable import Emitron
 
 final class UserMCMock: UserModelController {
-  var user: User?
-  let objectWillChange = ObservableObjectPublisher()
-  let client = RWAPI(authToken: "FAKE_TOKEN")
-  let objectDidChange = ObservableObjectPublisher()
-  
-  init(user: User? = nil) {
-    self.user = user
-  }
+    var user: User?
+    let objectWillChange = ObservableObjectPublisher()
+    let client = RWAPI(authToken: "FAKE_TOKEN")
+    let objectDidChange = ObservableObjectPublisher()
+
+    init(user: User? = nil) {
+        self.user = user
+    }
 }

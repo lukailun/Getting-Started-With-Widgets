@@ -29,12 +29,11 @@
 import UIKit
 
 extension UIColor {
-  
-  static var backgroundColor: UIColor {
-    UIColor(named: "backgroundColor")!
-  }
-  
-  static var accent: UIColor {
-    UIColor(red: 21.0 / 255.0, green: 132.0 / 255.0, blue: 67.0 / 255.0, alpha: 1.0)
-  }
+    static var backgroundColor: UIColor {
+        UIColor(named: "backgroundColor")!
+    }
+
+    static var accent: UIColor {
+        UIColor(red: 21.0 / 255.0, green: 132.0 / 255.0, blue: 67.0 / 255.0, alpha: 1.0)
+    }
 }

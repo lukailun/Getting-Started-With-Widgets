@@ -29,13 +29,13 @@
 import SwiftUI
 
 struct FullScreenVideoPlayerRepresentable: UIViewControllerRepresentable {
-  @Binding var viewModel: VideoPlaybackViewModel?
-  
-  func makeUIViewController(context: UIViewControllerRepresentableContext<FullScreenVideoPlayerRepresentable>) -> FullScreenVideoPlayerViewController {
-    .init(viewModel: $viewModel)
-  }
-  
-  func updateUIViewController(_ uiViewController: FullScreenVideoPlayerViewController, context: UIViewControllerRepresentableContext<FullScreenVideoPlayerRepresentable>) {
-    // No-op
-  }
+    @Binding var viewModel: VideoPlaybackViewModel?
+
+    func makeUIViewController(context _: UIViewControllerRepresentableContext<FullScreenVideoPlayerRepresentable>) -> FullScreenVideoPlayerViewController {
+        .init(viewModel: $viewModel)
+    }
+
+    func updateUIViewController(_: FullScreenVideoPlayerViewController, context _: UIViewControllerRepresentableContext<FullScreenVideoPlayerRepresentable>) {
+        // No-op
+    }
 }

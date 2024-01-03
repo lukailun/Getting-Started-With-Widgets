@@ -29,35 +29,35 @@
 import Combine
 
 enum RequestDownloadResult {
-  case downloadRequestedSuccessfully
-  case downloadRequestedButQueueInactive
+    case downloadRequestedSuccessfully
+    case downloadRequestedButQueueInactive
 }
 
 enum DownloadActionError: Error {
-  case downloadNotPermitted
-  case downloadContentNotFound
-  case problemRequestingDownload
-  case unableToCancelDownload
-  case unableToDeleteDownload
-  
-  var localizedDescription: String {
-    switch self {
-    case .downloadNotPermitted:
-      return Constants.downloadNotPermitted
-    case .downloadContentNotFound:
-      return Constants.downloadContentNotFound
-    case .problemRequestingDownload:
-      return Constants.downloadRequestProblem
-    case .unableToCancelDownload:
-      return Constants.downloadUnableToCancel
-    case .unableToDeleteDownload:
-      return Constants.downloadUnableToDelete
+    case downloadNotPermitted
+    case downloadContentNotFound
+    case problemRequestingDownload
+    case unableToCancelDownload
+    case unableToDeleteDownload
+
+    var localizedDescription: String {
+        switch self {
+        case .downloadNotPermitted:
+            return Constants.downloadNotPermitted
+        case .downloadContentNotFound:
+            return Constants.downloadContentNotFound
+        case .problemRequestingDownload:
+            return Constants.downloadRequestProblem
+        case .unableToCancelDownload:
+            return Constants.downloadUnableToCancel
+        case .unableToDeleteDownload:
+            return Constants.downloadUnableToDelete
+        }
     }
-  }
 }
 
 protocol DownloadAction {
-  func requestDownload(contentId: Int, contentLookup: @escaping ContentLookup) -> AnyPublisher<RequestDownloadResult, DownloadActionError>
-  func cancelDownload(contentId: Int) -> AnyPublisher<Void, DownloadActionError>
-  func deleteDownload(contentId: Int) -> AnyPublisher<Void, DownloadActionError>
+    func requestDownload(contentId: Int, contentLookup: @escaping ContentLookup) -> AnyPublisher<RequestDownloadResult, DownloadActionError>
+    func cancelDownload(contentId: Int) -> AnyPublisher<Void, DownloadActionError>
+    func deleteDownload(contentId: Int) -> AnyPublisher<Void, DownloadActionError>
 }

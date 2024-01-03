@@ -27,16 +27,16 @@
 // THE SOFTWARE.
 
 extension ContentDifficulty {
-  var requestValue: String {
-    switch self {
-    case .beginner:
-      return "beginner"
-    case .intermediate:
-      return "intermediate"
-    case .advanced:
-      return "advanced"
-    case .allLevels:
-      return ""
+    var requestValue: String {
+        switch self {
+        case .beginner:
+            return "beginner"
+        case .intermediate:
+            return "intermediate"
+        case .advanced:
+            return "advanced"
+        case .allLevels:
+            return ""
+        }
     }
-  }
 }

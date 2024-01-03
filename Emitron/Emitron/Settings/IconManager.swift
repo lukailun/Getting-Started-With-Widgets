@@ -26,60 +26,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import UIKit
 import Combine
+import UIKit
 
 class IconManager: ObservableObject {
-  private(set) var icons = [Icon]()
-  @Published private(set) var currentIcon: Icon?
-  
-  init() {
-    populateIcons()
-      
-    let currentIconName = UIApplication.shared.alternateIconName
-    currentIcon = icons.first { $0.name == currentIconName }!
-  }
-  
-  func set(icon: Icon) {
-    UIApplication.shared.setAlternateIconName(icon.name) { error in
-      DispatchQueue.main.async {
-        if let error = error {
-          Failure
-            .appIcon(from: String(describing: type(of: self)), reason: error.localizedDescription)
-            .log()
-          MessageBus.current.post(message: Message(level: .error, message: Constants.appIconUpdateProblem))
-        } else {
-          self.currentIcon = icon
-          MessageBus.current.post(message: Message(level: .success, message: Constants.appIconUpdatedSuccessfully))
-        }
-      }
-    }
-  }
+    private(set) var icons = [Icon]()
+    @Published private(set) var currentIcon: Icon?
 
-  private func populateIcons() {
-    guard let plistIcons = Bundle.main.object(forInfoDictionaryKey: "CFBundleIcons") as? [String: Any] else { return }
-    
-    var iconList = [Icon]()
-    
-    if let primaryIcon = plistIcons["CFBundlePrimaryIcon"] as? [String: Any],
-      let files = primaryIcon["CFBundleIconFiles"] as? [String],
-      let fileName = files.first {
-      iconList.append(Icon(name: nil, imageName: fileName, ordinal: 0))
+    init() {
+        populateIcons()
+
+        let currentIconName = UIApplication.shared.alternateIconName
+        currentIcon = icons.first { $0.name == currentIconName }!
     }
-    
-    if let alternateIcons = plistIcons["CFBundleAlternateIcons"] as? [String: Any] {
-         
-      iconList += alternateIcons.compactMap { key, value in
-        guard let alternateIcon = value as? [String: Any],
-          let files = alternateIcon["CFBundleIconFiles"] as? [String],
-          let fileName = files.first,
-          let ordinal = alternateIcon["ordinal"] as? Int else { return nil }
-        
-        return Icon(name: key, imageName: fileName, ordinal: ordinal)
-      }
-      .sorted()
+
+    func set(icon: Icon) {
+        UIApplication.shared.setAlternateIconName(icon.name) { error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    Failure
+                        .appIcon(from: String(describing: type(of: self)), reason: error.localizedDescription)
+                        .log()
+                    MessageBus.current.post(message: Message(level: .error, message: Constants.appIconUpdateProblem))
+                } else {
+                    self.currentIcon = icon
+                    MessageBus.current.post(message: Message(level: .success, message: Constants.appIconUpdatedSuccessfully))
+                }
+            }
+        }
     }
-    
-    icons = iconList
-  }
+
+    private func populateIcons() {
+        guard let plistIcons = Bundle.main.object(forInfoDictionaryKey: "CFBundleIcons") as? [String: Any] else { return }
+
+        var iconList = [Icon]()
+
+        if let primaryIcon = plistIcons["CFBundlePrimaryIcon"] as? [String: Any],
+           let files = primaryIcon["CFBundleIconFiles"] as? [String],
+           let fileName = files.first
+        {
+            iconList.append(Icon(name: nil, imageName: fileName, ordinal: 0))
+        }
+
+        if let alternateIcons = plistIcons["CFBundleAlternateIcons"] as? [String: Any] {
+            iconList += alternateIcons.compactMap { key, value in
+                guard let alternateIcon = value as? [String: Any],
+                      let files = alternateIcon["CFBundleIconFiles"] as? [String],
+                      let fileName = files.first,
+                      let ordinal = alternateIcon["ordinal"] as? Int else { return nil }
+
+                return Icon(name: key, imageName: fileName, ordinal: ordinal)
+            }
+            .sorted()
+        }
+
+        icons = iconList
+    }
 }

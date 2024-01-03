@@ -29,66 +29,65 @@
 import typealias Foundation.TimeInterval
 
 extension TimeInterval {
-  static let oneMinute: TimeInterval = 60
-  static let oneHour: TimeInterval = 3600
-  static let oneDay: TimeInterval = 86400
+    static let oneMinute: TimeInterval = 60
+    static let oneHour: TimeInterval = 3600
+    static let oneDay: TimeInterval = 86400
 }
 
 extension Int {
-  var minutes: TimeInterval {
-    .oneMinute * Double(self)
-  }
-  
-  var hours: TimeInterval {
-    .oneHour * Double(self)
-  }
-  
-  var days: TimeInterval {
-    .oneDay * Double(self)
-  }
-  
-  var minutesFromSeconds: Double {
-    Double(self) / TimeInterval.oneMinute
-  }
-  
-  var timeFromSeconds: String {
-    let hours = minutesFromSeconds / 60
-    let minutes = minutesFromSeconds.truncatingRemainder(dividingBy: 60)
-    
-    let intHours = Int(hours)
-    let intMinutes = Int(minutes)
-    
-    var timeString = ""
-    
-    switch (intHours, intMinutes) {
-      
-    case (0, 0):
-      break
-    case (0, 1):
-      timeString = "\(intMinutes) min"
-    case (0, _):
-      timeString = "\(intMinutes) mins"
-    case (1, 0):
-      timeString = "\(intHours) hr"
-    case (_, 0):
-      timeString = "\(intHours) hrs"
-    case (1, 1):
-      timeString = "\(intHours) hr, \(intMinutes) min"
-    case (1, _):
-      timeString = "\(intHours) hr, \(intMinutes) mins"
-    case (_, 1):
-      timeString = "\(intHours) hrs, \(intMinutes) min"
-    case (_, _):
-      timeString = "\(intHours) hrs, \(intMinutes) mins"
+    var minutes: TimeInterval {
+        .oneMinute * Double(self)
     }
-    
-    return timeString
-  }
-  
-  var minuteSecondTimeFromSeconds: String {
-    let minutes = Int(minutesFromSeconds)
-    let seconds = self - minutes * 60
-    
-    return "\(minutes):\(String(format: "%02d", seconds))"
-  }
+
+    var hours: TimeInterval {
+        .oneHour * Double(self)
+    }
+
+    var days: TimeInterval {
+        .oneDay * Double(self)
+    }
+
+    var minutesFromSeconds: Double {
+        Double(self) / TimeInterval.oneMinute
+    }
+
+    var timeFromSeconds: String {
+        let hours = minutesFromSeconds / 60
+        let minutes = minutesFromSeconds.truncatingRemainder(dividingBy: 60)
+
+        let intHours = Int(hours)
+        let intMinutes = Int(minutes)
+
+        var timeString = ""
+
+        switch (intHours, intMinutes) {
+        case (0, 0):
+            break
+        case (0, 1):
+            timeString = "\(intMinutes) min"
+        case (0, _):
+            timeString = "\(intMinutes) mins"
+        case (1, 0):
+            timeString = "\(intHours) hr"
+        case (_, 0):
+            timeString = "\(intHours) hrs"
+        case (1, 1):
+            timeString = "\(intHours) hr, \(intMinutes) min"
+        case (1, _):
+            timeString = "\(intHours) hr, \(intMinutes) mins"
+        case (_, 1):
+            timeString = "\(intHours) hrs, \(intMinutes) min"
+        case (_, _):
+            timeString = "\(intHours) hrs, \(intMinutes) mins"
+        }
+
+        return timeString
+    }
+
+    var minuteSecondTimeFromSeconds: String {
+        let minutes = Int(minutesFromSeconds)
+        let seconds = self - minutes * 60
+
+        return "\(minutes):\(String(format: "%02d", seconds))"
+    }
 }

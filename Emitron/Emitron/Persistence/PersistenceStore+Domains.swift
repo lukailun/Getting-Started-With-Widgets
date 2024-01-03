@@ -29,38 +29,40 @@
 import GRDB
 
 // MARK: - Data reading methods for display
+
 extension PersistenceStore {
-  /// List of all the **Domain** objects from the data store
-  func domainList() throws -> [Domain] {
-    try db.read { db in
-      try Domain
-        .order(Domain.Columns.level.asc)
-        .fetchAll(db)
+    /// List of all the **Domain** objects from the data store
+    func domainList() throws -> [Domain] {
+        try db.read { db in
+            try Domain
+                .order(Domain.Columns.level.asc)
+                .fetchAll(db)
+        }
     }
-  }
-  
-  /// Get all the **Domain** objects with the given keys
-  func domains(with domainIds: [Int]) throws -> [Domain] {
-    try db.read { db in
-      try Domain
-        .fetchAll(db, keys: domainIds)
-        .sorted { $0.level.rawValue <= $1.level.rawValue }
+
+    /// Get all the **Domain** objects with the given keys
+    func domains(with domainIds: [Int]) throws -> [Domain] {
+        try db.read { db in
+            try Domain
+                .fetchAll(db, keys: domainIds)
+                .sorted { $0.level.rawValue <= $1.level.rawValue }
+        }
     }
-  }
 }
 
 // MARK: - Data writing methods
+
 extension PersistenceStore {
-  /// Sync all **Domain** objects to the data store
-  /// - Parameter domains: The list of **Domain** objects to sync
-  func sync(domains: [Domain]) throws {
-    try db.write { db in
-      // Delete domains that no longer exist
-      try Domain
-        .filter(!domains.map(\.id).contains(Domain.Columns.id))
-        .deleteAll(db)
-      // And now save all the domains we've been provided
-      try domains.forEach { try $0.save(db) }
+    /// Sync all **Domain** objects to the data store
+    /// - Parameter domains: The list of **Domain** objects to sync
+    func sync(domains: [Domain]) throws {
+        try db.write { db in
+            // Delete domains that no longer exist
+            try Domain
+                .filter(!domains.map(\.id).contains(Domain.Columns.id))
+                .deleteAll(db)
+            // And now save all the domains we've been provided
+            try domains.forEach { try $0.save(db) }
+        }
     }
-  }
 }

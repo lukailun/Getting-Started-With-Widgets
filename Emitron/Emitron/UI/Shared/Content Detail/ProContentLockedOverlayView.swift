@@ -29,29 +29,29 @@
 import SwiftUI
 
 struct ProContentLockedOverlayView: View {
-  var body: some View {
-    VStack {
-      HStack {
-        Image.padlock
-        
-        Text("Pro Course")
-          .font(.uiTitle1)
-          .foregroundColor(.titleText)
-      }
-      
-      Text(Constants.detailContentLockedCosPro)
-        .multilineTextAlignment(.center)
-        .font(.uiLabel)
-        .foregroundColor(.titleText)
-        .padding([.leading, .trailing], 20)
-        .lineLimit(3)
-        .fixedSize(horizontal: false, vertical: true)
+    var body: some View {
+        VStack {
+            HStack {
+                Image.padlock
+
+                Text("Pro Course")
+                    .font(.uiTitle1)
+                    .foregroundColor(.titleText)
+            }
+
+            Text(Constants.detailContentLockedCosPro)
+                .multilineTextAlignment(.center)
+                .font(.uiLabel)
+                .foregroundColor(.titleText)
+                .padding([.leading, .trailing], 20)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
-  }
 }
 
 struct ProContentLockedOverlayView_Previews: PreviewProvider {
-  static var previews: some View {
-    ProContentLockedOverlayView()
-  }
+    static var previews: some View {
+        ProContentLockedOverlayView()
+    }
 }

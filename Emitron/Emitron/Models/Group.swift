@@ -27,9 +27,9 @@
 // THE SOFTWARE.
 
 struct Group: Equatable, Codable {
-  var id: Int
-  var name: String
-  var description: String?
-  var ordinal: Int
-  var contentId: Int
+    var id: Int
+    var name: String
+    var description: String?
+    var ordinal: Int
+    var contentId: Int
 }

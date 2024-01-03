@@ -29,48 +29,48 @@
 import SwiftUI
 
 struct CustomToggle: UIViewRepresentable {
-  
-  var isOn: Bool
-  var callback: (() -> Void)?
-  
-  func makeUIView(context: Context) -> UISwitch {
-    let uiView = UISwitch()
-    uiView.addTarget(
-        context.coordinator,
-        action: #selector(Coordinator.didChange(sender:)),
-        for: .valueChanged)
+    var isOn: Bool
+    var callback: (() -> Void)?
 
-    return uiView
-  }
+    func makeUIView(context: Context) -> UISwitch {
+        let uiView = UISwitch()
+        uiView.addTarget(
+            context.coordinator,
+            action: #selector(Coordinator.didChange(sender:)),
+            for: .valueChanged
+        )
 
-  func updateUIView(_ uiView: UISwitch, context: Context) {
-    // This is appGreen
-    uiView.onTintColor = UIColor(red: 21.0 / 255.0, green: 132.0 / 255.0, blue: 67.0 / 255.0, alpha: 1)
-    uiView.isOn = isOn
-  }
-  
-  func makeCoordinator() -> CustomToggle.Coordinator {
-      Coordinator(self)
-  }
-  
-  class Coordinator: NSObject {
-    var control: CustomToggle
-    
-    init(_ control: CustomToggle) {
-      self.control = control
+        return uiView
     }
-    
-    @objc func didChange(sender: UISwitch) {
-      control.isOn = sender.isOn
-      control.callback?()
+
+    func updateUIView(_ uiView: UISwitch, context _: Context) {
+        // This is appGreen
+        uiView.onTintColor = UIColor(red: 21.0 / 255.0, green: 132.0 / 255.0, blue: 67.0 / 255.0, alpha: 1)
+        uiView.isOn = isOn
     }
-  }
+
+    func makeCoordinator() -> CustomToggle.Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject {
+        var control: CustomToggle
+
+        init(_ control: CustomToggle) {
+            self.control = control
+        }
+
+        @objc func didChange(sender: UISwitch) {
+            control.isOn = sender.isOn
+            control.callback?()
+        }
+    }
 }
 
 struct CustomToggleView: View {
-  var isOn: Bool
-  var callback: (() -> Void)?
-  var body: some View {
-    CustomToggle(isOn: isOn, callback: callback)
-  }
+    var isOn: Bool
+    var callback: (() -> Void)?
+    var body: some View {
+        CustomToggle(isOn: isOn, callback: callback)
+    }
 }

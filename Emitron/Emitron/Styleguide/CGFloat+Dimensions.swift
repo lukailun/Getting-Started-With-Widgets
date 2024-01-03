@@ -29,5 +29,5 @@
 import QuartzCore
 
 extension CGFloat {
-  static let sidePadding: CGFloat = 18
+    static let sidePadding: CGFloat = 18
 }

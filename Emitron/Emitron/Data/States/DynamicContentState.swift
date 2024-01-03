@@ -27,12 +27,12 @@
 // THE SOFTWARE.
 
 struct CachedDynamicContentState: Equatable {
-  var progression: Progression?
-  var bookmark: Bookmark?
+    var progression: Progression?
+    var bookmark: Bookmark?
 }
 
 struct DynamicContentState: Codable, Equatable {
-  var download: Download?
-  var progression: Progression?
-  var bookmark: Bookmark?
+    var download: Download?
+    var progression: Progression?
+    var bookmark: Bookmark?
 }

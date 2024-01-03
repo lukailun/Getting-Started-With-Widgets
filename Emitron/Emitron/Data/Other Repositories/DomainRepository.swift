@@ -29,72 +29,72 @@
 import Combine
 
 class DomainRepository: ObservableObject, Refreshable {
-  let repository: Repository
-  let service: DomainsService
-  
-  var refreshableCheckTimeSpan: RefreshableTimeSpan = .long
-  
-  @Published private (set) var state: DataState = .initial
-  @Published private (set) var domains: [Domain] = []
-  
-  init(repository: Repository, service: DomainsService) {
-    self.repository = repository
-    self.service = service
-    populate()
-  }
-  
-  func populate() {
-    loadFromPersistentStore()
-    
-    if shouldRefresh || domains.isEmpty {
-      fetchDomainsAndUpdatePersistentStore()
+    let repository: Repository
+    let service: DomainsService
+
+    var refreshableCheckTimeSpan: RefreshableTimeSpan = .long
+
+    @Published private(set) var state: DataState = .initial
+    @Published private(set) var domains: [Domain] = []
+
+    init(repository: Repository, service: DomainsService) {
+        self.repository = repository
+        self.service = service
+        populate()
     }
-  }
-  
-  private func loadFromPersistentStore() {
-    do {
-      self.domains = try repository.domainList()
-      state = .hasData
-    } catch {
-      self.state = .failed
-      Failure
-        .fetch(from: "DomainRepository", reason: error.localizedDescription)
-        .log()
+
+    func populate() {
+        loadFromPersistentStore()
+
+        if shouldRefresh || domains.isEmpty {
+            fetchDomainsAndUpdatePersistentStore()
+        }
     }
-  }
-  
-  private func saveToPersistentStore() {
-    do {
-      try self.repository.syncDomainList(self.domains)
-    } catch {
-      Failure
-        .fetch(from: "DomainRepository", reason: error.localizedDescription)
-        .log()
+
+    private func loadFromPersistentStore() {
+        do {
+            domains = try repository.domainList()
+            state = .hasData
+        } catch {
+            state = .failed
+            Failure
+                .fetch(from: "DomainRepository", reason: error.localizedDescription)
+                .log()
+        }
     }
-  }
-  
-  private func fetchDomainsAndUpdatePersistentStore() {
-    if state == .loading || state == .loadingAdditional {
-      return
+
+    private func saveToPersistentStore() {
+        do {
+            try repository.syncDomainList(domains)
+        } catch {
+            Failure
+                .fetch(from: "DomainRepository", reason: error.localizedDescription)
+                .log()
+        }
     }
-    
-    state = .loading
-    
-    service.allDomains { [weak self] result in
-      guard let self = self else { return }
-      
-      switch result {
-      case .failure(let error):
-        self.state = .failed
-        Failure
-        .fetch(from: "DomainRepository", reason: error.localizedDescription)
-        .log()
-      case .success(let domains):
-        self.domains = domains
-        self.state = .hasData
-        self.saveToPersistentStore()
-        self.saveOrReplaceRefreshableUpdateDate()
-      }
+
+    private func fetchDomainsAndUpdatePersistentStore() {
+        if state == .loading || state == .loadingAdditional {
+            return
+        }
+
+        state = .loading
+
+        service.allDomains { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case let .failure(error):
+                self.state = .failed
+                Failure
+                    .fetch(from: "DomainRepository", reason: error.localizedDescription)
+                    .log()
+            case let .success(domains):
+                self.domains = domains
+                self.state = .hasData
+                self.saveToPersistentStore()
+                self.saveOrReplaceRefreshableUpdateDate()
+            }
+        }
     }
-  }
 }

@@ -29,27 +29,27 @@
 import SwiftUI
 
 struct ProTag: View {
-  var body: some View {
-    TagView(
-      text: "pro",
-      textColor: .proTagForeground,
-      backgroundColor: .proTagBackground,
-      borderColor: .proTagBorder
-    )
-  }
+    var body: some View {
+        TagView(
+            text: "pro",
+            textColor: .proTagForeground,
+            backgroundColor: .proTagBackground,
+            borderColor: .proTagBorder
+        )
+    }
 }
 
 struct ProTag_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack(spacing: 10) {
-      proTag.colorScheme(.light)
-      proTag.colorScheme(.dark)
+    static var previews: some View {
+        VStack(spacing: 10) {
+            proTag.colorScheme(.light)
+            proTag.colorScheme(.dark)
+        }
     }
-  }
-  
-  static var proTag: some View {
-    ProTag()
-      .padding()
-      .background(Color.backgroundColor)
-  }
+
+    static var proTag: some View {
+        ProTag()
+            .padding()
+            .background(Color.backgroundColor)
+    }
 }

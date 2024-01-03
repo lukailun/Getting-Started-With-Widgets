@@ -29,132 +29,131 @@
 import SwiftUI
 
 struct ChildContentListingView: View {
-  @ObservedObject var childContentsViewModel: ChildContentsViewModel
-  @Binding var currentlyDisplayedVideoPlaybackViewModel: VideoPlaybackViewModel?
-  @EnvironmentObject var sessionController: SessionController
-  
-  var body: some View {
-    childContentsViewModel.initialiseIfRequired()
-    return courseDetailsSection
-  }
-  
-  private var courseDetailsSection: AnyView {
-    switch childContentsViewModel.state {
-    case .failed:
-      return AnyView(reloadView)
-    case .hasData:
-      return AnyView(coursesSection)
-    case .loading, .loadingAdditional:
-      return AnyView(loadingView)
-    case .initial:
-      return AnyView(loadingView)
+    @ObservedObject var childContentsViewModel: ChildContentsViewModel
+    @Binding var currentlyDisplayedVideoPlaybackViewModel: VideoPlaybackViewModel?
+    @EnvironmentObject var sessionController: SessionController
+
+    var body: some View {
+        childContentsViewModel.initialiseIfRequired()
+        return courseDetailsSection
     }
-  }
-  
-  var coursesSection: some View {
-    Section {
-      if self.childContentsViewModel.contents.count > 1 {
-        Text("Course Episodes")
-          .font(.uiTitle2)
-          .foregroundColor(.titleText)
-          .padding([.top], -5)
-        
-        if childContentsViewModel.groups.count > 1 {
-          ForEach(childContentsViewModel.groups, id: \.id) { group in
-            
-            Section(header: CourseHeaderView(name: group.name)) {
-              self.episodeListing(data: self.childContentsViewModel.contents(for: group.id))
-            }
-          }
-        } else {
-          if !childContentsViewModel.groups.isEmpty {
-            self.episodeListing(data: childContentsViewModel.contents)
-          }
+
+    private var courseDetailsSection: AnyView {
+        switch childContentsViewModel.state {
+        case .failed:
+            return AnyView(reloadView)
+        case .hasData:
+            return AnyView(coursesSection)
+        case .loading, .loadingAdditional:
+            return AnyView(loadingView)
+        case .initial:
+            return AnyView(loadingView)
         }
-      }
     }
-    .listRowBackground(Color.backgroundColor)
-    .accessibility(identifier: "childContentList")
-  }
-  
-  private func episodeListing(data: [ChildContentListDisplayable]) -> some View {
-    let onlyContentWithVideoID = data
-      .filter { $0.videoIdentifier != nil }
-      .sorted(by: {
-        guard let lhs = $0.ordinal, let rhs = $1.ordinal else { return true }
-        return lhs < rhs
-      })
-    
-    return ForEach(onlyContentWithVideoID, id: \.id) { model in
-      self.episodeRow(model: model)
+
+    var coursesSection: some View {
+        Section {
+            if self.childContentsViewModel.contents.count > 1 {
+                Text("Course Episodes")
+                    .font(.uiTitle2)
+                    .foregroundColor(.titleText)
+                    .padding([.top], -5)
+
+                if childContentsViewModel.groups.count > 1 {
+                    ForEach(childContentsViewModel.groups, id: \.id) { group in
+
+                        Section(header: CourseHeaderView(name: group.name)) {
+                            self.episodeListing(data: self.childContentsViewModel.contents(for: group.id))
+                        }
+                    }
+                } else {
+                    if !childContentsViewModel.groups.isEmpty {
+                        self.episodeListing(data: childContentsViewModel.contents)
+                    }
+                }
+            }
+        }
+        .listRowBackground(Color.backgroundColor)
+        .accessibility(identifier: "childContentList")
+    }
+
+    private func episodeListing(data: [ChildContentListDisplayable]) -> some View {
+        let onlyContentWithVideoID = data
+            .filter { $0.videoIdentifier != nil }
+            .sorted(by: {
+                guard let lhs = $0.ordinal, let rhs = $1.ordinal else { return true }
+                return lhs < rhs
+            })
+
+        return ForEach(onlyContentWithVideoID, id: \.id) { model in
+            self.episodeRow(model: model)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.backgroundColor)
+        }
+    }
+
+    private func episodeRow(model: ChildContentListDisplayable) -> some View {
+        let childDynamicContentViewModel = childContentsViewModel.dynamicContentViewModel(for: model.id)
+
+        if !sessionController.canPlay(content: model) {
+            return AnyView(
+                TextListItemView(
+                    dynamicContentViewModel: childDynamicContentViewModel,
+                    content: model
+                )
+                .padding([.horizontal, .bottom], 20)
+            )
+        } else if sessionController.sessionState == .offline && !sessionController.hasCurrentDownloadPermissions {
+            return AnyView(
+                Button(action: {
+                    MessageBus.current
+                        .post(message: Message(level: .warning, message: Constants.videoPlaybackExpiredPermissions))
+                }) {
+                    TextListItemView(
+                        dynamicContentViewModel: childDynamicContentViewModel,
+                        content: model
+                    )
+                    .padding([.horizontal, .bottom], 20)
+                }
+            )
+        } else {
+            return AnyView(Button(action: {
+                self.currentlyDisplayedVideoPlaybackViewModel = childDynamicContentViewModel.videoPlaybackViewModel(
+                    apiClient: self.sessionController.client,
+                    dismissClosure: {
+                        self.currentlyDisplayedVideoPlaybackViewModel = nil
+                    }
+                )
+            }) {
+                TextListItemView(
+                    dynamicContentViewModel: childDynamicContentViewModel,
+                    content: model
+                )
+                .padding([.horizontal, .bottom], 20)
+            })
+        }
+    }
+
+    private var loadingView: some View {
+        HStack {
+            Spacer()
+            LoadingView()
+            Spacer()
+        }
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.backgroundColor)
+        .background(Color.backgroundColor)
     }
-  }
-  
-  private func episodeRow(model: ChildContentListDisplayable) -> some View {
-    
-    let childDynamicContentViewModel = childContentsViewModel.dynamicContentViewModel(for: model.id)
-    
-    if !sessionController.canPlay(content: model) {
-      return AnyView(
-        TextListItemView(
-          dynamicContentViewModel: childDynamicContentViewModel,
-          content: model
-        )
-          .padding([.horizontal, .bottom], 20)
-      )
-    } else if sessionController.sessionState == .offline && !sessionController.hasCurrentDownloadPermissions {
-      return AnyView(
-        Button(action: {
-          MessageBus.current
-            .post(message: Message(level: .warning, message: Constants.videoPlaybackExpiredPermissions))
-        }) {
-          TextListItemView(
-            dynamicContentViewModel: childDynamicContentViewModel,
-            content: model
-          )
-            .padding([.horizontal, .bottom], 20)
-        }
-      )
-    } else {
-      return AnyView(Button(action: {
-        self.currentlyDisplayedVideoPlaybackViewModel = childDynamicContentViewModel.videoPlaybackViewModel(
-          apiClient: self.sessionController.client,
-          dismissClosure: {
-            self.currentlyDisplayedVideoPlaybackViewModel = nil
-          }
-        )
-      }) {
-        TextListItemView(
-          dynamicContentViewModel: childDynamicContentViewModel,
-          content: model
-        )
-          .padding([.horizontal, .bottom], 20)
-      })
+
+    private var reloadView: AnyView? {
+        AnyView(MainButtonView(title: "Reload", type: .primary(withArrow: false)) {
+            self.childContentsViewModel.reload()
+        })
     }
-  }
-  
-  private var loadingView: some View {
-    HStack {
-      Spacer()
-      LoadingView()
-      Spacer()
-    }
-      .listRowInsets(EdgeInsets())
-      .listRowBackground(Color.backgroundColor)
-      .background(Color.backgroundColor)
-  }
-  
-  private var reloadView: AnyView? {
-    AnyView(MainButtonView(title: "Reload", type: .primary(withArrow: false)) {
-      self.childContentsViewModel.reload()
-    })
-  }
 }
 
-//struct ChildContentListingView_Previews: PreviewProvider {
+// struct ChildContentListingView_Previews: PreviewProvider {
 //  static var previews: some View {
 //    ChildContentListingView()
 //  }
-//}
+// }

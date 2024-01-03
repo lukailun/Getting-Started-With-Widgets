@@ -26,109 +26,109 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import SwiftyJSON
 @testable import Emitron
+import SwiftyJSON
+import XCTest
 
 class DomainAdapterTest: XCTestCase {
-  let sampleResource: JSON = [
-    "id": "1234",
-    "type": "domains",
-    "attributes": [
-      "name": "iOS & Swift",
-      "slug": "ios",
-      "ordinal": 1,
-      "description": "Learn iOS development in Swift",
-      "level": "production"
+    let sampleResource: JSON = [
+        "id": "1234",
+        "type": "domains",
+        "attributes": [
+            "name": "iOS & Swift",
+            "slug": "ios",
+            "ordinal": 1,
+            "description": "Learn iOS development in Swift",
+            "level": "production",
+        ],
     ]
-  ]
-  
-  func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
-    let json: JSON = [
-      "data": [
-        dict
-      ]
-    ]
-    
-    let document = JSONAPIDocument(json)
-    return document.data.first!
-  }
 
-  func testValidResourceProcessedCorrectly() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let domain = try DomainAdapter.process(resource: resource)
-    
-    XCTAssertEqual(1234, domain.id)
-    XCTAssertEqual("iOS & Swift", domain.name)
-    XCTAssertEqual("ios", domain.slug)
-    XCTAssertEqual("Learn iOS development in Swift", domain.description)
-    XCTAssertEqual(.production, domain.level)
-    XCTAssertEqual(1, domain.ordinal)
-  }
-  
-  func testInvalidTypeThrows() throws {
-    var sample = sampleResource
-    sample["type"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+    func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
+        let json: JSON = [
+            "data": [
+                dict,
+            ],
+        ]
+
+        let document = JSONAPIDocument(json)
+        return document.data.first!
     }
-  }
-  
-  func testMissingNameThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testValidResourceProcessedCorrectly() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let domain = try DomainAdapter.process(resource: resource)
+
+        XCTAssertEqual(1234, domain.id)
+        XCTAssertEqual("iOS & Swift", domain.name)
+        XCTAssertEqual("ios", domain.slug)
+        XCTAssertEqual("Learn iOS development in Swift", domain.description)
+        XCTAssertEqual(.production, domain.level)
+        XCTAssertEqual(1, domain.ordinal)
     }
-  }
-  
-  func testMissingSlugThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "slug")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testInvalidTypeThrows() throws {
+        var sample = sampleResource
+        sample["type"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testMissingOrdinalThrows() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testMissingNameThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "name")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testInvalidDomainLevelThrows() throws {
-    var sample = sampleResource
-    sample["attributes"]["level"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testMissingSlugThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "slug")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
     }
-  }
-  
-  func testMissingDescriptionIsAllowed() throws {
-    var sample = sampleResource
-    sample["attributes"].dictionaryObject?.removeValue(forKey: "description")
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    let domain = try DomainAdapter.process(resource: resource)
-    XCTAssertNil(domain.description)
-  }
+
+    func testMissingOrdinalThrows() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "ordinal")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testInvalidDomainLevelThrows() throws {
+        var sample = sampleResource
+        sample["attributes"]["level"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try DomainAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testMissingDescriptionIsAllowed() throws {
+        var sample = sampleResource
+        sample["attributes"].dictionaryObject?.removeValue(forKey: "description")
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        let domain = try DomainAdapter.process(resource: resource)
+        XCTAssertNil(domain.description)
+    }
 }

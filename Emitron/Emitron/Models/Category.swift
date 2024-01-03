@@ -27,8 +27,8 @@
 // THE SOFTWARE.
 
 struct Category: Equatable, Codable {
-  var id: Int
-  var name: String
-  var uri: String
-  var ordinal: Int
+    var id: Int
+    var name: String
+    var uri: String
+    var ordinal: Int
 }

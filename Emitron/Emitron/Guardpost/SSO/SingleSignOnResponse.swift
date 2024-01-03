@@ -30,75 +30,76 @@ import CryptoKit
 import Foundation
 
 struct SingleSignOnResponse {
+    // MARK: - Properties
 
-  // MARK: - Properties
-  private let request: SingleSignOnRequest
-  private let signature: String
-  private let payload: String
-  private let decodedPayload: [URLQueryItem]?
+    private let request: SingleSignOnRequest
+    private let signature: String
+    private let payload: String
+    private let decodedPayload: [URLQueryItem]?
 
-  // MARK: - Initializers
-  init?(request: SingleSignOnRequest, responseUrl: URL) {
-    let responseComponents = URLComponents(url: responseUrl,
-                                           resolvingAgainstBaseURL: false)
-    var components = URLComponents()
-    guard
-      let sso = responseComponents?.queryItems?.first(where: { $0.name == "sso" })?.value,
-      let sig = responseComponents?.queryItems?.first(where: { $0.name == "sig" })?.value,
-      let urlString = sso.fromBase64()
-      else {
-        return nil
+    // MARK: - Initializers
+
+    init?(request: SingleSignOnRequest, responseUrl: URL) {
+        let responseComponents = URLComponents(url: responseUrl,
+                                               resolvingAgainstBaseURL: false)
+        var components = URLComponents()
+        guard
+            let sso = responseComponents?.queryItems?.first(where: { $0.name == "sso" })?.value,
+            let sig = responseComponents?.queryItems?.first(where: { $0.name == "sig" })?.value,
+            let urlString = sso.fromBase64()
+        else {
+            return nil
+        }
+
+        components.query = urlString
+
+        self.request = request
+        signature = sig
+        payload = sso
+        decodedPayload = components.queryItems
     }
 
-    components.query = urlString
-
-    self.request = request
-    self.signature = sig
-    self.payload = sso
-    self.decodedPayload = components.queryItems
-  }
-
-  var isValid: Bool {
-    isSignatureValid && isNonceValid
-  }
-
-  var user: User? {
-    if !isValid {
-      return nil
-    }
-    guard let decodedPayload = decodedPayload else {
-      return nil
+    var isValid: Bool {
+        isSignatureValid && isNonceValid
     }
 
-    let dictionary = queryItemsToDictionary(decodedPayload)
-    return User(dictionary: dictionary)
-  }
+    var user: User? {
+        if !isValid {
+            return nil
+        }
+        guard let decodedPayload = decodedPayload else {
+            return nil
+        }
+
+        let dictionary = queryItemsToDictionary(decodedPayload)
+        return User(dictionary: dictionary)
+    }
 }
 
 // MARK: - Private
+
 private extension SingleSignOnResponse {
+    var isSignatureValid: Bool {
+        let symmetricKey = SymmetricKey(data: Data(request.secret.utf8))
+        let hmac = HMAC<SHA256>.authenticationCode(for: Data(payload.utf8),
+                                                   using: symmetricKey)
+            .description
+            .replacingOccurrences(of: String.hmacToRemove, with: "")
 
-  var isSignatureValid: Bool {
-    let symmetricKey = SymmetricKey(data: Data(request.secret.utf8))
-    let hmac = HMAC<SHA256>.authenticationCode(for: Data(payload.utf8),
-                                               using: symmetricKey)
-      .description
-      .replacingOccurrences(of: String.hmacToRemove, with: "")
-
-    return hmac == signature
-  }
-
-  var isNonceValid: Bool {
-    decodedPayloadEntry(name: "nonce") == request.nonce
-  }
-
-  func decodedPayloadEntry(name: String) -> String? {
-    decodedPayload?.first { $0.name == name }?.value
-  }
-
-  func queryItemsToDictionary(_ queryItems: [URLQueryItem]) -> [String: String] {
-    queryItems.reduce(into: [:]) { result, item in
-      result[item.name] = item.value?.removingPercentEncoding
+        return hmac == signature
     }
-  }
+
+    var isNonceValid: Bool {
+        decodedPayloadEntry(name: "nonce") == request.nonce
+    }
+
+    func decodedPayloadEntry(name: String) -> String? {
+        decodedPayload?.first { $0.name == name }?.value
+    }
+
+    func queryItemsToDictionary(_ queryItems: [URLQueryItem]) -> [String: String] {
+        queryItems.reduce(into: [:]) { result, item in
+            result[item.name] = item.value?.removingPercentEncoding
+        }
+    }
 }

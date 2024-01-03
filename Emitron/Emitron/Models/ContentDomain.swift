@@ -27,7 +27,7 @@
 // THE SOFTWARE.
 
 struct ContentDomain: Equatable, Codable {
-  var id: Int64?
-  var contentId: Int
-  var domainId: Int
+    var id: Int64?
+    var contentId: Int
+    var domainId: Int
 }

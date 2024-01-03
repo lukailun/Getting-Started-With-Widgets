@@ -29,43 +29,43 @@
 import XCTest
 
 class EmitronScreenshots: XCTestCase {
-  func testTakeSnapshots() {
-    let app = XCUIApplication()
-    setupSnapshot(app)
-    app.launch()
+    func testTakeSnapshots() {
+        let app = XCUIApplication()
+        setupSnapshot(app)
+        app.launch()
 
-    let contentList = app.descendants(matching: .any)
-                         .matching(identifier: "contentListView")
-                         .element
-    _ = contentList.waitForExistence(timeout: 20)
-    snapshot("01Library")
-    
-    // Reset filters
-    app.buttons.matching(identifier: "Filter Library").element.tap()
-    app.buttons.matching(identifier: "Clear All").element.tap()
-    
-    // Now set some and screenshot
-    app.buttons.matching(identifier: "Filter Library").element.tap()
-    app.buttons.matching(identifier: "Platforms").element.tap()
-    app.descendants(matching: .any).matching(identifier: "Toggle iOS & Swift").element.tap()
-    app.buttons.matching(identifier: "Content Type").element.tap()
-    app.descendants(matching: .any).matching(identifier: "Toggle Video Course").element.tap()
-    snapshot("02Filters")
-    
-    app.buttons.matching(identifier: "Apply").element.tap()
-    snapshot("03FilteredLibrary")
-    
-    app.tables.cells.element(boundBy: 1).tap()
-    _ = app.descendants(matching: .any).matching(identifier: "childContentList").element.waitForExistence(timeout: 10)
-    app.descendants(matching: .any).matching(identifier: "Bookmark course").element.tap()
-    snapshot("04Course")
-    
-    app.descendants(matching: .any).matching(identifier: "Download course").element.tap()
-    app.tabBars.buttons.matching(identifier: "Downloads").element.tap()
-    snapshot("05Downloads")
+        let contentList = app.descendants(matching: .any)
+            .matching(identifier: "contentListView")
+            .element
+        _ = contentList.waitForExistence(timeout: 20)
+        snapshot("01Library")
 
-    app.tabBars.buttons.matching(identifier: "My Tutorials").element.tap()
-    app.buttons.matching(identifier: "Bookmarks").element.tap()
-    snapshot("06Bookmarks")
-  }
+        // Reset filters
+        app.buttons.matching(identifier: "Filter Library").element.tap()
+        app.buttons.matching(identifier: "Clear All").element.tap()
+
+        // Now set some and screenshot
+        app.buttons.matching(identifier: "Filter Library").element.tap()
+        app.buttons.matching(identifier: "Platforms").element.tap()
+        app.descendants(matching: .any).matching(identifier: "Toggle iOS & Swift").element.tap()
+        app.buttons.matching(identifier: "Content Type").element.tap()
+        app.descendants(matching: .any).matching(identifier: "Toggle Video Course").element.tap()
+        snapshot("02Filters")
+
+        app.buttons.matching(identifier: "Apply").element.tap()
+        snapshot("03FilteredLibrary")
+
+        app.tables.cells.element(boundBy: 1).tap()
+        _ = app.descendants(matching: .any).matching(identifier: "childContentList").element.waitForExistence(timeout: 10)
+        app.descendants(matching: .any).matching(identifier: "Bookmark course").element.tap()
+        snapshot("04Course")
+
+        app.descendants(matching: .any).matching(identifier: "Download course").element.tap()
+        app.tabBars.buttons.matching(identifier: "Downloads").element.tap()
+        snapshot("05Downloads")
+
+        app.tabBars.buttons.matching(identifier: "My Tutorials").element.tap()
+        app.buttons.matching(identifier: "Bookmarks").element.tap()
+        snapshot("06Bookmarks")
+    }
 }

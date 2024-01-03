@@ -29,22 +29,22 @@
 import Foundation
 
 extension Date {
-  var cardString: String {
-    let formatter = DateFormatter.cardDateFormatter
-    return formatter.string(from: self)
-  }
-  
-  func dateByAddingNumberOfDays(_ days: Int) -> Date {
-      let timeInterval = TimeInterval(60 * 60 * 24 * days)
-      return addingTimeInterval(timeInterval)
-  }
-  
-  func equalEnough(to otherDate: Date, epsilon: Double = 0.001) -> Bool {
-    abs(timeIntervalSince(otherDate)) < epsilon
-  }
-  
-  static var topOfTheHour: Date {
-    let cmpts = Calendar.current.dateComponents([.year, .month, .day, .hour], from: Date())
-    return Calendar.current.date(from: cmpts)!
-  }
+    var cardString: String {
+        let formatter = DateFormatter.cardDateFormatter
+        return formatter.string(from: self)
+    }
+
+    func dateByAddingNumberOfDays(_ days: Int) -> Date {
+        let timeInterval = TimeInterval(60 * 60 * 24 * days)
+        return addingTimeInterval(timeInterval)
+    }
+
+    func equalEnough(to otherDate: Date, epsilon: Double = 0.001) -> Bool {
+        abs(timeIntervalSince(otherDate)) < epsilon
+    }
+
+    static var topOfTheHour: Date {
+        let cmpts = Calendar.current.dateComponents([.year, .month, .day, .hour], from: Date())
+        return Calendar.current.date(from: cmpts)!
+    }
 }

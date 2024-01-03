@@ -27,25 +27,25 @@
 // THE SOFTWARE.
 
 struct BookmarkAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Bookmark {
-    guard resource.entityType == .bookmark else {
-      throw EntityAdapterError.invalidResourceTypeForAdapter
+    static func process(resource: JSONAPIResource, relationships _: [EntityRelationship] = []) throws -> Bookmark {
+        guard resource.entityType == .bookmark else {
+            throw EntityAdapterError.invalidResourceTypeForAdapter
+        }
+
+        guard let createdAtString = resource.attributes["created_at"] as? String,
+              let createdAt = createdAtString.iso8601
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        guard let content = resource.relationships.first(where: { $0.type == "content" }),
+              let contentId = content.data.first?.id
+        else {
+            throw EntityAdapterError.invalidOrMissingRelationships
+        }
+
+        return Bookmark(id: resource.id,
+                        createdAt: createdAt,
+                        contentId: contentId)
     }
-    
-    guard let createdAtString = resource.attributes["created_at"] as? String,
-      let createdAt = createdAtString.iso8601
-      else {
-        throw EntityAdapterError.invalidOrMissingAttributes
-    }
-    
-    guard let content = resource.relationships.first(where: { $0.type == "content" }),
-      let contentId = content.data.first?.id
-      else {
-        throw EntityAdapterError.invalidOrMissingRelationships
-    }
-    
-    return Bookmark(id: resource.id,
-                    createdAt: createdAt,
-                    contentId: contentId)
-  }
 }

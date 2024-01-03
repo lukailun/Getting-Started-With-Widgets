@@ -10,21 +10,21 @@ import SwiftUI
 
 struct TabBar: View {
     var body: some View {
-      TabbedView {
-        BlueView()
-          .tabItemLabel(Text("Blue"))
-          .tag(0)
-        OrangeView()
-          .tabItemLabel(Text("Orange"))
-          .tag(1)
-      }
+        TabbedView {
+            BlueView()
+                .tabItemLabel(Text("Blue"))
+                .tag(0)
+            OrangeView()
+                .tabItemLabel(Text("Orange"))
+                .tag(1)
+        }
     }
 }
 
 #if DEBUG
-struct TabBar_Previews: PreviewProvider {
-    static var previews: some View {
-        TabBar()
+    struct TabBar_Previews: PreviewProvider {
+        static var previews: some View {
+            TabBar()
+        }
     }
-}
 #endif

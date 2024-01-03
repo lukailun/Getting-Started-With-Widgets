@@ -29,80 +29,81 @@
 import Combine
 
 class ChildContentsViewModel: ObservableObject {
-  let parentContentId: Int
-  let downloadAction: DownloadAction
-  weak var syncAction: SyncAction?
-  let repository: Repository
-  
-  var state: DataState = .initial
-  @Published var groups: [GroupDisplayable] = []
-  @Published var contents: [ChildContentListDisplayable] = []
-  
-  var subscriptions = Set<AnyCancellable>()
-  
-  init(parentContentId: Int,
-       downloadAction: DownloadAction,
-       syncAction: SyncAction?,
-       repository: Repository) {
-    self.parentContentId = parentContentId
-    self.downloadAction = downloadAction
-    self.syncAction = syncAction
-    self.repository = repository
-  }
-  
-  func initialiseIfRequired() {
-    if state == .initial {
-      reload()
+    let parentContentId: Int
+    let downloadAction: DownloadAction
+    weak var syncAction: SyncAction?
+    let repository: Repository
+
+    var state: DataState = .initial
+    @Published var groups: [GroupDisplayable] = []
+    @Published var contents: [ChildContentListDisplayable] = []
+
+    var subscriptions = Set<AnyCancellable>()
+
+    init(parentContentId: Int,
+         downloadAction: DownloadAction,
+         syncAction: SyncAction?,
+         repository: Repository)
+    {
+        self.parentContentId = parentContentId
+        self.downloadAction = downloadAction
+        self.syncAction = syncAction
+        self.repository = repository
     }
-  }
-  
-  func reload() {
-    self.state = .loading
-    // Manually do this since can't have a @Published state property
-    objectWillChange.send()
-    
-    subscriptions.forEach({ $0.cancel() })
-    subscriptions.removeAll()
-    configureSubscriptions()
-  }
-  
-  func contents(for groupId: Int) -> [ChildContentListDisplayable] {
-    contents.filter({ $0.groupId == groupId })
-  }
-  
-  func configureSubscriptions() {
-    repository
-      .childContentsState(for: parentContentId)
-      .sink(receiveCompletion: { [weak self] completion in
-        guard let self = self else { return }
-        if case .failure(let error) = completion, (error as? DataCacheError) == DataCacheError.cacheMiss {
-          self.loadContentDetailsIntoCache()
-        } else {
-          self.state = .failed
-          Failure
-            .repositoryLoad(from: "DataCacheContentDetailsViewModel", reason: "Unable to retrieve download content detail: \(completion)")
-            .log()
+
+    func initialiseIfRequired() {
+        if state == .initial {
+            reload()
         }
-      }, receiveValue: { [weak self] childContentsState in
-        guard let self = self else { return }
-        
-        self.state = .hasData
-        self.contents = childContentsState.contents
-        self.groups = childContentsState.groups
-      })
-      .store(in: &subscriptions)
-  }
-  
-  func loadContentDetailsIntoCache() {
-    preconditionFailure("Override in a subclass please.")
-  }
-  
-  func dynamicContentViewModel(for contentId: Int) -> DynamicContentViewModel {
-    DynamicContentViewModel(
-      contentId: contentId,
-      repository: repository,
-      downloadAction: downloadAction,
-      syncAction: syncAction
-    )
-  }
+    }
+
+    func reload() {
+        state = .loading
+        // Manually do this since can't have a @Published state property
+        objectWillChange.send()
+
+        subscriptions.forEach { $0.cancel() }
+        subscriptions.removeAll()
+        configureSubscriptions()
+    }
+
+    func contents(for groupId: Int) -> [ChildContentListDisplayable] {
+        contents.filter { $0.groupId == groupId }
+    }
+
+    func configureSubscriptions() {
+        repository
+            .childContentsState(for: parentContentId)
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                if case let .failure(error) = completion, (error as? DataCacheError) == DataCacheError.cacheMiss {
+                    self.loadContentDetailsIntoCache()
+                } else {
+                    self.state = .failed
+                    Failure
+                        .repositoryLoad(from: "DataCacheContentDetailsViewModel", reason: "Unable to retrieve download content detail: \(completion)")
+                        .log()
+                }
+            }, receiveValue: { [weak self] childContentsState in
+                guard let self = self else { return }
+
+                self.state = .hasData
+                self.contents = childContentsState.contents
+                self.groups = childContentsState.groups
+            })
+            .store(in: &subscriptions)
+    }
+
+    func loadContentDetailsIntoCache() {
+        preconditionFailure("Override in a subclass please.")
+    }
+
+    func dynamicContentViewModel(for contentId: Int) -> DynamicContentViewModel {
+        DynamicContentViewModel(
+            contentId: contentId,
+            repository: repository,
+            downloadAction: downloadAction,
+            syncAction: syncAction
+        )
+    }
 }

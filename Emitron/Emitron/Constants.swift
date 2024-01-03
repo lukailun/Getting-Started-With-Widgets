@@ -26,85 +26,85 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import typealias Foundation.TimeInterval
 import CoreGraphics.CGBase
+import typealias Foundation.TimeInterval
 
 enum Constants {
-  static let filters = "Filters"
-  static let clearAll = "Clear All"
-  static let search = "Search…"
-  static let loading = "Loading…"
-  static let library = "Library"
-  static let myTutorials = "My Tutorials"
-  static let downloads = "Downloads"
-  static let newest =  "Newest"
-  static let popularity = "Popularity"
-  static let tutorials = "Tutorials"
-  static let settings = "Settings"
-  
-  // Onboarding
-  static let login = "Login"
-  
-  // Other
-  static let today = "Today"
-  static let by = "By"
-  static let yes = "Yes"
-  static let no = "No" // swiftlint:disable:this identifier_name
-  
-  // Video playback
-  static let videoPlaybackProgressTrackingInterval: Int = 5
-  static let videoPlaybackOfflinePermissionsCheckPeriod: TimeInterval = 7 * 24 * 60 * 60
-  
-  // Message Banner
-  static let autoDismissTime: TimeInterval = 3
-  
-  // Appearance
-  static let blurRadius: CGFloat = 5
-  
-  // Messaging
-  static let bookmarkCreated = "Content bookmarked successfully."
-  static let bookmarkDeleted = "Bookmark removed successfully."
-  static let bookmarkCreatedError = "There was a problem creating the bookmark"
-  static let bookmarkDeletedError = "There was a problem deleting the bookmark"
-  
-  static let progressRemoved = "Progress removed successfully."
-  static let progressMarkedAsComplete = "Content marked as complete."
-  static let progressRemovedError = "There was a problem removing progress."
-  static let progressMarkedAsCompleteError = "There was a problem marking content as complete."
-  
-  static let downloadRequestedSuccessfully = "Download enqueued."
-  static let downloadRequestedButQueueInactive = "Download will begin when WiFi available."
-  static let downloadNotPermitted = "Download not permitted."
-  static let downloadContentNotFound = "Invalid download request."
-  static let downloadRequestProblem = "Problem requesting download."
-  static let downloadCancelled = "Download cancelled."
-  static let downloadDeleted = "Download deleted."
-  static let downloadReset = "Download reset."
-  static let downloadUnspecifiedProblem = "Problem with download action."
-  static let downloadUnableToCancel = "Unable to cancel download."
-  static let downloadUnableToDelete = "Unable to delete download."
-  
-  static let simultaneousStreamsError = "You can only stream on one device at a time."
-  
-  static let downloadedContentNotFound = "Unable to find download."
-  
-  static let videoPlaybackCannotStreamWhenOffline = "Cannot stream video when offline."
-  static let videoPlaybackInvalidPermissions = "You don't have the required permissions to view this video."
-  static let videoPlaybackExpiredPermissions = "Download expired. Please reconnect to the internet to reverify."
-  
-  static let appIconUpdatedSuccessfully = "You app icon has been updated!"
-  static let appIconUpdateProblem = "There was a problem updating the app icon."
-  
-  // Settings screens
-  static let settingsPlaybackSpeedLabel = "Video Playback Speed"
-  static let settingsWifiOnlyDownloadsLabel = "Downloads (WiFi only)"
-  static let settingsDownloadQualityLabel = "Downloads Quality"
-  static let settingsClosedCaptionOnLabel = "Subtitles"
-  
-  // Detail View
-  static let detailContentLockedCosPro = "Upgrade your account to watch this and other Pro courses"
-  
-  // Pull-to-refresh
-  static let pullToRefreshPullMessage = "Pull to refresh"
-  static let pullToRefreshLoadingMessage = "Loading…"
+    static let filters = "Filters"
+    static let clearAll = "Clear All"
+    static let search = "Search…"
+    static let loading = "Loading…"
+    static let library = "Library"
+    static let myTutorials = "My Tutorials"
+    static let downloads = "Downloads"
+    static let newest = "Newest"
+    static let popularity = "Popularity"
+    static let tutorials = "Tutorials"
+    static let settings = "Settings"
+
+    // Onboarding
+    static let login = "Login"
+
+    // Other
+    static let today = "Today"
+    static let by = "By"
+    static let yes = "Yes"
+    static let no = "No" // swiftlint:disable:this identifier_name
+
+    // Video playback
+    static let videoPlaybackProgressTrackingInterval: Int = 5
+    static let videoPlaybackOfflinePermissionsCheckPeriod: TimeInterval = 7 * 24 * 60 * 60
+
+    // Message Banner
+    static let autoDismissTime: TimeInterval = 3
+
+    // Appearance
+    static let blurRadius: CGFloat = 5
+
+    // Messaging
+    static let bookmarkCreated = "Content bookmarked successfully."
+    static let bookmarkDeleted = "Bookmark removed successfully."
+    static let bookmarkCreatedError = "There was a problem creating the bookmark"
+    static let bookmarkDeletedError = "There was a problem deleting the bookmark"
+
+    static let progressRemoved = "Progress removed successfully."
+    static let progressMarkedAsComplete = "Content marked as complete."
+    static let progressRemovedError = "There was a problem removing progress."
+    static let progressMarkedAsCompleteError = "There was a problem marking content as complete."
+
+    static let downloadRequestedSuccessfully = "Download enqueued."
+    static let downloadRequestedButQueueInactive = "Download will begin when WiFi available."
+    static let downloadNotPermitted = "Download not permitted."
+    static let downloadContentNotFound = "Invalid download request."
+    static let downloadRequestProblem = "Problem requesting download."
+    static let downloadCancelled = "Download cancelled."
+    static let downloadDeleted = "Download deleted."
+    static let downloadReset = "Download reset."
+    static let downloadUnspecifiedProblem = "Problem with download action."
+    static let downloadUnableToCancel = "Unable to cancel download."
+    static let downloadUnableToDelete = "Unable to delete download."
+
+    static let simultaneousStreamsError = "You can only stream on one device at a time."
+
+    static let downloadedContentNotFound = "Unable to find download."
+
+    static let videoPlaybackCannotStreamWhenOffline = "Cannot stream video when offline."
+    static let videoPlaybackInvalidPermissions = "You don't have the required permissions to view this video."
+    static let videoPlaybackExpiredPermissions = "Download expired. Please reconnect to the internet to reverify."
+
+    static let appIconUpdatedSuccessfully = "You app icon has been updated!"
+    static let appIconUpdateProblem = "There was a problem updating the app icon."
+
+    // Settings screens
+    static let settingsPlaybackSpeedLabel = "Video Playback Speed"
+    static let settingsWifiOnlyDownloadsLabel = "Downloads (WiFi only)"
+    static let settingsDownloadQualityLabel = "Downloads Quality"
+    static let settingsClosedCaptionOnLabel = "Subtitles"
+
+    // Detail View
+    static let detailContentLockedCosPro = "Upgrade your account to watch this and other Pro courses"
+
+    // Pull-to-refresh
+    static let pullToRefreshPullMessage = "Pull to refresh"
+    static let pullToRefreshLoadingMessage = "Loading…"
 }

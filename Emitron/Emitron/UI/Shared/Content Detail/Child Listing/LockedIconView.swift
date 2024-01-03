@@ -29,27 +29,27 @@
 import SwiftUI
 
 struct LockedIconView: View {
-  var body: some View {
-    Image.padlock
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-      .frame(width: 28.0, height: 28.0)
-      .foregroundColor(.activeIcon)
-      .frame(width: .childContentButtonSide, height: .childContentButtonSide)
-  }
+    var body: some View {
+        Image.padlock
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 28.0, height: 28.0)
+            .foregroundColor(.activeIcon)
+            .frame(width: .childContentButtonSide, height: .childContentButtonSide)
+    }
 }
 
 struct LockedIconView_Previews: PreviewProvider {
-  static var previews: some View {
-    HStack {
-      padlock.colorScheme(.dark)
-      padlock.colorScheme(.light)
+    static var previews: some View {
+        HStack {
+            padlock.colorScheme(.dark)
+            padlock.colorScheme(.light)
+        }
     }
-  }
-  
-  static var padlock: some View {
-    LockedIconView()
-      .padding()
-      .background(Color.backgroundColor)
-  }
+
+    static var padlock: some View {
+        LockedIconView()
+            .padding()
+            .background(Color.backgroundColor)
+    }
 }

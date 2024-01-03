@@ -29,19 +29,19 @@
 import struct Foundation.URL
 
 struct AttachmentAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Attachment {
-    guard resource.entityType == .attachment else { throw EntityAdapterError.invalidResourceTypeForAdapter }
-    
-    guard let urlString = resource.attributes["url"] as? String,
-      let url = URL(string: urlString),
-      let kindString = resource.attributes["kind"] as? String,
-      let kind = Attachment.Kind(from: kindString)
-    else {
-      throw EntityAdapterError.invalidOrMissingAttributes
+    static func process(resource: JSONAPIResource, relationships _: [EntityRelationship] = []) throws -> Attachment {
+        guard resource.entityType == .attachment else { throw EntityAdapterError.invalidResourceTypeForAdapter }
+
+        guard let urlString = resource.attributes["url"] as? String,
+              let url = URL(string: urlString),
+              let kindString = resource.attributes["kind"] as? String,
+              let kind = Attachment.Kind(from: kindString)
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        return Attachment(id: resource.id,
+                          kind: kind,
+                          url: url)
     }
-    
-    return Attachment(id: resource.id,
-                      kind: kind,
-                      url: url)
-  }
 }

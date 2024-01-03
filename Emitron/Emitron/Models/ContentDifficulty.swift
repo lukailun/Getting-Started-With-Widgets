@@ -27,47 +27,47 @@
 // THE SOFTWARE.
 
 enum ContentDifficulty: Int, Codable, CaseIterable {
-  case beginner
-  case intermediate
-  case advanced
-  case allLevels
-  
-  init?(string: String) {
-    switch string {
-    case "beginner":
-      self = .beginner
-    case "intermediate":
-      self = .intermediate
-    case "advanced":
-      self = .advanced
-    default:
-      return nil
+    case beginner
+    case intermediate
+    case advanced
+    case allLevels
+
+    init?(string: String) {
+        switch string {
+        case "beginner":
+            self = .beginner
+        case "intermediate":
+            self = .intermediate
+        case "advanced":
+            self = .advanced
+        default:
+            return nil
+        }
     }
-  }
-  
-  var displayString: String {
-    switch self {
-    case .beginner:
-      return "Beginner"
-    case .intermediate:
-      return "Intermediate"
-    case .advanced:
-      return "Advanced"
-    case .allLevels:
-      return "All Levels"
+
+    var displayString: String {
+        switch self {
+        case .beginner:
+            return "Beginner"
+        case .intermediate:
+            return "Intermediate"
+        case .advanced:
+            return "Advanced"
+        case .allLevels:
+            return "All Levels"
+        }
     }
-  }
-  
-  var sortOrdinal: Int {
-    switch self {
-    case .beginner:
-      return 0
-    case .intermediate:
-      return 1
-    case .advanced:
-      return 2
-    case .allLevels:
-      return 3
+
+    var sortOrdinal: Int {
+        switch self {
+        case .beginner:
+            return 0
+        case .intermediate:
+            return 1
+        case .advanced:
+            return 2
+        case .allLevels:
+            return 3
+        }
     }
-  }
 }

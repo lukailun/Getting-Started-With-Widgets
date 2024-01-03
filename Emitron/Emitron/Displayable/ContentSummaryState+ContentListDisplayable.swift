@@ -29,79 +29,82 @@
 import Foundation
 
 extension ContentSummaryState: ContentListDisplayable {
-  // MARK: - Proxied from content
-  var id: Int {
-    content.id
-  }
-  
-  var releasedAt: Date {
-    content.releasedAt
-  }
-  
-  var duration: Int {
-    content.duration
-  }
-  
-  var name: String {
-    content.name
-  }
-  
-  var descriptionPlainText: String {
-    content.descriptionPlainText
-  }
-  
-  var professional: Bool {
-    content.professional
-  }
-  
-  var free: Bool {
-    content.free
-  }
-  
-  var cardArtworkUrl: URL? {
-    content.cardArtworkUrl
-  }
-  
-  var contentType: ContentType {
-    content.contentType
-  }
-  
-  var ordinal: Int? {
-    content.ordinal
-  }
-  
-  var technologyTripleString: String {
-    content.technologyTriple
-  }
-  
-  var contentSummaryMetadataString: String {
-    content.contentSummaryMetadataString
-  }
-  
-  var contributorString: String {
-    content.contributors
-  }
-  
-  var groupId: Int? {
-    content.groupId
-  }
-  
-  var videoIdentifier: Int? {
-    content.videoIdentifier
-  }
-  
-  // MARK: - Proxied from Other Records
-  var parentName: String? {
-    parentContent?.name
-  }
-  
-  // MARK: - Evaluated
-  var cardViewSubtitle: String {
-    if domains.count == 1 {
-      return domains.first!.name
-    } else if domains.count > 1 {
-      return "Multi-platform"
+    // MARK: - Proxied from content
+
+    var id: Int {
+        content.id
     }
-    return ""
-  }
+
+    var releasedAt: Date {
+        content.releasedAt
+    }
+
+    var duration: Int {
+        content.duration
+    }
+
+    var name: String {
+        content.name
+    }
+
+    var descriptionPlainText: String {
+        content.descriptionPlainText
+    }
+
+    var professional: Bool {
+        content.professional
+    }
+
+    var free: Bool {
+        content.free
+    }
+
+    var cardArtworkUrl: URL? {
+        content.cardArtworkUrl
+    }
+
+    var contentType: ContentType {
+        content.contentType
+    }
+
+    var ordinal: Int? {
+        content.ordinal
+    }
+
+    var technologyTripleString: String {
+        content.technologyTriple
+    }
+
+    var contentSummaryMetadataString: String {
+        content.contentSummaryMetadataString
+    }
+
+    var contributorString: String {
+        content.contributors
+    }
+
+    var groupId: Int? {
+        content.groupId
+    }
+
+    var videoIdentifier: Int? {
+        content.videoIdentifier
+    }
+
+    // MARK: - Proxied from Other Records
+
+    var parentName: String? {
+        parentContent?.name
+    }
+
+    // MARK: - Evaluated
+
+    var cardViewSubtitle: String {
+        if domains.count == 1 {
+            return domains.first!.name
+        } else if domains.count > 1 {
+            return "Multi-platform"
+        }
+        return ""
+    }
 }

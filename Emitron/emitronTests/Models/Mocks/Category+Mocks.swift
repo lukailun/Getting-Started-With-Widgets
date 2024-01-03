@@ -26,33 +26,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+@testable import Emitron
 import Foundation
 import GRDB
 import SwiftyJSON
-@testable import Emitron
 
 extension Emitron.Category {
-  static func loadAndSaveMocks(db: DatabaseWriter) throws {
-    let categories = loadMocksFrom(filename: "Categories")
-    try db.write { db in
-      try categories.forEach { try $0.save(db) }
+    static func loadAndSaveMocks(db: DatabaseWriter) throws {
+        let categories = loadMocksFrom(filename: "Categories")
+        try db.write { db in
+            try categories.forEach { try $0.save(db) }
+        }
     }
-  }
-  
-  private static func loadMocksFrom(filename: String) -> ([Emitron.Category]) {
-    do {
-      let bundle = Bundle(for: AttachmentTest.self)
-      let fileURL = bundle.url(forResource: filename, withExtension: "json")
-      let data = try Data(contentsOf: fileURL!)
-      let json = try JSON(data: data)
-      
-      let document = JSONAPIDocument(json)
-      let categories = try document.data.map { resource in
-        try CategoryAdapter.process(resource: resource)
-      }
-      return categories
-    } catch {
-      preconditionFailure("Unable to load Category mocks: \(error)")
+
+    private static func loadMocksFrom(filename: String) -> ([Emitron.Category]) {
+        do {
+            let bundle = Bundle(for: AttachmentTest.self)
+            let fileURL = bundle.url(forResource: filename, withExtension: "json")
+            let data = try Data(contentsOf: fileURL!)
+            let json = try JSON(data: data)
+
+            let document = JSONAPIDocument(json)
+            let categories = try document.data.map { resource in
+                try CategoryAdapter.process(resource: resource)
+            }
+            return categories
+        } catch {
+            preconditionFailure("Unable to load Category mocks: \(error)")
+        }
     }
-  }
 }

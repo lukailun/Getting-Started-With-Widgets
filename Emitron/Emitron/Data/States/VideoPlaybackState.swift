@@ -27,12 +27,12 @@
 // THE SOFTWARE.
 
 struct CachedVideoPlaybackState {
-  let content: Content
-  let progression: Progression?
+    let content: Content
+    let progression: Progression?
 }
 
 struct VideoPlaybackState {
-  let content: Content
-  let progression: Progression?
-  let download: Download?
+    let content: Content
+    let progression: Progression?
+    let download: Download?
 }

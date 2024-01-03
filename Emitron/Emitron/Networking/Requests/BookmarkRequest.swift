@@ -30,80 +30,85 @@ import Foundation
 import SwiftyJSON
 
 struct GetBookmarksRequest: Request {
-  typealias Response = (bookmarks: [Bookmark], cacheUpdate: DataCacheUpdate, totalNumber: Int)
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/bookmarks" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  var parameters: [Parameter]? { nil }
-  
-  // MARK: - Internal
-  func handle(response: Data) throws -> Response {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let bookmarks = try doc.data.map { try BookmarkAdapter.process(resource: $0) }
-    let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
-    guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
-      throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+    typealias Response = (bookmarks: [Bookmark], cacheUpdate: DataCacheUpdate, totalNumber: Int)
+
+    // MARK: - Properties
+
+    var method: HTTPMethod { .GET }
+    var path: String { "/bookmarks" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+    var parameters: [Parameter]? { nil }
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Response {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let bookmarks = try doc.data.map { try BookmarkAdapter.process(resource: $0) }
+        let cacheUpdate = try DataCacheUpdate.loadFrom(document: doc)
+        guard let totalResultCount = doc.meta["total_result_count"] as? Int else {
+            throw RWAPIError.responseMissingRequiredMeta(field: "total_result_count")
+        }
+
+        return (bookmarks: bookmarks, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
     }
-    
-    return (bookmarks: bookmarks, cacheUpdate: cacheUpdate, totalNumber: totalResultCount)
-  }
 }
 
 struct DestroyBookmarkRequest: Request {
-  typealias Response = Void
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .DELETE }
-  var path: String { "/bookmarks/\(id)" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  
-  // MARK: - Parameters
-  let id: Int
-  
-  // MARK: - Internal
-  func handle(response: Data) throws { }
+    typealias Response = Void
+
+    // MARK: - Properties
+
+    var method: HTTPMethod { .DELETE }
+    var path: String { "/bookmarks/\(id)" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response _: Data) throws {}
 }
 
 struct MakeBookmark: Request {
-  typealias Response = Bookmark
-  
-  // MARK: - Properties
-  var method: HTTPMethod { .POST }
-  var path: String { "/bookmarks" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? {
-    let json: [String: Any] =
-      ["data":
-        ["type": "bookmarks", "relationships":
-          ["content":
+    typealias Response = Bookmark
+
+    // MARK: - Properties
+
+    var method: HTTPMethod { .POST }
+    var path: String { "/bookmarks" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? {
+        let json: [String: Any] =
             ["data":
-              ["type": "contents", "id": id]
-            ]
-          ]
-        ]
-    ]    
-    
-    return try? JSONSerialization.data(withJSONObject: json)
-  }
-  
-  // MARK: - Parameters
-  let id: Int
-  
-  // MARK: - Internal
-  func handle(response: Data) throws -> Bookmark {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let bookmarks = try doc.data.map { try BookmarkAdapter.process(resource: $0) }
-    guard let bookmark = bookmarks.first,
-      bookmarks.count == 1 else {
-        throw RWAPIError.responseHasIncorrectNumberOfElements
+                ["type": "bookmarks", "relationships":
+                    ["content":
+                        ["data":
+                            ["type": "contents", "id": id]]]]]
+
+        return try? JSONSerialization.data(withJSONObject: json)
     }
-    
-    return bookmark
-  }
+
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Bookmark {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let bookmarks = try doc.data.map { try BookmarkAdapter.process(resource: $0) }
+        guard let bookmark = bookmarks.first,
+              bookmarks.count == 1
+        else {
+            throw RWAPIError.responseHasIncorrectNumberOfElements
+        }
+
+        return bookmark
+    }
 }

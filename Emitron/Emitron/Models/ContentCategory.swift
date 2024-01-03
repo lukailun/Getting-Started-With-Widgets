@@ -27,7 +27,7 @@
 // THE SOFTWARE.
 
 struct ContentCategory: Equatable, Codable {
-  var id: Int64?
-  var contentId: Int
-  var categoryId: Int
+    var id: Int64?
+    var contentId: Int
+    var categoryId: Int
 }

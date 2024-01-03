@@ -29,31 +29,31 @@
 import SwiftUI
 
 struct EntryView: View {
-  let model: WidgetContent
+    let model: WidgetContent
 
-  var body: some View {
-    VStack(alignment: .leading) {
-      Text(model.name)
-        .font(.uiTitle4)
-        .lineLimit(2)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding([.trailing], 15)
-        .foregroundColor(.titleText)
-      
-      Text(model.cardViewSubtitle)
-        .font(.uiCaption)
-        .lineLimit(nil)
-        .foregroundStyle(.contentText)
-      
-      Text(model.descriptionPlainText)
-        .font(.uiCaption)
-        .fixedSize(horizontal: false, vertical: true)
-        .lineLimit(2)
-        .lineSpacing(3)
-        .foregroundColor(.contentText)
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(model.name)
+                .font(.uiTitle4)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding([.trailing], 15)
+                .foregroundColor(.titleText)
+
+            Text(model.cardViewSubtitle)
+                .font(.uiCaption)
+                .lineLimit(nil)
+                .foregroundStyle(.contentText)
+
+            Text(model.descriptionPlainText)
+                .font(.uiCaption)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(2)
+                .lineSpacing(3)
+                .foregroundColor(.contentText)
+        }
+        .background(Color.cardBackground)
+        .padding()
+        .cornerRadius(6)
     }
-    .background(Color.cardBackground)
-    .padding()
-    .cornerRadius(6)
-  }
 }

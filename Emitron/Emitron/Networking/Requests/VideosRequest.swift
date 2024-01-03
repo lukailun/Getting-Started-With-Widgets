@@ -30,49 +30,56 @@ import struct Foundation.Data
 import SwiftyJSON
 
 struct StreamVideoRequest: Request {
-  typealias Response = Attachment
+    typealias Response = Attachment
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/videos/\(id)/stream" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
-  
-  // MARK: - Parameters
-  let id: Int
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> Attachment {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    let attachments = try doc.data.map { try AttachmentAdapter.process(resource: $0) }
-    
-    guard let attachment = attachments.first,
-      attachments.count == 1 else {
-        throw RWAPIError.responseHasIncorrectNumberOfElements
+    var method: HTTPMethod { .GET }
+    var path: String { "/videos/\(id)/stream" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> Attachment {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        let attachments = try doc.data.map { try AttachmentAdapter.process(resource: $0) }
+
+        guard let attachment = attachments.first,
+              attachments.count == 1
+        else {
+            throw RWAPIError.responseHasIncorrectNumberOfElements
+        }
+
+        return attachment
     }
-    
-    return attachment
-  }
 }
 
 struct DownloadVideoRequest: Request {
-  // It contains two Attachment objects, one for the HD file and one for the SD file.
-  typealias Response = [Attachment]
+    // It contains two Attachment objects, one for the HD file and one for the SD file.
+    typealias Response = [Attachment]
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/videos/\(id)/download" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
+    // MARK: - Properties
 
-  // MARK: - Parameters
-  let id: Int
+    var method: HTTPMethod { .GET }
+    var path: String { "/videos/\(id)/download" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> [Attachment] {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    return try doc.data.map { try AttachmentAdapter.process(resource: $0) }
-  }
+    // MARK: - Parameters
+
+    let id: Int
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> [Attachment] {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        return try doc.data.map { try AttachmentAdapter.process(resource: $0) }
+    }
 }

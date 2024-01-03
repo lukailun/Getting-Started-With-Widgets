@@ -29,18 +29,19 @@
 import Foundation
 
 extension String {
-  static let cardDateString: String = "MMM dd yyyy"
+    static let cardDateString: String = "MMM dd yyyy"
 }
 
 extension ISO8601DateFormatter {
-  convenience init(_ formatOptions: Options, timeZone: TimeZone = TimeZone(secondsFromGMT: 0)!) {
-    self.init()
-    self.formatOptions = formatOptions
-    self.timeZone = timeZone
-  }
+    convenience init(_ formatOptions: Options, timeZone: TimeZone = TimeZone(secondsFromGMT: 0)!) {
+        self.init()
+        self.formatOptions = formatOptions
+        self.timeZone = timeZone
+    }
 }
+
 extension Formatter {
-  static let iso8601 = ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
+    static let iso8601 = ISO8601DateFormatter([.withInternetDateTime, .withFractionalSeconds])
 }
 
 extension Date {
@@ -50,19 +51,17 @@ extension Date {
 }
 
 extension String {
-  var iso8601: Date? {
-    Formatter.iso8601.date(from: self)
-  }
+    var iso8601: Date? {
+        Formatter.iso8601.date(from: self)
+    }
 }
 
 extension DateFormatter {
-  static let cardDateFormatter: DateFormatter = {
-    DateFormatter.formatter(for: .cardDateString)
-  }()
-  
-  static func formatter(for dateString: String) -> DateFormatter {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = dateString
-    return dateFormatter
-  }
+    static let cardDateFormatter: DateFormatter = .formatter(for: .cardDateString)
+
+    static func formatter(for dateString: String) -> DateFormatter {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = dateString
+        return dateFormatter
+    }
 }

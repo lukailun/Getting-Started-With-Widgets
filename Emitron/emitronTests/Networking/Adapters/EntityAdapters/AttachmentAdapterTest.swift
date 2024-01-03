@@ -26,72 +26,72 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import SwiftyJSON
 @testable import Emitron
+import SwiftyJSON
+import XCTest
 
 class AttachmentAdapterTest: XCTestCase {
-  let sampleResource: JSON = [
-    "id": "1234",
-    "type": "attachments",
-    "attributes": [
-      "url": "https://example.com/download.mp4",
-      "kind": "sd_video_file"
+    let sampleResource: JSON = [
+        "id": "1234",
+        "type": "attachments",
+        "attributes": [
+            "url": "https://example.com/download.mp4",
+            "kind": "sd_video_file",
+        ],
     ]
-  ]
-  
-  func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
-    let json: JSON = [
-      "data": [
-        dict
-      ]
-    ]
-    
-    let document = JSONAPIDocument(json)
-    return document.data.first!
-  }
 
-  func testValidResourceProcessedCorrectly() throws {
-    let resource = try makeJsonAPIResource(for: sampleResource)
-    
-    let attachment = try AttachmentAdapter.process(resource: resource)
-    
-    XCTAssertEqual(1234, attachment.id)
-    XCTAssertEqual(.sdVideoFile, attachment.kind)
-    let url = URL(string: "https://example.com/download.mp4")!
-    XCTAssertEqual(url, attachment.url)
-  }
-  
-  func testInvalidTypeThrows() throws {
-    var sample = sampleResource
-    sample["type"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+    func makeJsonAPIResource(for dict: JSON) throws -> JSONAPIResource {
+        let json: JSON = [
+            "data": [
+                dict,
+            ],
+        ]
+
+        let document = JSONAPIDocument(json)
+        return document.data.first!
     }
-  }
-  
-  func testInvalidUrlThrows() throws {
-    var sample = sampleResource
-    sample["attributes"]["url"] = "this is not a valid URL"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testValidResourceProcessedCorrectly() throws {
+        let resource = try makeJsonAPIResource(for: sampleResource)
+
+        let attachment = try AttachmentAdapter.process(resource: resource)
+
+        XCTAssertEqual(1234, attachment.id)
+        XCTAssertEqual(.sdVideoFile, attachment.kind)
+        let url = URL(string: "https://example.com/download.mp4")!
+        XCTAssertEqual(url, attachment.url)
     }
-  }
-  
-  func testInvalidKindThrows() throws {
-    var sample = sampleResource
-    sample["attributes"]["kind"] = "invalid"
-    
-    let resource = try makeJsonAPIResource(for: sample)
-    
-    XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
-      XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+
+    func testInvalidTypeThrows() throws {
+        var sample = sampleResource
+        sample["type"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidResourceTypeForAdapter, error as! EntityAdapterError)
+        }
     }
-  }
+
+    func testInvalidUrlThrows() throws {
+        var sample = sampleResource
+        sample["attributes"]["url"] = "this is not a valid URL"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
+
+    func testInvalidKindThrows() throws {
+        var sample = sampleResource
+        sample["attributes"]["kind"] = "invalid"
+
+        let resource = try makeJsonAPIResource(for: sample)
+
+        XCTAssertThrowsError(try AttachmentAdapter.process(resource: resource)) { error in
+            XCTAssertEqual(EntityAdapterError.invalidOrMissingAttributes, error as! EntityAdapterError)
+        }
+    }
 }

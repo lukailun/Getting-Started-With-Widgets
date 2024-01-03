@@ -29,62 +29,62 @@
 import struct Foundation.URL
 
 struct ContentAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Content {
-    guard resource.entityType == .content else { throw EntityAdapterError.invalidResourceTypeForAdapter }
-    
-    guard let uri = resource.attributes["uri"] as? String,
-      let name = resource.attributes["name"] as? String,
-      let descriptionHtml = resource.attributes["description"] as? String,
-      let descriptionPlainText = resource.attributes["description_plain_text"] as? String,
-      let releasedAtString = resource.attributes["released_at"] as? String,
-      let releasedAt = releasedAtString.iso8601,
-      let free = resource.attributes["free"] as? Bool,
-      let professional = resource.attributes["professional"] as? Bool,
-      let contentTypeString = resource.attributes["content_type"] as? String,
-      let contentType = ContentType(string: contentTypeString),
-      let duration = resource.attributes["duration"] as? Int,
-      let technologyTriple = resource.attributes["technology_triple_string"] as? String,
-      let contributors = resource.attributes["contributor_string"] as? String
-      else {
-        throw EntityAdapterError.invalidOrMissingAttributes
+    static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Content {
+        guard resource.entityType == .content else { throw EntityAdapterError.invalidResourceTypeForAdapter }
+
+        guard let uri = resource.attributes["uri"] as? String,
+              let name = resource.attributes["name"] as? String,
+              let descriptionHtml = resource.attributes["description"] as? String,
+              let descriptionPlainText = resource.attributes["description_plain_text"] as? String,
+              let releasedAtString = resource.attributes["released_at"] as? String,
+              let releasedAt = releasedAtString.iso8601,
+              let free = resource.attributes["free"] as? Bool,
+              let professional = resource.attributes["professional"] as? Bool,
+              let contentTypeString = resource.attributes["content_type"] as? String,
+              let contentType = ContentType(string: contentTypeString),
+              let duration = resource.attributes["duration"] as? Int,
+              let technologyTriple = resource.attributes["technology_triple_string"] as? String,
+              let contributors = resource.attributes["contributor_string"] as? String
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+        var difficulty = ContentDifficulty.allLevels
+        if let difficultyString = resource.attributes["difficulty"] as? String {
+            if let parsedDifficulty = ContentDifficulty(string: difficultyString) {
+                difficulty = parsedDifficulty
+            } else {
+                throw EntityAdapterError.invalidOrMissingAttributes
+            }
+        }
+
+        var cardArtworkUrl: URL?
+        if let cardArtworkUrlString = resource.attributes["card_artwork_url"] as? String {
+            cardArtworkUrl = URL(string: cardArtworkUrlString)
+        }
+
+        let group = relationships.first { relationship in
+            relationship.from.type == .group
+                && relationship.to.id == resource.id
+                && relationship.to.type == .content
+        }
+        let groupId = group?.from.id
+
+        return Content(id: resource.id,
+                       uri: uri,
+                       name: name,
+                       descriptionHtml: descriptionHtml,
+                       descriptionPlainText: descriptionPlainText,
+                       releasedAt: releasedAt,
+                       free: free,
+                       professional: professional,
+                       difficulty: difficulty,
+                       contentType: contentType,
+                       duration: duration,
+                       videoIdentifier: resource.attributes["video_identifier"] as? Int,
+                       cardArtworkUrl: cardArtworkUrl,
+                       technologyTriple: technologyTriple,
+                       contributors: contributors,
+                       groupId: groupId,
+                       ordinal: resource.attributes["ordinal"] as? Int)
     }
-    var difficulty = ContentDifficulty.allLevels
-    if let difficultyString = resource.attributes["difficulty"] as? String {
-      if let parsedDifficulty = ContentDifficulty(string: difficultyString) {
-        difficulty = parsedDifficulty
-      } else {
-        throw EntityAdapterError.invalidOrMissingAttributes
-      }
-    }
-    
-    var cardArtworkUrl: URL?
-    if let cardArtworkUrlString = resource.attributes["card_artwork_url"] as? String {
-      cardArtworkUrl = URL(string: cardArtworkUrlString)
-    }
-    
-    let group = relationships.first { relationship in
-      relationship.from.type == .group
-        && relationship.to.id == resource.id
-        && relationship.to.type == .content
-    }
-    let groupId = group?.from.id
-    
-    return Content(id: resource.id,
-                   uri: uri,
-                   name: name,
-                   descriptionHtml: descriptionHtml,
-                   descriptionPlainText: descriptionPlainText,
-                   releasedAt: releasedAt,
-                   free: free,
-                   professional: professional,
-                   difficulty: difficulty,
-                   contentType: contentType,
-                   duration: duration,
-                   videoIdentifier: resource.attributes["video_identifier"] as? Int,
-                   cardArtworkUrl: cardArtworkUrl,
-                   technologyTriple: technologyTriple,
-                   contributors: contributors,
-                   groupId: groupId,
-                   ordinal: resource.attributes["ordinal"] as? Int)
-  }
 }

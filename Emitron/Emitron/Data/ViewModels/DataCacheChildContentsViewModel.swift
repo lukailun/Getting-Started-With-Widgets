@@ -27,33 +27,34 @@
 // THE SOFTWARE.
 
 final class DataCacheChildContentsViewModel: ChildContentsViewModel {
-  private let service: ContentsService
+    private let service: ContentsService
 
-  init(parentContentId: Int,
-       downloadAction: DownloadAction,
-       syncAction: SyncAction?,
-       repository: Repository,
-       service: ContentsService) {
-    self.service = service
-    super.init(parentContentId: parentContentId,
-               downloadAction: downloadAction,
-               syncAction: syncAction,
-               repository: repository)
-  }
-  
-  override func loadContentDetailsIntoCache() {
-    self.state = .loading
-    service.contentDetails(for: parentContentId) { result in
-      switch result {
-      case .failure(let error):
-        self.state = .failed
-        Failure
-          .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
-          .log()
-      case .success(let (_, cacheUpdate)):
-        self.repository.apply(update: cacheUpdate)
-        self.reload()
-      }
+    init(parentContentId: Int,
+         downloadAction: DownloadAction,
+         syncAction: SyncAction?,
+         repository: Repository,
+         service: ContentsService)
+    {
+        self.service = service
+        super.init(parentContentId: parentContentId,
+                   downloadAction: downloadAction,
+                   syncAction: syncAction,
+                   repository: repository)
     }
-  }
+
+    override func loadContentDetailsIntoCache() {
+        state = .loading
+        service.contentDetails(for: parentContentId) { result in
+            switch result {
+            case let .failure(error):
+                self.state = .failed
+                Failure
+                    .fetch(from: String(describing: type(of: self)), reason: error.localizedDescription)
+                    .log()
+            case .success(let (_, cacheUpdate)):
+                self.repository.apply(update: cacheUpdate)
+                self.reload()
+            }
+        }
+    }
 }

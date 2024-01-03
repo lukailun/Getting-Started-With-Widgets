@@ -29,32 +29,32 @@
 import SwiftUI
 
 struct OfflineView: View {
-  var body: some View {
-    VStack {
-      Image("emojiCrying")
-        .padding([.bottom], 30)
-      
-      Text("No Connection")
-        .font(.uiTitle2)
-        .foregroundColor(.titleText)
-        .multilineTextAlignment(.center)
-        .padding([.leading, .trailing, .bottom], 20)
-      
-      Text("Please check internet connection and try again.")
-        .font(.uiLabel)
-        .lineSpacing(8)
-        .foregroundColor(.contentText)
-        .multilineTextAlignment(.center)
-        .padding([.leading, .trailing], 20)
+    var body: some View {
+        VStack {
+            Image("emojiCrying")
+                .padding([.bottom], 30)
+
+            Text("No Connection")
+                .font(.uiTitle2)
+                .foregroundColor(.titleText)
+                .multilineTextAlignment(.center)
+                .padding([.leading, .trailing, .bottom], 20)
+
+            Text("Please check internet connection and try again.")
+                .font(.uiLabel)
+                .lineSpacing(8)
+                .foregroundColor(.contentText)
+                .multilineTextAlignment(.center)
+                .padding([.leading, .trailing], 20)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.backgroundColor)
+        .edgesIgnoringSafeArea(.all)
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.backgroundColor)
-    .edgesIgnoringSafeArea(.all)
-  }
 }
 
 struct OfflineView_Previews: PreviewProvider {
-  static var previews: some View {
-    OfflineView()
-  }
+    static var previews: some View {
+        OfflineView()
+    }
 }

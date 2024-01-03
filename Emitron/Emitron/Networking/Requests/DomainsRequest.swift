@@ -30,18 +30,20 @@ import struct Foundation.Data
 import SwiftyJSON
 
 struct DomainsRequest: Request {
-  typealias Response = [Domain]
+    typealias Response = [Domain]
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/domains" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> [Domain] {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    return try doc.data.map { try DomainAdapter.process(resource: $0) }
-  }
+    var method: HTTPMethod { .GET }
+    var path: String { "/domains" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> [Domain] {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        return try doc.data.map { try DomainAdapter.process(resource: $0) }
+    }
 }

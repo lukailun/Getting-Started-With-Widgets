@@ -30,18 +30,20 @@ import struct Foundation.Data
 import SwiftyJSON
 
 struct CategoriesRequest: Request {
-  typealias Response = [Category]
+    typealias Response = [Category]
 
-  // MARK: - Properties
-  var method: HTTPMethod { .GET }
-  var path: String { "/categories" }
-  var additionalHeaders: [String: String] = [:]
-  var body: Data? { nil }
+    // MARK: - Properties
 
-  // MARK: - Internal
-  func handle(response: Data) throws -> [Category] {
-    let json = try JSON(data: response)
-    let doc = JSONAPIDocument(json)
-    return try doc.data.map { try CategoryAdapter.process(resource: $0) }
-  }
+    var method: HTTPMethod { .GET }
+    var path: String { "/categories" }
+    var additionalHeaders: [String: String] = [:]
+    var body: Data? { nil }
+
+    // MARK: - Internal
+
+    func handle(response: Data) throws -> [Category] {
+        let json = try JSON(data: response)
+        let doc = JSONAPIDocument(json)
+        return try doc.data.map { try CategoryAdapter.process(resource: $0) }
+    }
 }

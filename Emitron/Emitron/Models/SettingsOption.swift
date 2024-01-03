@@ -29,60 +29,60 @@
 import Combine
 
 enum SettingsOption: Int, Identifiable, CaseIterable {
-  case playbackSpeed
-  case wifiOnlyDownloads
-  case downloadQuality
-  case closedCaptionOn
-  
-  var id: Int {
-    rawValue
-  }
-  
-  var title: String {
-    switch self {
-    case .playbackSpeed:
-      return Constants.settingsPlaybackSpeedLabel
-    case .wifiOnlyDownloads:
-      return Constants.settingsWifiOnlyDownloadsLabel
-    case .downloadQuality:
-      return Constants.settingsDownloadQualityLabel
-    case .closedCaptionOn:
-      return Constants.settingsClosedCaptionOnLabel
+    case playbackSpeed
+    case wifiOnlyDownloads
+    case downloadQuality
+    case closedCaptionOn
+
+    var id: Int {
+        rawValue
     }
-  }
-  
-  var key: SettingsKey {
-    switch self {
-    case .playbackSpeed:
-      return .playbackSpeed
-    case .wifiOnlyDownloads:
-      return .wifiOnlyDownloads
-    case .downloadQuality:
-      return .downloadQuality
-    case .closedCaptionOn:
-      return .closedCaptionOn
+
+    var title: String {
+        switch self {
+        case .playbackSpeed:
+            return Constants.settingsPlaybackSpeedLabel
+        case .wifiOnlyDownloads:
+            return Constants.settingsWifiOnlyDownloadsLabel
+        case .downloadQuality:
+            return Constants.settingsDownloadQualityLabel
+        case .closedCaptionOn:
+            return Constants.settingsClosedCaptionOnLabel
+        }
     }
-  }
-  
-  var detail: [String] {
-    switch self {
-    case .playbackSpeed:
-      return PlaybackSpeed.allCases.map(\.display)
-    case .wifiOnlyDownloads:
-      return ["Yes", "No"]
-    case .downloadQuality:
-      return Attachment.Kind.downloads.map(\.display)
-    case .closedCaptionOn:
-      return ["Yes", "No"]
+
+    var key: SettingsKey {
+        switch self {
+        case .playbackSpeed:
+            return .playbackSpeed
+        case .wifiOnlyDownloads:
+            return .wifiOnlyDownloads
+        case .downloadQuality:
+            return .downloadQuality
+        case .closedCaptionOn:
+            return .closedCaptionOn
+        }
     }
-  }
-  
-  var isToggle: Bool {
-    switch self {
-    case .wifiOnlyDownloads, .closedCaptionOn:
-      return true
-    default:
-      return false
+
+    var detail: [String] {
+        switch self {
+        case .playbackSpeed:
+            return PlaybackSpeed.allCases.map(\.display)
+        case .wifiOnlyDownloads:
+            return ["Yes", "No"]
+        case .downloadQuality:
+            return Attachment.Kind.downloads.map(\.display)
+        case .closedCaptionOn:
+            return ["Yes", "No"]
+        }
     }
-  }
+
+    var isToggle: Bool {
+        switch self {
+        case .wifiOnlyDownloads, .closedCaptionOn:
+            return true
+        default:
+            return false
+        }
+    }
 }

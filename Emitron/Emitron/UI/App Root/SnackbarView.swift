@@ -29,64 +29,64 @@
 import SwiftUI
 
 struct SnackbarState {
-  enum Status: String {
-    case success, warning, error
-    
-    var color: Color {
-      switch self {
-      case .success:
-        return .snackSuccess
-      case .warning:
-        return .snackWarning
-      case .error:
-        return .snackError
-      }
+    enum Status: String {
+        case success, warning, error
+
+        var color: Color {
+            switch self {
+            case .success:
+                return .snackSuccess
+            case .warning:
+                return .snackWarning
+            case .error:
+                return .snackError
+            }
+        }
+
+        var tagText: String {
+            rawValue.uppercased()
+        }
     }
-    
-    var tagText: String {
-      rawValue.uppercased()
-    }
-  }
-  
-  let status: Status
-  let message: String
+
+    let status: Status
+    let message: String
 }
 
 struct SnackbarView: View {
-  var state: SnackbarState
-  @Binding var visible: Bool
-  
-  var body: some View {
-    HStack {
-      Text(state.message)
-        .font(.uiBodyCustom)
-        .foregroundColor(.snackText)
-        .animation(.none)
-      
-      Spacer()
-      
-      Button(action: {
-        withAnimation {
-          self.visible.toggle()
+    var state: SnackbarState
+    @Binding var visible: Bool
+
+    var body: some View {
+        HStack {
+            Text(state.message)
+                .font(.uiBodyCustom)
+                .foregroundColor(.snackText)
+                .animation(.none)
+
+            Spacer()
+
+            Button(action: {
+                withAnimation {
+                    self.visible.toggle()
+                }
+            }) {
+                Image.closeWhite
+                    .resizable()
+                    .frame(width: 18, height: 18)
+            }.foregroundColor(.snackText)
         }
-      }) {
-        Image.closeWhite
-          .resizable()
-          .frame(width: 18, height: 18)
-      }.foregroundColor(.snackText)
+        .padding()
+        .background(state.status.color)
     }
-    .padding()
-    .background(state.status.color)
-  }
 }
 
 struct SnackbarView_Previews: PreviewProvider {
-  @State static var visible = true
-  static var previews: some View {
-    VStack {
-      SnackbarView(state: SnackbarState(status: .error, message: "There was a problem."), visible: $visible)
-      SnackbarView(state: SnackbarState(status: .warning, message: "We're going orange."), visible: $visible)
-      SnackbarView(state: SnackbarState(status: .success, message: "Everything looks peachy."), visible: $visible)
+    @State static var visible = true
+    static var previews: some View {
+        VStack {
+            SnackbarView(state: SnackbarState(status: .error, message: "There was a problem."), visible: $visible)
+            SnackbarView(state: SnackbarState(status: .warning, message: "We're going orange."), visible: $visible)
+            SnackbarView(state: SnackbarState(status: .success, message: "Everything looks peachy."), visible: $visible)
+        }
     }
-  }
 }

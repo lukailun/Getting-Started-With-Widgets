@@ -29,7 +29,7 @@
 import UIKit
 
 extension UIViewController {
-  var sceneDelegate: UISceneDelegate? {
-    self.view.window?.windowScene?.delegate
-  }
+    var sceneDelegate: UISceneDelegate? {
+        view.window?.windowScene?.delegate
+    }
 }

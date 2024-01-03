@@ -29,49 +29,49 @@
 import SwiftUI
 
 struct LicenseListView: View {
-  var licenses: [FossLicense] = FossLicense.load()
-  @Binding var visible: Bool
-  
-  var body: some View {
-    NavigationView {
-      VStack {
-        Text("This app uses a selection of fantastic 3rd-party libraries. You can see details and their licenses below.")
-          .font(.uiLabel)
-          .foregroundColor(.contentText)
-          
-        List(licenses) { license in
-          NavigationLink(destination: LicenseDetailView(license: license)) {
-            Text(license.name)
-              .font(.uiLabel)
-              .foregroundColor(.contentText)
-          }
-            .navigationBarTitle("Software Licenses")
-            .navigationBarItems(trailing: self.dismissButton)
+    var licenses: [FossLicense] = FossLicense.load()
+    @Binding var visible: Bool
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("This app uses a selection of fantastic 3rd-party libraries. You can see details and their licenses below.")
+                    .font(.uiLabel)
+                    .foregroundColor(.contentText)
+
+                List(licenses) { license in
+                    NavigationLink(destination: LicenseDetailView(license: license)) {
+                        Text(license.name)
+                            .font(.uiLabel)
+                            .foregroundColor(.contentText)
+                    }
+                    .navigationBarTitle("Software Licenses")
+                    .navigationBarItems(trailing: self.dismissButton)
+                }
+            }
+            .padding(10)
+            .background(Color.backgroundColor)
         }
-      }
-        .padding(10)
-        .background(Color.backgroundColor)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
-      .navigationViewStyle(StackNavigationViewStyle())
-  }
-  
-  var dismissButton: some View {
-    Button(action: {
-      self.visible.toggle()
-    }) {
-      Image.close
-        .foregroundColor(.iconButton)
+
+    var dismissButton: some View {
+        Button(action: {
+            self.visible.toggle()
+        }) {
+            Image.close
+                .foregroundColor(.iconButton)
+        }
     }
-  }
 }
 
 struct LicenseListView_Previews: PreviewProvider {
-  @State static var visible: Bool = true
-  
-  static var previews: some View {
-    SwiftUI.Group {
-      LicenseListView(licenses: FossLicense.load(), visible: $visible).colorScheme(.light)
-      LicenseListView(licenses: FossLicense.load(), visible: $visible).colorScheme(.dark)
+    @State static var visible: Bool = true
+
+    static var previews: some View {
+        SwiftUI.Group {
+            LicenseListView(licenses: FossLicense.load(), visible: $visible).colorScheme(.light)
+            LicenseListView(licenses: FossLicense.load(), visible: $visible).colorScheme(.dark)
+        }
     }
-  }
 }

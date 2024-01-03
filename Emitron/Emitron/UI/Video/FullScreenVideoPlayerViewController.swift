@@ -26,79 +26,81 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import UIKit
 import AVKit
 import SwiftUI
+import UIKit
 
 class FullScreenVideoPlayerViewController: UIViewController {
-  @Binding var viewModel: VideoPlaybackViewModel?
-  private var isFullscreen: Bool = false
-  
-  init(viewModel: Binding<VideoPlaybackViewModel?>) {
-    self._viewModel = viewModel
-    super.init(nibName: nil, bundle: nil)
-    
-    self.viewModel?.reloadIfRequired()
-    self.verifyVideoPlaybackAllowed()
-  }
+    @Binding var viewModel: VideoPlaybackViewModel?
+    private var isFullscreen: Bool = false
 
-  required init?(coder: NSCoder) {
-    preconditionFailure("init(coder:) has not been implemented")
-  }
+    init(viewModel: Binding<VideoPlaybackViewModel?>) {
+        _viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+
+        self.viewModel?.reloadIfRequired()
+        verifyVideoPlaybackAllowed()
+    }
+
+    required init?(coder _: NSCoder) {
+        preconditionFailure("init(coder:) has not been implemented")
+    }
 }
 
 extension FullScreenVideoPlayerViewController {
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    if !isFullscreen {
-      let viewController = AVPlayerViewController()
-      viewController.player = viewModel?.player
-      viewController.delegate = self
-      present(viewController, animated: true)
-      viewModel?.play()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !isFullscreen {
+            let viewController = AVPlayerViewController()
+            viewController.player = viewModel?.player
+            viewController.delegate = self
+            present(viewController, animated: true)
+            viewModel?.play()
+        }
     }
-  }
 }
 
 extension FullScreenVideoPlayerViewController {
-  private func verifyVideoPlaybackAllowed() {
-    do {
-      try viewModel?.verifyCanPlay()
-    } catch {
-      if let viewModelError = error as? VideoPlaybackViewModel.Error {
-        MessageBus.current.post(
-          message: Message(
-            level: viewModelError.messageLevel,
-            message: viewModelError.localizedDescription,
-            autoDismiss: viewModelError.messageAutoDismiss
-          )
-        )
-      }
-      disappear()
+    private func verifyVideoPlaybackAllowed() {
+        do {
+            try viewModel?.verifyCanPlay()
+        } catch {
+            if let viewModelError = error as? VideoPlaybackViewModel.Error {
+                MessageBus.current.post(
+                    message: Message(
+                        level: viewModelError.messageLevel,
+                        message: viewModelError.localizedDescription,
+                        autoDismiss: viewModelError.messageAutoDismiss
+                    )
+                )
+            }
+            disappear()
+        }
     }
-  }
-  
-  private func disappear() {
-    dismiss(animated: true) {
-      self.viewModel = nil
+
+    private func disappear() {
+        dismiss(animated: true) {
+            self.viewModel = nil
+        }
     }
-  }
 }
 
 extension FullScreenVideoPlayerViewController: AVPlayerViewControllerDelegate {
-  func playerViewController(
-    _ playerViewController: AVPlayerViewController,
-    willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-    isFullscreen = true
-  }
-  
-  func playerViewController(
-    _ playerViewController: AVPlayerViewController,
-    willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-    coordinator.animate(alongsideTransition: nil) { context in
-      guard !context.isCancelled else { return }
-      // Exited fullscreen, so let's disappear ourselves
-      self.disappear()
+    func playerViewController(
+        _: AVPlayerViewController,
+        willBeginFullScreenPresentationWithAnimationCoordinator _: UIViewControllerTransitionCoordinator
+    ) {
+        isFullscreen = true
     }
-  }
+
+    func playerViewController(
+        _: AVPlayerViewController,
+        willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
+    ) {
+        coordinator.animate(alongsideTransition: nil) { context in
+            guard !context.isCancelled else { return }
+            // Exited fullscreen, so let's disappear ourselves
+            self.disappear()
+        }
+    }
 }

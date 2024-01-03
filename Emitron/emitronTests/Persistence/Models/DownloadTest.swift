@@ -26,61 +26,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
-import GRDB
 @testable import Emitron
+import GRDB
+import XCTest
 
 class DownloadTest: XCTestCase {
-  private var database: DatabaseWriter!
-  
-  override func setUp() {
-    super.setUp()
-    // swiftlint:disable:next force_try
-    database = try! EmitronDatabase.testDatabase()
-  }
-  
-  func getAllContents() -> [Content] {
-    // swiftlint:disable:next force_try
-    try! database.read { db in
-      try Content.fetchAll(db)
+    private var database: DatabaseWriter!
+
+    override func setUp() {
+        super.setUp()
+        // swiftlint:disable:next force_try
+        database = try! EmitronDatabase.testDatabase()
     }
-  }
-  
-  func getAllDownloads() -> [Download] {
-    // swiftlint:disable:next force_try
-    try! database.read { db in
-      try Download.fetchAll(db)
+
+    func getAllContents() -> [Content] {
+        // swiftlint:disable:next force_try
+        try! database.read { db in
+            try Content.fetchAll(db)
+        }
     }
-  }
-  
-  func testDeletingDownloadDoesNotDeleteContents() throws {
-    let content = PersistenceMocks.content
-    try database.write { db in
-      try content.save(db)
+
+    func getAllDownloads() -> [Download] {
+        // swiftlint:disable:next force_try
+        try! database.read { db in
+            try Download.fetchAll(db)
+        }
     }
-      
-    var download = PersistenceMocks.download(for: content)
-    try database.write { db in
-      try download.save(db)
+
+    func testDeletingDownloadDoesNotDeleteContents() throws {
+        let content = PersistenceMocks.content
+        try database.write { db in
+            try content.save(db)
+        }
+
+        var download = PersistenceMocks.download(for: content)
+        try database.write { db in
+            try download.save(db)
+        }
+
+        // Should have one item of content
+        XCTAssertEqual(1, getAllContents().count)
+        // It should be the right one
+        XCTAssertEqual(content, getAllContents().first!)
+        // There should be a single download
+        XCTAssertEqual(1, getAllDownloads().count)
+        // It too should be the right one
+        XCTAssertEqual(download, getAllDownloads().first!)
+
+        _ = try database.write { db in
+            try download.delete(db)
+        }
+
+        // Check it was deleted
+        XCTAssertEqual(0, getAllDownloads().count)
+        // And that the contents was not deleted
+        XCTAssertEqual(1, getAllContents().count)
+        XCTAssertEqual(content, getAllContents().first!)
     }
-      
-    // Should have one item of content
-    XCTAssertEqual(1, getAllContents().count)
-    // It should be the right one
-    XCTAssertEqual(content, getAllContents().first!)
-    // There should be a single download
-    XCTAssertEqual(1, getAllDownloads().count)
-    // It too should be the right one
-    XCTAssertEqual(download, getAllDownloads().first!)
-    
-    _ = try database.write { db in
-      try download.delete(db)
-    }
-      
-    // Check it was deleted
-    XCTAssertEqual(0, getAllDownloads().count)
-    // And that the contents was not deleted
-    XCTAssertEqual(1, getAllContents().count)
-    XCTAssertEqual(content, getAllContents().first!)
-  }
 }

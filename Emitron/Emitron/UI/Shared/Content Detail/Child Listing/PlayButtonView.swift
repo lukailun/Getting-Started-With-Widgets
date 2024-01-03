@@ -29,22 +29,22 @@
 import SwiftUI
 
 struct PlayButtonView: View {
-  var body: some View {
-    VideoOverlayButtonView()
-  }
+    var body: some View {
+        VideoOverlayButtonView()
+    }
 }
 
 struct PlayButtonView_Previews: PreviewProvider {
-  static var previews: some View {
-    HStack {
-      button.colorScheme(.dark)
-      button.colorScheme(.light)
+    static var previews: some View {
+        HStack {
+            button.colorScheme(.dark)
+            button.colorScheme(.light)
+        }
     }
-  }
-  
-  static var button: some View {
-    PlayButtonView()
-      .padding()
-      .background(Color.backgroundColor)
-  }
+
+    static var button: some View {
+        PlayButtonView()
+            .padding()
+            .background(Color.backgroundColor)
+    }
 }

@@ -29,27 +29,23 @@
 import Combine
 
 final class DownloadQueueManager {
-  private let maxSimultaneousDownloads: Int
-  private let persistenceStore: PersistenceStore
+    private let maxSimultaneousDownloads: Int
+    private let persistenceStore: PersistenceStore
 
-  private (set) lazy var pendingStream: AnyPublisher<PersistenceStore.DownloadQueueItem?, Error> = {
-    persistenceStore
-      .downloads(in: .pending)
-      .eraseToAnyPublisher()
-  }()
-  private (set) lazy var readyForDownloadStream: AnyPublisher<PersistenceStore.DownloadQueueItem?, Error> = {
-    persistenceStore
-      .downloads(in: .readyForDownload)
-      .eraseToAnyPublisher()
-  }()
-  private (set) lazy var downloadQueue: AnyPublisher<[PersistenceStore.DownloadQueueItem], Error> = {
-    persistenceStore
-      .downloadQueue(withMaxLength: maxSimultaneousDownloads)
-      .eraseToAnyPublisher()
-  }()
-  
-  init(persistenceStore: PersistenceStore, maxSimultaneousDownloads: Int = 2) {
-    self.maxSimultaneousDownloads = maxSimultaneousDownloads
-    self.persistenceStore = persistenceStore
-  }
+    private(set) lazy var pendingStream: AnyPublisher<PersistenceStore.DownloadQueueItem?, Error> = persistenceStore
+        .downloads(in: .pending)
+        .eraseToAnyPublisher()
+
+    private(set) lazy var readyForDownloadStream: AnyPublisher<PersistenceStore.DownloadQueueItem?, Error> = persistenceStore
+        .downloads(in: .readyForDownload)
+        .eraseToAnyPublisher()
+
+    private(set) lazy var downloadQueue: AnyPublisher<[PersistenceStore.DownloadQueueItem], Error> = persistenceStore
+        .downloadQueue(withMaxLength: maxSimultaneousDownloads)
+        .eraseToAnyPublisher()
+
+    init(persistenceStore: PersistenceStore, maxSimultaneousDownloads: Int = 2) {
+        self.maxSimultaneousDownloads = maxSimultaneousDownloads
+        self.persistenceStore = persistenceStore
+    }
 }

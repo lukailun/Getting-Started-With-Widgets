@@ -33,12 +33,12 @@ import Security
 /// - parameters:
 ///   - length: the length of the hex string to generate
 func randomHexString(length: Int) -> String {
-  let byteCount = length * 2
-  var randomBytes = [UInt8](repeating: 0, count: byteCount)
+    let byteCount = length * 2
+    var randomBytes = [UInt8](repeating: 0, count: byteCount)
 
-  _ = SecRandomCopyBytes(kSecRandomDefault, byteCount, &randomBytes)
+    _ = SecRandomCopyBytes(kSecRandomDefault, byteCount, &randomBytes)
 
-  return randomBytes
-    .map { String(format: "%02hhx", $0) }
-    .joined()
+    return randomBytes
+        .map { String(format: "%02hhx", $0) }
+        .joined()
 }

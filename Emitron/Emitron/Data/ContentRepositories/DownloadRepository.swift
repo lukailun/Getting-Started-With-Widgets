@@ -29,57 +29,58 @@
 import Combine
 
 final class DownloadRepository: ContentRepository {
-  let downloadService: DownloadService
-  
-  private var contentSubscription: AnyCancellable?
-  
-  init(repository: Repository,
-       contentsService: ContentsService,
-       downloadService: DownloadService,
-       syncAction: SyncAction) {
-    self.downloadService = downloadService
-    // Don't need the repository or the service adapter
-    super.init(repository: repository,
-               contentsService: contentsService,
-               downloadAction: downloadService,
-               syncAction: syncAction,
-               serviceAdapter: nil)
-  }
-  
-  override func loadMore() {
-    // Do nothing
-  }
-  
-  override func reload() {
-    self.state = .loading
-    self.contentSubscription?.cancel()
-    configureSubscription()
-  }
-  
-  override func childContentsViewModel(for contentId: Int) -> ChildContentsViewModel {
-    // For donwloaded content, we need to tell it to use the DB, not the service
-    PersistenceStoreChildContentsViewModel(
-      parentContentId: contentId,
-      downloadAction: downloadService,
-      syncAction: syncAction,
-      repository: repository
-    )
-  }
-  
-  private func configureSubscription() {
-    self.contentSubscription =
-      self.downloadService
-        .downloadList()
-        .sink(receiveCompletion: { [weak self] error in
-          guard let self = self else { return }
-          self.state = .failed
-          Failure
-            .loadFromPersistentStore(from: String(describing: type(of: self)), reason: "Unable to retrieve download content summaries: \(error)")
-            .log()
-        }, receiveValue: { [weak self] contentSummaryStates in
-          guard let self = self else { return }
-          self.contents = contentSummaryStates
-          self.state = .hasData
-        })
-  }
+    let downloadService: DownloadService
+
+    private var contentSubscription: AnyCancellable?
+
+    init(repository: Repository,
+         contentsService: ContentsService,
+         downloadService: DownloadService,
+         syncAction: SyncAction)
+    {
+        self.downloadService = downloadService
+        // Don't need the repository or the service adapter
+        super.init(repository: repository,
+                   contentsService: contentsService,
+                   downloadAction: downloadService,
+                   syncAction: syncAction,
+                   serviceAdapter: nil)
+    }
+
+    override func loadMore() {
+        // Do nothing
+    }
+
+    override func reload() {
+        state = .loading
+        contentSubscription?.cancel()
+        configureSubscription()
+    }
+
+    override func childContentsViewModel(for contentId: Int) -> ChildContentsViewModel {
+        // For donwloaded content, we need to tell it to use the DB, not the service
+        PersistenceStoreChildContentsViewModel(
+            parentContentId: contentId,
+            downloadAction: downloadService,
+            syncAction: syncAction,
+            repository: repository
+        )
+    }
+
+    private func configureSubscription() {
+        contentSubscription =
+            downloadService
+                .downloadList()
+                .sink(receiveCompletion: { [weak self] error in
+                    guard let self = self else { return }
+                    self.state = .failed
+                    Failure
+                        .loadFromPersistentStore(from: String(describing: type(of: self)), reason: "Unable to retrieve download content summaries: \(error)")
+                        .log()
+                }, receiveValue: { [weak self] contentSummaryStates in
+                    guard let self = self else { return }
+                    self.contents = contentSummaryStates
+                    self.state = .hasData
+                })
+    }
 }

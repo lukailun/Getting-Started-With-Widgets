@@ -26,22 +26,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 @testable import Emitron
+import XCTest
 
 final class RefreshableTestCase: XCTestCase {
-  func test_refreshableUserDefaultsKey() throws {
-    XCTAssertEqual(
-      DomainRepository(
-        repository: .init(
-          persistenceStore: .init( db: try EmitronDatabase.testDatabase() ),
-          dataCache: .init()
-        ),
-        service: .init(
-          client: .init( authToken: .init() )
+    func test_refreshableUserDefaultsKey() throws {
+        XCTAssertEqual(
+            try DomainRepository(
+                repository: .init(
+                    persistenceStore: .init(db: EmitronDatabase.testDatabase()),
+                    dataCache: .init()
+                ),
+                service: .init(
+                    client: .init(authToken: .init())
+                )
+            ).refreshableUserDefaultsKey,
+            "UserDefaultsRefreshableDomainRepository"
         )
-      ).refreshableUserDefaultsKey,
-      "UserDefaultsRefreshableDomainRepository"
-    )
-  }
+    }
 }

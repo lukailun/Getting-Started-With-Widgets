@@ -29,49 +29,49 @@
 import Combine
 
 protocol ObservablePrePostFactoObject: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
-  // It's non-trivial to synthesise this, since it is a stored property. So let's not bother.
-  var objectDidChange: ObservableObjectPublisher { get }
+    // It's non-trivial to synthesise this, since it is a stored property. So let's not bother.
+    var objectDidChange: ObservableObjectPublisher { get }
 }
 
 @propertyWrapper
 struct PublishedPrePostFacto<Value: Equatable> {
-  init(initialValue: Value) {
-    self.init(wrappedValue: initialValue)
-  }
-  
-  init(wrappedValue: Value) {
-    value = wrappedValue
-    publisher = CurrentValueSubject<Value, Never>(value)
-  }
-  
-  private var value: Value
-  private let publisher: CurrentValueSubject<Value, Never>!
-  
-  var projectedValue: AnyPublisher<Value, Never> {
-    publisher.eraseToAnyPublisher()
-  }
-  
-  var wrappedValue: Value {
-    get { preconditionFailure("wrappedValue:get called") }
-    set { preconditionFailure("wrappedValue:set called with \(newValue)") }
-  }
-  
-  static subscript<EnclosingSelf: ObservablePrePostFactoObject>(
-    _enclosingInstance object: EnclosingSelf,
-    wrapped wrappedKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Value>,
-    storage storageKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Self>
-  ) -> Value {
-    get {
-      object[keyPath: storageKeyPath].value
+    init(initialValue: Value) {
+        self.init(wrappedValue: initialValue)
     }
-    set {
-      guard object[keyPath: storageKeyPath].value != newValue
-      else { return }
-      
-      object.objectWillChange.send()
-      object[keyPath: storageKeyPath].value = newValue
-      object[keyPath: storageKeyPath].publisher.send(newValue)
-      object.objectDidChange.send()
+
+    init(wrappedValue: Value) {
+        value = wrappedValue
+        publisher = CurrentValueSubject<Value, Never>(value)
     }
-  }
+
+    private var value: Value
+    private let publisher: CurrentValueSubject<Value, Never>!
+
+    var projectedValue: AnyPublisher<Value, Never> {
+        publisher.eraseToAnyPublisher()
+    }
+
+    var wrappedValue: Value {
+        get { preconditionFailure("wrappedValue:get called") }
+        set { preconditionFailure("wrappedValue:set called with \(newValue)") }
+    }
+
+    static subscript<EnclosingSelf: ObservablePrePostFactoObject>(
+        _enclosingInstance object: EnclosingSelf,
+        wrapped _: ReferenceWritableKeyPath<EnclosingSelf, Value>,
+        storage storageKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Self>
+    ) -> Value {
+        get {
+            object[keyPath: storageKeyPath].value
+        }
+        set {
+            guard object[keyPath: storageKeyPath].value != newValue
+            else { return }
+
+            object.objectWillChange.send()
+            object[keyPath: storageKeyPath].value = newValue
+            object[keyPath: storageKeyPath].publisher.send(newValue)
+            object.objectDidChange.send()
+        }
+    }
 }

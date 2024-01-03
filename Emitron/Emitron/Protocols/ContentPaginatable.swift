@@ -29,25 +29,25 @@
 import Combine
 
 protocol ContentPaginatable: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
-  var currentPage: Int { get }
-  var startingPage: Int { get }
-  var defaultPageSize: Int { get }
-  var state: DataState { get }
-  var totalContentNum: Int { get }
-  
-  var contents: [ContentListDisplayable] { get }
-  
-  func loadMore()
-  func reload()
+    var currentPage: Int { get }
+    var startingPage: Int { get }
+    var defaultPageSize: Int { get }
+    var state: DataState { get }
+    var totalContentNum: Int { get }
+
+    var contents: [ContentListDisplayable] { get }
+
+    func loadMore()
+    func reload()
 }
 
 extension ContentPaginatable {
-	// All content that currently conforms to this prootocol is 1-indexed
-  var startingPage: Int {
-    1
-  }
-  
-  var defaultPageSize: Int {
-    20
-  }
+    // All content that currently conforms to this prootocol is 1-indexed
+    var startingPage: Int {
+        1
+    }
+
+    var defaultPageSize: Int {
+        20
+    }
 }

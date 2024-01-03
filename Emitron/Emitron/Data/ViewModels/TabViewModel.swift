@@ -29,11 +29,11 @@
 import Combine
 
 enum MainTab: Hashable {
-  case library
-  case downloads
-  case myTutorials
+    case library
+    case downloads
+    case myTutorials
 }
 
 final class TabViewModel: ObservableObject {
-  @Published var selectedTab: MainTab = .library
+    @Published var selectedTab: MainTab = .library
 }

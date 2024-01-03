@@ -29,60 +29,60 @@
 import struct Foundation.URL
 
 struct Attachment: Codable {
-  enum Kind: Int, Codable, CaseIterable, SettingsSelectable {
-    case stream
-    case sdVideoFile
-    case hdVideoFile
-    
-    init?(from string: String) {
-      switch string {
-      case "stream":
-        self = .stream
-      case "sd_video_file":
-        self = .sdVideoFile
-      case "hd_video_file":
-        self = .hdVideoFile
-      default:
-        return nil
-      }
+    enum Kind: Int, Codable, CaseIterable, SettingsSelectable {
+        case stream
+        case sdVideoFile
+        case hdVideoFile
+
+        init?(from string: String) {
+            switch string {
+            case "stream":
+                self = .stream
+            case "sd_video_file":
+                self = .sdVideoFile
+            case "hd_video_file":
+                self = .hdVideoFile
+            default:
+                return nil
+            }
+        }
+
+        static func fromDisplay(_ value: String) -> Kind? {
+            allCases.first { $0.display == value }
+        }
+
+        var display: String {
+            switch self {
+            case .stream:
+                return "stream"
+            case .hdVideoFile:
+                return "HD"
+            case .sdVideoFile:
+                return "SD"
+            }
+        }
+
+        var apiValue: String {
+            switch self {
+            case .stream:
+                return "stream"
+            case .hdVideoFile:
+                return "hd_video_file"
+            case .sdVideoFile:
+                return "sd_video_file"
+            }
+        }
+
+        static var downloads: [Kind] {
+            [.sdVideoFile, .hdVideoFile]
+        }
+
+        static var selectableCases: [Attachment.Kind] {
+            [.sdVideoFile, .hdVideoFile]
+        }
     }
-    
-    static func fromDisplay(_ value: String) -> Kind? {
-      allCases.first { $0.display == value }
-    }
-    
-    var display: String {
-      switch self {
-      case .stream:
-        return "stream"
-      case .hdVideoFile:
-        return "HD"
-      case .sdVideoFile:
-        return "SD"
-      }
-    }
-    
-    var apiValue: String {
-      switch self {
-      case .stream:
-        return "stream"
-      case .hdVideoFile:
-        return "hd_video_file"
-      case .sdVideoFile:
-        return "sd_video_file"
-      }
-    }
-    
-    static var downloads: [Kind] {
-      [.sdVideoFile, .hdVideoFile]
-    }
-    
-    static var selectableCases: [Attachment.Kind] {
-      [.sdVideoFile, .hdVideoFile]
-    }
-  }
-  
-  var id: Int
-  var kind: Kind
-  var url: URL
+
+    var id: Int
+    var kind: Kind
+    var url: URL
 }

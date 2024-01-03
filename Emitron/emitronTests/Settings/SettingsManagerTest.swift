@@ -26,163 +26,163 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import XCTest
 import CombineExpectations
 @testable import Emitron
+import XCTest
 
 class SettingsManagerTest: XCTestCase {
-  private let userDefaultsSuite = "TestSuite"
-  let userModelController = UserMCMock()
-  var settingsManager: SettingsManager!
+    private let userDefaultsSuite = "TestSuite"
+    let userModelController = UserMCMock()
+    var settingsManager: SettingsManager!
 
-  override func setUp() {
-    super.setUp()
-    let userDefaults = UserDefaults(suiteName: userDefaultsSuite)!
-    settingsManager = SettingsManager(
-      userDefaults: userDefaults,
-      userModelController: userModelController
-    )
-  }
-
-  override func tearDown() {
-    super.tearDown()
-    UserDefaults().removePersistentDomain(forName: userDefaultsSuite)
-  }
-  
-  func testResetAllRemovesValuesInUserDefaults() {
-    var persistentDomain: [String: Any]? {
-      UserDefaults().persistentDomain(forName: userDefaultsSuite)
+    override func setUp() {
+        super.setUp()
+        let userDefaults = UserDefaults(suiteName: userDefaultsSuite)!
+        settingsManager = SettingsManager(
+            userDefaults: userDefaults,
+            userModelController: userModelController
+        )
     }
 
-    XCTAssertNil(persistentDomain)
-    
-    settingsManager.playbackToken = "HELLO"
-    settingsManager.playbackSpeed = .double
-    settingsManager.wifiOnlyDownloads = true
-    settingsManager.downloadQuality = .sdVideoFile
-    
-    XCTAssertNotNil(persistentDomain)
-    
-    settingsManager.resetAll()
-    
-    XCTAssertNil(persistentDomain)
-  }
-  
-  func testFiltersPersistedSuccessfully() {
-    settingsManager.filters = [.testFilter]
-    
-    XCTAssertEqual([.testFilter], settingsManager.filters)
-  }
-  
-  func testFiltersDefaultIsEmptyArray() {
-    XCTAssertEqual([], settingsManager.filters)
-  }
-  
-  func testSortFilterPersistedSuccessfully() {
-    settingsManager.sortFilter = .popularity
-    
-    XCTAssertEqual(.popularity, settingsManager.sortFilter)
-  }
-  
-  func testSortFilterDefaultIsNewest() {
-    XCTAssertEqual(.newest, settingsManager.sortFilter)
-  }
-  
-  func testPlaybackTokenSuccessfullyPersisted() {
-    settingsManager.playbackToken = "HELLO"
-    
-    XCTAssertEqual("HELLO", settingsManager.playbackToken)
-  }
-  
-  func testPlaybackTokenDefaultIsNil() {
-    XCTAssertNil(settingsManager.playbackToken)
-  }
-  
-  func testPlaybackSpeedSuccessfullyPersisted() {
-    settingsManager.playbackSpeed = .double
-    
-    XCTAssertEqual(.double, settingsManager.playbackSpeed)
-  }
-  
-  func testPlaybackSpeedDefaultIsStandard() {
-    XCTAssertEqual(.standard, settingsManager.playbackSpeed)
-  }
-  
-  func testPlaybackSpeedPublisherSendsUpdates() throws {
-    let recorder = settingsManager.playbackSpeedPublisher.record()
-    
-    settingsManager.playbackSpeed = .double
-    settingsManager.playbackSpeed = .standard
-    settingsManager.playbackSpeed = .onePointFive
-    
-    let stream = try wait(for: recorder.next(3), timeout: 2)
-    
-    XCTAssertEqual([.double, .standard, .onePointFive], stream)
-  }
-  
-  func testClosedCaptionOnSuccessfullyPersisted() {
-    settingsManager.closedCaptionOn = true
-    
-    XCTAssertTrue(settingsManager.closedCaptionOn)
-  }
-  
-  func testClosedCaptionOnDefaultIsFalse() {
-    XCTAssertFalse(settingsManager.closedCaptionOn)
-  }
-  
-  func testClosedCaptionOnPublisherSendsUpdates() throws {
-    let recorder = settingsManager.closedCaptionOnPublisher.record()
-    
-    settingsManager.closedCaptionOn = false
-    settingsManager.closedCaptionOn = true
-    settingsManager.closedCaptionOn = true
-    
-    let stream = try wait(for: recorder.next(3), timeout: 2)
-    
-    XCTAssertEqual([false, true, true], stream)
-  }
-  
-  func testDownloadQualitySuccessfullyPersisted() {
-    settingsManager.downloadQuality = .sdVideoFile
-    
-    XCTAssertEqual(.sdVideoFile, settingsManager.downloadQuality)
-  }
-  
-  func testDownloadQualityDefaultIsHD() {
-    XCTAssertEqual(.hdVideoFile, settingsManager.downloadQuality)
-  }
-  
-  func testDownloadQualityPublisherSendsUpdates() throws {
-    let recorder = settingsManager.downloadQualityPublisher.record()
-    
-    settingsManager.downloadQuality = .hdVideoFile
-    settingsManager.downloadQuality = .sdVideoFile
-    settingsManager.downloadQuality = .sdVideoFile
-    
-    let stream = try wait(for: recorder.next(3), timeout: 2)
-    
-    XCTAssertEqual([.hdVideoFile, .sdVideoFile, .sdVideoFile], stream)
-  }
-  
-  func testWifiOnlyDownloadsSuccessfullyPersisted() {
-    settingsManager.wifiOnlyDownloads = true
-    
-    XCTAssertTrue(settingsManager.wifiOnlyDownloads)
-  }
-  
-  func testWifiOnlyDownloadsDefaultIsFalse() {
-    XCTAssertFalse(settingsManager.wifiOnlyDownloads)
-  }
-  
-  func testWifiOnlyDownloadsPublisherSendsUpdates() throws {
-    let recorder = settingsManager.wifiOnlyDownloadsPublisher.record()
-    
-    settingsManager.wifiOnlyDownloads = true
-    settingsManager.wifiOnlyDownloads = false
-    settingsManager.wifiOnlyDownloads = false
-    
-    let stream = try wait(for: recorder.next(3), timeout: 2)
-    
-    XCTAssertEqual([true, false, false], stream)
-  }
+    override func tearDown() {
+        super.tearDown()
+        UserDefaults().removePersistentDomain(forName: userDefaultsSuite)
+    }
+
+    func testResetAllRemovesValuesInUserDefaults() {
+        var persistentDomain: [String: Any]? {
+            UserDefaults().persistentDomain(forName: userDefaultsSuite)
+        }
+
+        XCTAssertNil(persistentDomain)
+
+        settingsManager.playbackToken = "HELLO"
+        settingsManager.playbackSpeed = .double
+        settingsManager.wifiOnlyDownloads = true
+        settingsManager.downloadQuality = .sdVideoFile
+
+        XCTAssertNotNil(persistentDomain)
+
+        settingsManager.resetAll()
+
+        XCTAssertNil(persistentDomain)
+    }
+
+    func testFiltersPersistedSuccessfully() {
+        settingsManager.filters = [.testFilter]
+
+        XCTAssertEqual([.testFilter], settingsManager.filters)
+    }
+
+    func testFiltersDefaultIsEmptyArray() {
+        XCTAssertEqual([], settingsManager.filters)
+    }
+
+    func testSortFilterPersistedSuccessfully() {
+        settingsManager.sortFilter = .popularity
+
+        XCTAssertEqual(.popularity, settingsManager.sortFilter)
+    }
+
+    func testSortFilterDefaultIsNewest() {
+        XCTAssertEqual(.newest, settingsManager.sortFilter)
+    }
+
+    func testPlaybackTokenSuccessfullyPersisted() {
+        settingsManager.playbackToken = "HELLO"
+
+        XCTAssertEqual("HELLO", settingsManager.playbackToken)
+    }
+
+    func testPlaybackTokenDefaultIsNil() {
+        XCTAssertNil(settingsManager.playbackToken)
+    }
+
+    func testPlaybackSpeedSuccessfullyPersisted() {
+        settingsManager.playbackSpeed = .double
+
+        XCTAssertEqual(.double, settingsManager.playbackSpeed)
+    }
+
+    func testPlaybackSpeedDefaultIsStandard() {
+        XCTAssertEqual(.standard, settingsManager.playbackSpeed)
+    }
+
+    func testPlaybackSpeedPublisherSendsUpdates() throws {
+        let recorder = settingsManager.playbackSpeedPublisher.record()
+
+        settingsManager.playbackSpeed = .double
+        settingsManager.playbackSpeed = .standard
+        settingsManager.playbackSpeed = .onePointFive
+
+        let stream = try wait(for: recorder.next(3), timeout: 2)
+
+        XCTAssertEqual([.double, .standard, .onePointFive], stream)
+    }
+
+    func testClosedCaptionOnSuccessfullyPersisted() {
+        settingsManager.closedCaptionOn = true
+
+        XCTAssertTrue(settingsManager.closedCaptionOn)
+    }
+
+    func testClosedCaptionOnDefaultIsFalse() {
+        XCTAssertFalse(settingsManager.closedCaptionOn)
+    }
+
+    func testClosedCaptionOnPublisherSendsUpdates() throws {
+        let recorder = settingsManager.closedCaptionOnPublisher.record()
+
+        settingsManager.closedCaptionOn = false
+        settingsManager.closedCaptionOn = true
+        settingsManager.closedCaptionOn = true
+
+        let stream = try wait(for: recorder.next(3), timeout: 2)
+
+        XCTAssertEqual([false, true, true], stream)
+    }
+
+    func testDownloadQualitySuccessfullyPersisted() {
+        settingsManager.downloadQuality = .sdVideoFile
+
+        XCTAssertEqual(.sdVideoFile, settingsManager.downloadQuality)
+    }
+
+    func testDownloadQualityDefaultIsHD() {
+        XCTAssertEqual(.hdVideoFile, settingsManager.downloadQuality)
+    }
+
+    func testDownloadQualityPublisherSendsUpdates() throws {
+        let recorder = settingsManager.downloadQualityPublisher.record()
+
+        settingsManager.downloadQuality = .hdVideoFile
+        settingsManager.downloadQuality = .sdVideoFile
+        settingsManager.downloadQuality = .sdVideoFile
+
+        let stream = try wait(for: recorder.next(3), timeout: 2)
+
+        XCTAssertEqual([.hdVideoFile, .sdVideoFile, .sdVideoFile], stream)
+    }
+
+    func testWifiOnlyDownloadsSuccessfullyPersisted() {
+        settingsManager.wifiOnlyDownloads = true
+
+        XCTAssertTrue(settingsManager.wifiOnlyDownloads)
+    }
+
+    func testWifiOnlyDownloadsDefaultIsFalse() {
+        XCTAssertFalse(settingsManager.wifiOnlyDownloads)
+    }
+
+    func testWifiOnlyDownloadsPublisherSendsUpdates() throws {
+        let recorder = settingsManager.wifiOnlyDownloadsPublisher.record()
+
+        settingsManager.wifiOnlyDownloads = true
+        settingsManager.wifiOnlyDownloads = false
+        settingsManager.wifiOnlyDownloads = false
+
+        let stream = try wait(for: recorder.next(3), timeout: 2)
+
+        XCTAssertEqual([true, false, false], stream)
+    }
 }

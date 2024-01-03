@@ -28,18 +28,18 @@
 
 import GRDB
 
-extension Category: FetchableRecord, TableRecord, PersistableRecord { }
+extension Category: FetchableRecord, TableRecord, PersistableRecord {}
 
 extension Category {
-  enum Columns {
-    static let id = Column("id")
-    static let name = Column("name")
-    static let uri = Column("uri")
-    static let ordinal = Column("ordinal")
-  }
+    enum Columns {
+        static let id = Column("id")
+        static let name = Column("name")
+        static let uri = Column("uri")
+        static let ordinal = Column("ordinal")
+    }
 }
 
 extension Category {
-  static let contentCategories = hasMany(ContentCategory.self)
-  static let contents = hasMany(Content.self, through: contentCategories, using: ContentCategory.content)
+    static let contentCategories = hasMany(ContentCategory.self)
+    static let contents = hasMany(Content.self, through: contentCategories, using: ContentCategory.content)
 }

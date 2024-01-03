@@ -27,11 +27,11 @@
 // THE SOFTWARE.
 
 class PermissionsService: Service {
+    // MARK: - Internal
 
-  // MARK: - Internal
-  func permissions(completion: @escaping (_ response: Result<PermissionsRequest.Response, RWAPIError>) -> Void) {
-    let request = PermissionsRequest()
-    makeAndProcessRequest(request: request,
-                          completion: completion)
-  }
+    func permissions(completion: @escaping (_ response: Result<PermissionsRequest.Response, RWAPIError>) -> Void) {
+        let request = PermissionsRequest()
+        makeAndProcessRequest(request: request,
+                              completion: completion)
+    }
 }

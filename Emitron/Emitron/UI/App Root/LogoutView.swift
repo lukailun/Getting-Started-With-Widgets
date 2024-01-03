@@ -29,44 +29,43 @@
 import SwiftUI
 
 struct LogoutView: View {
-  @EnvironmentObject var sessionController: SessionController
-  
-  var body: some View {
-    VStack {
-      
-      Image("logo")
-        .padding([.top], 88)
-      
-      Spacer()
-      
-      Text("No access")
-        .font(.uiTitle1)
-        .foregroundColor(.titleText)
-        .padding([.bottom], 15)
-        .multilineTextAlignment(.center)
-      
-      Text("The raywenderlich app is only available to members.")
-        .lineSpacing(8)
-        .font(.uiLabel)
-        .foregroundColor(.contentText)
-        .multilineTextAlignment(.center)
-        .padding([.leading, .trailing], 55)
-      
-      Spacer()
-      
-      MainButtonView(title: "Sign Out", type: .destructive(withArrow: true)) {
-        self.sessionController.logout()
-      }
-      .padding([.leading, .trailing], 18)
-      .padding([.bottom], 38)
+    @EnvironmentObject var sessionController: SessionController
+
+    var body: some View {
+        VStack {
+            Image("logo")
+                .padding([.top], 88)
+
+            Spacer()
+
+            Text("No access")
+                .font(.uiTitle1)
+                .foregroundColor(.titleText)
+                .padding([.bottom], 15)
+                .multilineTextAlignment(.center)
+
+            Text("The raywenderlich app is only available to members.")
+                .lineSpacing(8)
+                .font(.uiLabel)
+                .foregroundColor(.contentText)
+                .multilineTextAlignment(.center)
+                .padding([.leading, .trailing], 55)
+
+            Spacer()
+
+            MainButtonView(title: "Sign Out", type: .destructive(withArrow: true)) {
+                self.sessionController.logout()
+            }
+            .padding([.leading, .trailing], 18)
+            .padding([.bottom], 38)
+        }
+        .background(Color.backgroundColor)
+        .edgesIgnoringSafeArea([.all])
     }
-    .background(Color.backgroundColor)
-    .edgesIgnoringSafeArea([.all])
-  }
 }
 
 struct LogoutView_Previews: PreviewProvider {
-  static var previews: some View {
-    LogoutView()
-  }
+    static var previews: some View {
+        LogoutView()
+    }
 }

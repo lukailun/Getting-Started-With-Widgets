@@ -28,20 +28,20 @@
 
 import GRDB
 
-extension Domain: FetchableRecord, TableRecord, PersistableRecord { }
+extension Domain: FetchableRecord, TableRecord, PersistableRecord {}
 
 extension Domain {
-  enum Columns {
-    static let id = Column("id")
-    static let name = Column("name")
-    static let slug = Column("slug")
-    static let description = Column("description")
-    static let level = Column("level")
-    static let ordinal = Column("ordinal")
-  }
+    enum Columns {
+        static let id = Column("id")
+        static let name = Column("name")
+        static let slug = Column("slug")
+        static let description = Column("description")
+        static let level = Column("level")
+        static let ordinal = Column("ordinal")
+    }
 }
 
 extension Domain {
-  static let contentDomains = hasMany(ContentDomain.self)
-  static let contents = hasMany(Content.self, through: contentDomains, using: ContentDomain.content)
+    static let contentDomains = hasMany(ContentDomain.self)
+    static let contents = hasMany(Content.self, through: contentDomains, using: ContentDomain.content)
 }

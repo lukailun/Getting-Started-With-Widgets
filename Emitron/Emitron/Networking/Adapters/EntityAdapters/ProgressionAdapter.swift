@@ -27,36 +27,36 @@
 // THE SOFTWARE.
 
 struct ProgressionAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Progression {
-    guard resource.entityType == .progression else {
-      throw EntityAdapterError.invalidResourceTypeForAdapter
+    static func process(resource: JSONAPIResource, relationships _: [EntityRelationship] = []) throws -> Progression {
+        guard resource.entityType == .progression else {
+            throw EntityAdapterError.invalidResourceTypeForAdapter
+        }
+
+        guard let target = resource.attributes["target"] as? Int,
+              let progress = resource.attributes["progress"] as? Int,
+              let createdAtString = resource.attributes["created_at"] as? String,
+              let createdAt = createdAtString.iso8601,
+              let updatedAtString = resource.attributes["updated_at"] as? String,
+              let updatedAt = updatedAtString.iso8601
+        /* Note: We're purposefully ignoring the following attributes:
+         - finished
+         - percent_complete
+         */
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        guard let content = resource.relationships.first(where: { $0.type == "content" }),
+              let contentId = content.data.first?.id
+        else {
+            throw EntityAdapterError.invalidOrMissingRelationships
+        }
+
+        return Progression(id: resource.id,
+                           target: target,
+                           progress: progress,
+                           createdAt: createdAt,
+                           updatedAt: updatedAt,
+                           contentId: contentId)
     }
-    
-    guard let target = resource.attributes["target"] as? Int,
-      let progress = resource.attributes["progress"] as? Int,
-      let createdAtString = resource.attributes["created_at"] as? String,
-      let createdAt = createdAtString.iso8601,
-      let updatedAtString = resource.attributes["updated_at"] as? String,
-      let updatedAt = updatedAtString.iso8601
-      /* Note: We're purposefully ignoring the following attributes:
-       - finished
-       - percent_complete
-       */
-      else {
-        throw EntityAdapterError.invalidOrMissingAttributes
-    }
-    
-    guard let content = resource.relationships.first(where: { $0.type == "content" }),
-      let contentId = content.data.first?.id
-      else {
-        throw EntityAdapterError.invalidOrMissingRelationships
-    }
-    
-    return Progression(id: resource.id,
-                       target: target,
-                       progress: progress,
-                       createdAt: createdAt,
-                       updatedAt: updatedAt,
-                       contentId: contentId)
-  }
 }

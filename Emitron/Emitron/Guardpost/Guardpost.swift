@@ -29,130 +29,135 @@
 import AuthenticationServices
 
 public enum LoginError: Error {
-  case unableToCreateLoginUrl
-  case errorResponseFromGuardpost(Error?)
-  case unableToDecodeGuardpostResponse
-  case invalidSignature
-  case unableToCreateValidUser
-  
-  public var localizedDescription: String {
-    let prefix = "GuardpostLoginError::"
-    switch self {
-    case .unableToCreateLoginUrl:
-      return "\(prefix)UnableToCreateLoginUrl"
-    case .errorResponseFromGuardpost(let error):
-      return "\(prefix)GuardpostLoginError:: [Error: \(error?.localizedDescription ?? "UNKNOWN")]"
-    case .unableToDecodeGuardpostResponse:
-      return "\(prefix)UnableToDecodeGuardpostResponse"
-    case .invalidSignature:
-      return "\(prefix)InvalidSignature"
-    case .unableToCreateValidUser:
-      return "\(prefix)UnableToCreateValidUser"
+    case unableToCreateLoginUrl
+    case errorResponseFromGuardpost(Error?)
+    case unableToDecodeGuardpostResponse
+    case invalidSignature
+    case unableToCreateValidUser
+
+    public var localizedDescription: String {
+        let prefix = "GuardpostLoginError::"
+        switch self {
+        case .unableToCreateLoginUrl:
+            return "\(prefix)UnableToCreateLoginUrl"
+        case let .errorResponseFromGuardpost(error):
+            return "\(prefix)GuardpostLoginError:: [Error: \(error?.localizedDescription ?? "UNKNOWN")]"
+        case .unableToDecodeGuardpostResponse:
+            return "\(prefix)UnableToDecodeGuardpostResponse"
+        case .invalidSignature:
+            return "\(prefix)InvalidSignature"
+        case .unableToCreateValidUser:
+            return "\(prefix)UnableToCreateValidUser"
+        }
     }
-  }
 }
 
 public class Guardpost {
-  // MARK: - Properties
-  private let baseUrl: String
-  private let urlScheme: String
-  private let ssoSecret: String
-  private var _currentUser: User?
-  private var authSession: ASWebAuthenticationSession?
-  private let persistenceStore: PersistenceStore
-  public weak var presentationContextDelegate: ASWebAuthenticationPresentationContextProviding?
+    // MARK: - Properties
 
-  public var currentUser: User? {
-    if _currentUser == .none {
-      _currentUser = persistenceStore.userFromKeychain()
-    }
-    return _currentUser
-  }
+    private let baseUrl: String
+    private let urlScheme: String
+    private let ssoSecret: String
+    private var _currentUser: User?
+    private var authSession: ASWebAuthenticationSession?
+    private let persistenceStore: PersistenceStore
+    public weak var presentationContextDelegate: ASWebAuthenticationPresentationContextProviding?
 
-  // MARK: - Initializers
-  init(baseUrl: String,
-       urlScheme: String,
-       ssoSecret: String,
-       persistenceStore: PersistenceStore) {
-    self.baseUrl = baseUrl
-    self.urlScheme = urlScheme
-    self.ssoSecret = ssoSecret
-    self.persistenceStore = persistenceStore
-  }
-
-  public func login(callback: @escaping (Result<User, LoginError>) -> Void) {
-    let guardpostLogin = "\(baseUrl)/v2/sso/login"
-    let returnUrl = "\(urlScheme)sessions/create"
-    let ssoRequest = SingleSignOnRequest(endpoint: guardpostLogin,
-                                         secret: ssoSecret,
-                                         callbackUrl: returnUrl)
-
-    guard let loginUrl = ssoRequest.url else {
-      let result: Result<User, LoginError> = .failure(.unableToCreateLoginUrl)
-      return asyncResponse(callback: callback, result: result)
+    public var currentUser: User? {
+        if _currentUser == .none {
+            _currentUser = persistenceStore.userFromKeychain()
+        }
+        return _currentUser
     }
 
-    authSession = ASWebAuthenticationSession(url: loginUrl,
-                                             callbackURLScheme: urlScheme) { url, error in
+    // MARK: - Initializers
 
-      var result: Result<User, LoginError>
-
-      guard let url = url else {
-        result = .failure(LoginError.errorResponseFromGuardpost(error))
-        return self.asyncResponse(callback: callback, result: result)
-      }
-
-      guard let response = SingleSignOnResponse(request: ssoRequest, responseUrl: url) else {
-        result = .failure(LoginError.unableToDecodeGuardpostResponse)
-        return self.asyncResponse(callback: callback, result: result)
-      }
-
-      if !response.isValid {
-        result = .failure(LoginError.invalidSignature)
-        return self.asyncResponse(callback: callback, result: result)
-      }
-
-      guard let user = response.user else {
-        result = .failure(LoginError.unableToCreateValidUser)
-        return self.asyncResponse(callback: callback, result: result)
-      }
-
-      self.persistenceStore.persistUserToKeychain(user: user)
-      self._currentUser = user
-
-      result = Result<User, LoginError>.success(user)
-      return self.asyncResponse(callback: callback, result: result)
+    init(baseUrl: String,
+         urlScheme: String,
+         ssoSecret: String,
+         persistenceStore: PersistenceStore)
+    {
+        self.baseUrl = baseUrl
+        self.urlScheme = urlScheme
+        self.ssoSecret = ssoSecret
+        self.persistenceStore = persistenceStore
     }
 
-    authSession?.presentationContextProvider = presentationContextDelegate
-    // This will prevent sharing cookies with Safari, which means no auto-login
-    // However, it also means that you can actually log out, which is good, I guess.
-    authSession?.prefersEphemeralWebBrowserSession = false
-    authSession?.start()
-  }
+    public func login(callback: @escaping (Result<User, LoginError>) -> Void) {
+        let guardpostLogin = "\(baseUrl)/v2/sso/login"
+        let returnUrl = "\(urlScheme)sessions/create"
+        let ssoRequest = SingleSignOnRequest(endpoint: guardpostLogin,
+                                             secret: ssoSecret,
+                                             callbackUrl: returnUrl)
 
-  public func cancelLogin() {
-    authSession?.cancel()
-  }
+        guard let loginUrl = ssoRequest.url else {
+            let result: Result<User, LoginError> = .failure(.unableToCreateLoginUrl)
+            return asyncResponse(callback: callback, result: result)
+        }
 
-  public func logout() {
-    persistenceStore.removeUserFromKeychain()
-    _currentUser = .none
-  }
-  
-  public func updateUser(with user: User?) {
-    _currentUser = user
-    if let user = user {
-      persistenceStore.persistUserToKeychain(user: user)
-    } else {
-      persistenceStore.removeUserFromKeychain()
+        authSession = ASWebAuthenticationSession(url: loginUrl,
+                                                 callbackURLScheme: urlScheme)
+        { url, error in
+
+            var result: Result<User, LoginError>
+
+            guard let url = url else {
+                result = .failure(LoginError.errorResponseFromGuardpost(error))
+                return self.asyncResponse(callback: callback, result: result)
+            }
+
+            guard let response = SingleSignOnResponse(request: ssoRequest, responseUrl: url) else {
+                result = .failure(LoginError.unableToDecodeGuardpostResponse)
+                return self.asyncResponse(callback: callback, result: result)
+            }
+
+            if !response.isValid {
+                result = .failure(LoginError.invalidSignature)
+                return self.asyncResponse(callback: callback, result: result)
+            }
+
+            guard let user = response.user else {
+                result = .failure(LoginError.unableToCreateValidUser)
+                return self.asyncResponse(callback: callback, result: result)
+            }
+
+            self.persistenceStore.persistUserToKeychain(user: user)
+            self._currentUser = user
+
+            result = Result<User, LoginError>.success(user)
+            return self.asyncResponse(callback: callback, result: result)
+        }
+
+        authSession?.presentationContextProvider = presentationContextDelegate
+        // This will prevent sharing cookies with Safari, which means no auto-login
+        // However, it also means that you can actually log out, which is good, I guess.
+        authSession?.prefersEphemeralWebBrowserSession = false
+        authSession?.start()
     }
-  }
 
-  private func asyncResponse(callback: @escaping (Result<User, LoginError>) -> Void,
-                             result: Result<User, LoginError>) {
-    DispatchQueue.global(qos: .userInitiated).async {
-      callback(result)
+    public func cancelLogin() {
+        authSession?.cancel()
     }
-  }
+
+    public func logout() {
+        persistenceStore.removeUserFromKeychain()
+        _currentUser = .none
+    }
+
+    public func updateUser(with user: User?) {
+        _currentUser = user
+        if let user = user {
+            persistenceStore.persistUserToKeychain(user: user)
+        } else {
+            persistenceStore.removeUserFromKeychain()
+        }
+    }
+
+    private func asyncResponse(callback: @escaping (Result<User, LoginError>) -> Void,
+                               result: Result<User, LoginError>)
+    {
+        DispatchQueue.global(qos: .userInitiated).async {
+            callback(result)
+        }
+    }
 }

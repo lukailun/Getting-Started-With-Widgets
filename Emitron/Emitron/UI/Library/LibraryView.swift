@@ -29,139 +29,138 @@
 import SwiftUI
 
 private extension CGFloat {
-  static let filterButtonSide: CGFloat = 27
-  static let searchFilterPadding: CGFloat = 15
-  static let filterSpacing: CGFloat = 6
-  static let filtersPaddingTop: CGFloat = 12
+    static let filterButtonSide: CGFloat = 27
+    static let searchFilterPadding: CGFloat = 15
+    static let filterSpacing: CGFloat = 6
+    static let filtersPaddingTop: CGFloat = 12
 }
 
 struct LibraryView: View {
-  @ObservedObject var filters: Filters
-  @ObservedObject var libraryRepository: LibraryRepository
-  @State var filtersPresented: Bool = false
+    @ObservedObject var filters: Filters
+    @ObservedObject var libraryRepository: LibraryRepository
+    @State var filtersPresented: Bool = false
 
-  var body: some View {
-    contentView
-      .navigationBarTitle(
-        Text(Constants.library)
-      )
-      .sheet(isPresented: $filtersPresented) {
-        FiltersView(libraryRepository: self.libraryRepository, filters: self.filters)
-          .background(Color.backgroundColor)
-      }
-  }
-  
-  private var contentControlsSection: some View {
-    VStack {
-      searchAndFilterControls
-        .padding([.top], 15)
-      
-      if !libraryRepository.currentAppliedFilters.isEmpty {
-        filtersView
-          .padding([.top], 10)
-      }
-      numberAndSortView
-        .padding([.vertical], 10)
-    }
-      .padding([.horizontal], .sidePadding)
-      .background(Color.backgroundColor)
-  }
-
-  private var searchField: some View {
-    SearchFieldView(searchString: filters.searchStr) { searchString in
-      self.filters.searchStr = searchString
-      self.updateFilters()
-    }
-  }
-
-  private var searchAndFilterControls: some View {
-    HStack {
-      searchField
-      
-      Spacer()
-
-      Button(action: {
-        self.filtersPresented = true
-      }, label: {
-        Image("filter")
-          .foregroundColor(.iconButton)
-          .frame(width: .filterButtonSide, height: .filterButtonSide)
-      })
-        .accessibility(label: Text("Filter Library"))
-        .padding([.horizontal], .searchFilterPadding)
-    }
-  }
-
-  private var numberAndSortView: some View {
-    HStack {
-      Text("\(libraryRepository.totalContentNum) \(Constants.tutorials)")
-        .font(.uiLabelBold)
-        .foregroundColor(.contentText)
-
-      Spacer()
-
-      Button(action: {
-        // Change sort
-        self.changeSort()
-      }) {
-        HStack {
-          Image("sort")
-            .foregroundColor(.textButtonText)
-
-          Text(filters.sortFilter.name)
-            .font(.uiLabelBold)
-            .foregroundColor(.textButtonText)
-        }
-      }
-    }
-  }
-
-  private var filtersView: some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-      HStack(alignment: .top, spacing: .filterSpacing) {
-
-        if self.filters.applied.count > 1 {
-          AppliedFilterTagButton(name: Constants.clearAll, type: .destructive) {
-            self.filters.removeAll()
-            self.libraryRepository.filters = self.filters
-          }
-        }
-        
-        ForEach(self.filters.applied, id: \.self) { filter in
-          AppliedFilterTagButton(name: filter.filterName, type: .default) {
-            if filter.isSearch {
-              self.filters.searchQuery = nil
-            } else {
-              filter.isOn.toggle()
-              self.filters.all.update(with: filter)
+    var body: some View {
+        contentView
+            .navigationBarTitle(
+                Text(Constants.library)
+            )
+            .sheet(isPresented: $filtersPresented) {
+                FiltersView(libraryRepository: self.libraryRepository, filters: self.filters)
+                    .background(Color.backgroundColor)
             }
-            self.filters.commitUpdates()
-            self.libraryRepository.filters = self.filters
-          }
-        }
-      }
-        .padding([.horizontal], .sidePadding)
     }
-      .padding([.horizontal], -.sidePadding)
-  }
 
-  private func updateFilters() {
-    filters.searchQuery = filters.searchStr
-    libraryRepository.filters = filters
-  }
+    private var contentControlsSection: some View {
+        VStack {
+            searchAndFilterControls
+                .padding([.top], 15)
 
-  private func changeSort() {
-    filters.changeSortFilter()
-    libraryRepository.filters = filters
-  }
+            if !libraryRepository.currentAppliedFilters.isEmpty {
+                filtersView
+                    .padding([.top], 10)
+            }
+            numberAndSortView
+                .padding([.vertical], 10)
+        }
+        .padding([.horizontal], .sidePadding)
+        .background(Color.backgroundColor)
+    }
 
-  private var contentView: some View {
-    let header = AnyView(contentControlsSection)
-    return ContentListView(
-      contentRepository: libraryRepository,
-      downloadAction: DownloadService.current,
-      contentScreen: .library,
-      headerView: header
-    )
-  }
+    private var searchField: some View {
+        SearchFieldView(searchString: filters.searchStr) { searchString in
+            self.filters.searchStr = searchString
+            self.updateFilters()
+        }
+    }
+
+    private var searchAndFilterControls: some View {
+        HStack {
+            searchField
+
+            Spacer()
+
+            Button(action: {
+                self.filtersPresented = true
+            }, label: {
+                Image("filter")
+                    .foregroundColor(.iconButton)
+                    .frame(width: .filterButtonSide, height: .filterButtonSide)
+            })
+            .accessibility(label: Text("Filter Library"))
+            .padding([.horizontal], .searchFilterPadding)
+        }
+    }
+
+    private var numberAndSortView: some View {
+        HStack {
+            Text("\(libraryRepository.totalContentNum) \(Constants.tutorials)")
+                .font(.uiLabelBold)
+                .foregroundColor(.contentText)
+
+            Spacer()
+
+            Button(action: {
+                // Change sort
+                self.changeSort()
+            }) {
+                HStack {
+                    Image("sort")
+                        .foregroundColor(.textButtonText)
+
+                    Text(filters.sortFilter.name)
+                        .font(.uiLabelBold)
+                        .foregroundColor(.textButtonText)
+                }
+            }
+        }
+    }
+
+    private var filtersView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .top, spacing: .filterSpacing) {
+                if self.filters.applied.count > 1 {
+                    AppliedFilterTagButton(name: Constants.clearAll, type: .destructive) {
+                        self.filters.removeAll()
+                        self.libraryRepository.filters = self.filters
+                    }
+                }
+
+                ForEach(self.filters.applied, id: \.self) { filter in
+                    AppliedFilterTagButton(name: filter.filterName, type: .default) {
+                        if filter.isSearch {
+                            self.filters.searchQuery = nil
+                        } else {
+                            filter.isOn.toggle()
+                            self.filters.all.update(with: filter)
+                        }
+                        self.filters.commitUpdates()
+                        self.libraryRepository.filters = self.filters
+                    }
+                }
+            }
+            .padding([.horizontal], .sidePadding)
+        }
+        .padding([.horizontal], -.sidePadding)
+    }
+
+    private func updateFilters() {
+        filters.searchQuery = filters.searchStr
+        libraryRepository.filters = filters
+    }
+
+    private func changeSort() {
+        filters.changeSortFilter()
+        libraryRepository.filters = filters
+    }
+
+    private var contentView: some View {
+        let header = AnyView(contentControlsSection)
+        return ContentListView(
+            contentRepository: libraryRepository,
+            downloadAction: DownloadService.current,
+            contentScreen: .library,
+            headerView: header
+        )
+    }
 }

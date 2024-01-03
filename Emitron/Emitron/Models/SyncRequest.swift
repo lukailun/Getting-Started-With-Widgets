@@ -29,59 +29,59 @@
 import struct Foundation.Date
 
 struct SyncRequest: Equatable, Codable {
-  enum Category: Int, Equatable, Codable {
-    case bookmark
-    case progress
-    case watchStat
-  }
-  
-  enum Synchronisation: Int, Equatable, Codable {
-    case createBookmark
-    case deleteBookmark
-    case deleteProgression
-    case markContentComplete
-    case updateProgress
-    case recordWatchStats
-  }
-  
-  enum Attribute: Equatable {
-    case progress(Int)
-    case time(Int)
-  }
-  
-  var id: Int64?
-  var contentId: Int
-  var associatedRecordId: Int?
-  var category: Category
-  var type: Synchronisation
-  var date: Date
-  var attributes: [Attribute]
+    enum Category: Int, Equatable, Codable {
+        case bookmark
+        case progress
+        case watchStat
+    }
+
+    enum Synchronisation: Int, Equatable, Codable {
+        case createBookmark
+        case deleteBookmark
+        case deleteProgression
+        case markContentComplete
+        case updateProgress
+        case recordWatchStats
+    }
+
+    enum Attribute: Equatable {
+        case progress(Int)
+        case time(Int)
+    }
+
+    var id: Int64?
+    var contentId: Int
+    var associatedRecordId: Int?
+    var category: Category
+    var type: Synchronisation
+    var date: Date
+    var attributes: [Attribute]
 }
 
 extension SyncRequest.Attribute: Encodable {
-  enum CodingKeys: CodingKey {
-    case progress
-    case time
-  }
-  
-  func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    switch self {
-    case .progress(let value), .time(let value):
-      try container.encode(value, forKey: .progress)
+    enum CodingKeys: CodingKey {
+        case progress
+        case time
     }
-  }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case let .progress(value), let .time(value):
+            try container.encode(value, forKey: .progress)
+        }
+    }
 }
 
 extension SyncRequest.Attribute: Decodable {
-  init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    do {
-      let progress = try container.decode(Int.self, forKey: .progress)
-      self = .progress(progress)
-    } catch {
-      let time = try container.decode(Int.self, forKey: .time)
-      self = .time(time)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        do {
+            let progress = try container.decode(Int.self, forKey: .progress)
+            self = .progress(progress)
+        } catch {
+            let time = try container.decode(Int.self, forKey: .time)
+            self = .time(time)
+        }
     }
-  }
 }

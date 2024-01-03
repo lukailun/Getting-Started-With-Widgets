@@ -26,18 +26,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import UIKit
 import SwiftUI
+import UIKit
 
 struct ActivityIndicator: UIViewRepresentable {
-  var style: UIActivityIndicatorView.Style = .medium
-  
-  func makeUIView(context: Context) -> UIActivityIndicatorView {
-    let view = UIActivityIndicatorView(style: style)
-    return view
-  }
-  
-  func updateUIView(_ activityIndicator: UIActivityIndicatorView, context: Context) {
-    activityIndicator.startAnimating()
-  }
+    var style: UIActivityIndicatorView.Style = .medium
+
+    func makeUIView(context _: Context) -> UIActivityIndicatorView {
+        let view = UIActivityIndicatorView(style: style)
+        return view
+    }
+
+    func updateUIView(_ activityIndicator: UIActivityIndicatorView, context _: Context) {
+        activityIndicator.startAnimating()
+    }
 }

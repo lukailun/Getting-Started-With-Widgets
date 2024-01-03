@@ -29,59 +29,59 @@
 import struct Foundation.Date
 
 struct Progression: Codable {
-  var id: Int
-  var target: Int
-  var progress: Int
-  var createdAt: Date
-  var updatedAt: Date
-  var contentId: Int
+    var id: Int
+    var target: Int
+    var progress: Int
+    var createdAt: Date
+    var updatedAt: Date
+    var contentId: Int
 }
 
 extension Progression: Equatable {
-  static func == (lhs: Progression, rhs: Progression) -> Bool {
-    lhs.id == rhs.id &&
-      lhs.target == rhs.target &&
-      lhs.progress == rhs.progress &&
-      lhs.createdAt.equalEnough(to: rhs.createdAt) &&
-      lhs.updatedAt.equalEnough(to: rhs.updatedAt) &&
-      lhs.contentId == rhs.contentId
-  }
-}
-
-extension Progression {
-  var finished: Bool {
-    // This is a really nasty hack. And I take full responsbility for it. But
-    // I'm also incredibly lazy. Basically, collections need to be fully complete
-    // before being marked as complete. Whereas videos should only be 90% complete.
-    // Since we don't know whether this is a video or a collection, we're gonna
-    // make the assumption that collections have fewer than 60 items, and videos
-    // are longer than a minute. We should probably fix this another day. I am
-    // reasonably confident that we never will.
-    if target <= 60 {
-      return target == progress
-    } else {
-      return progressProportion > 0.9
+    static func == (lhs: Progression, rhs: Progression) -> Bool {
+        lhs.id == rhs.id &&
+            lhs.target == rhs.target &&
+            lhs.progress == rhs.progress &&
+            lhs.createdAt.equalEnough(to: rhs.createdAt) &&
+            lhs.updatedAt.equalEnough(to: rhs.updatedAt) &&
+            lhs.contentId == rhs.contentId
     }
-  }
-  
-  var progressProportion: Double {
-    Double(progress) / Double(target)
-  }
 }
 
 extension Progression {
-  static func completed(for content: Content) -> Progression {
-    withProgress(for: content, progress: content.duration)
-  }
-  
-  static func withProgress(for content: Content, progress: Int) -> Progression {
-    Progression(
-      id: -1,
-      target: content.duration,
-      progress: progress,
-      createdAt: Date(),
-      updatedAt: Date(),
-      contentId: content.id
-    )
-  }
+    var finished: Bool {
+        // This is a really nasty hack. And I take full responsbility for it. But
+        // I'm also incredibly lazy. Basically, collections need to be fully complete
+        // before being marked as complete. Whereas videos should only be 90% complete.
+        // Since we don't know whether this is a video or a collection, we're gonna
+        // make the assumption that collections have fewer than 60 items, and videos
+        // are longer than a minute. We should probably fix this another day. I am
+        // reasonably confident that we never will.
+        if target <= 60 {
+            return target == progress
+        } else {
+            return progressProportion > 0.9
+        }
+    }
+
+    var progressProportion: Double {
+        Double(progress) / Double(target)
+    }
+}
+
+extension Progression {
+    static func completed(for content: Content) -> Progression {
+        withProgress(for: content, progress: content.duration)
+    }
+
+    static func withProgress(for content: Content, progress: Int) -> Progression {
+        Progression(
+            id: -1,
+            target: content.duration,
+            progress: progress,
+            createdAt: Date(),
+            updatedAt: Date(),
+            contentId: content.id
+        )
+    }
 }

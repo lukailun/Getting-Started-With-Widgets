@@ -27,15 +27,14 @@
 // THE SOFTWARE.
 
 struct ContentCategoryAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource = JSONAPIResource(), relationships: [EntityRelationship]) throws -> [ContentCategory] {
-    
-    relationships.filter {
-      $0.from.type == .content && $0.to.type == .category
+    static func process(resource _: JSONAPIResource = JSONAPIResource(), relationships: [EntityRelationship]) throws -> [ContentCategory] {
+        relationships.filter {
+            $0.from.type == .content && $0.to.type == .category
+        }
+        .map {
+            ContentCategory(id: nil,
+                            contentId: $0.from.id,
+                            categoryId: $0.to.id)
+        }
     }
-    .map {
-      ContentCategory(id: nil,
-                      contentId: $0.from.id,
-                      categoryId: $0.to.id)
-    }
-  }
 }

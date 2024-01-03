@@ -27,23 +27,23 @@
 // THE SOFTWARE.
 
 struct DomainAdapter: EntityAdapter {
-  static func process(resource: JSONAPIResource, relationships: [EntityRelationship] = []) throws -> Domain {
-    guard resource.entityType == .domain else { throw EntityAdapterError.invalidResourceTypeForAdapter }
-    
-    guard let name = resource.attributes["name"] as? String,
-      let slug = resource.attributes["slug"] as? String,
-      let domainLevelString = resource.attributes["level"] as? String,
-      let level = Domain.Level(from: domainLevelString),
-      let ordinal = resource.attributes["ordinal"] as? Int
-    else {
-      throw EntityAdapterError.invalidOrMissingAttributes
+    static func process(resource: JSONAPIResource, relationships _: [EntityRelationship] = []) throws -> Domain {
+        guard resource.entityType == .domain else { throw EntityAdapterError.invalidResourceTypeForAdapter }
+
+        guard let name = resource.attributes["name"] as? String,
+              let slug = resource.attributes["slug"] as? String,
+              let domainLevelString = resource.attributes["level"] as? String,
+              let level = Domain.Level(from: domainLevelString),
+              let ordinal = resource.attributes["ordinal"] as? Int
+        else {
+            throw EntityAdapterError.invalidOrMissingAttributes
+        }
+
+        return Domain(id: resource.id,
+                      name: name,
+                      slug: slug,
+                      description: resource.attributes["description"] as? String,
+                      level: level,
+                      ordinal: ordinal)
     }
-    
-    return Domain(id: resource.id,
-                  name: name,
-                  slug: slug,
-                  description: resource.attributes["description"] as? String,
-                  level: level,
-                  ordinal: ordinal)
-  }
 }

@@ -29,10 +29,10 @@
 import SwiftUI
 
 struct CardViewContainer: View {
-  @State var model: ContentListDisplayable
-  @State var dynamicContentViewModel: DynamicContentViewModel
-  
-  var body: some View {
-    CardView(model: model, dynamicContentViewModel: dynamicContentViewModel)
-  }
+    @State var model: ContentListDisplayable
+    @State var dynamicContentViewModel: DynamicContentViewModel
+
+    var body: some View {
+        CardView(model: model, dynamicContentViewModel: dynamicContentViewModel)
+    }
 }
