@@ -29,6 +29,12 @@
 import WidgetKit
 import SwiftUI
 
+extension FileManager {
+  static func sharedContainerURL() -> URL {
+    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.lukailun.emitron.contents")!
+  }
+}
+
 let snapshotEntry = WidgetContent(
   name: "iOS Concurrency with GCD and Operations",
   cardViewSubtitle: "iOS & Swift",
@@ -48,18 +54,32 @@ struct Provider: TimelineProvider {
         let entry = snapshotEntry
         completion(entry)
     }
+  
+  func readContents() -> [WidgetContent] {
+    var contents: [WidgetContent] = []
+    let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
+    print(">>> \(archiveURL)")
+    
+    let decoder = JSONDecoder()
+    if let codeData = try? Data(contentsOf: archiveURL) {
+      do {
+        contents = try decoder.decode([WidgetContent].self, from: codeData)
+      } catch {
+        print("Error: Can't decode contents")
+      }
+    }
+    return contents
+  }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-//        var entries: [WidgetContent] = []
-//
-//        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-//        let currentDate = Date()
-//        for hourOffset in 0 ..< 5 {
-//            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-//            let entry = WidgetContent(date: entryDate, emoji: "😀")
-//            entries.append(entry)
-//        }
-        let entries = [snapshotEntry]
+        var entries = readContents()
+
+        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+        let currentDate = Date()
+        let interval = 5
+      for index in 0 ..< entries.count {
+        entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
+        }
 
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
