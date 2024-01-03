@@ -29,73 +29,54 @@
 import WidgetKit
 import SwiftUI
 
+let snapshotEntry = WidgetContent(
+  name: "iOS Concurrency with GCD and Operations",
+  cardViewSubtitle: "iOS & Swift",
+  descriptionPlainText: """
+    Learn how to add concurrency to your apps! \
+    Keep your app's UI responsive to give your \
+    users a great user experience.
+    """,
+  releasedAtDateTimeString: "Jun 23 2020 • Video Course (3 hrs, 21 mins)")
+
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+    func placeholder(in context: Context) -> WidgetContent {
+      snapshotEntry
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+    func getSnapshot(in context: Context, completion: @escaping (WidgetContent) -> ()) {
+        let entry = snapshotEntry
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
-        }
+//        var entries: [WidgetContent] = []
+//
+//        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+//        let currentDate = Date()
+//        for hourOffset in 0 ..< 5 {
+//            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+//            let entry = WidgetContent(date: entryDate, emoji: "😀")
+//            entries.append(entry)
+//        }
+        let entries = [snapshotEntry]
 
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
 }
 
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let emoji: String
-}
-
-struct EmitronWidgetEntryView : View {
-    var entry: Provider.Entry
-
-    var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Emoji:")
-            Text(entry.emoji)
-        }
-    }
-}
-
 struct EmitronWidget: Widget {
-    let kind: String = "EmitronWidget"
+    private let kind: String = "EmitronWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
-                EmitronWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                EmitronWidgetEntryView(entry: entry)
-                    .padding()
-                    .background()
-            }
+        StaticConfiguration(
+          kind: kind,
+          provider: Provider()
+        ) { entry in
+            EntryView(model: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("RW Tutorials")
+        .description("See the latest video tutorials.")
     }
-}
-
-#Preview(as: .systemSmall) {
-    EmitronWidget()
-} timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
 }

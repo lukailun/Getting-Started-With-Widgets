@@ -34,7 +34,7 @@ struct EntryView: View {
   var body: some View {
     VStack(alignment: .leading) {
       Text(model.name)
-//        .font(.uiTitle4)
+        .font(.uiTitle4)
         .lineLimit(2)
         .fixedSize(horizontal: false, vertical: true)
         .padding([.trailing], 15)
