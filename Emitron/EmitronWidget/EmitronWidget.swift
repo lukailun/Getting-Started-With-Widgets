@@ -45,21 +45,82 @@ let snapshotEntry = WidgetContent(
     """,
   releasedAtDateTimeString: "Jun 23 2020 • Video Course (3 hrs, 21 mins)")
 
-struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> WidgetContent {
-      snapshotEntry
-    }
+//struct Provider: TimelineProvider {
+//    func placeholder(in context: Context) -> WidgetContent {
+//      snapshotEntry
+//    }
+//
+//    func getSnapshot(in context: Context, completion: @escaping (WidgetContent) -> ()) {
+//        let entry = snapshotEntry
+//        completion(entry)
+//    }
+//  
+//  func readContents() -> [WidgetContent] {
+//    var contents: [WidgetContent] = []
+//    let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
+//    print(">>> \(archiveURL)")
+//    
+//    let decoder = JSONDecoder()
+//    if let codeData = try? Data(contentsOf: archiveURL) {
+//      do {
+//        contents = try decoder.decode([WidgetContent].self, from: codeData)
+//      } catch {
+//        print("Error: Can't decode contents")
+//      }
+//    }
+//    return contents
+//  }
+//
+//    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+//        var entries = readContents()
+//
+//        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+//        let currentDate = Date()
+//        let interval = 5
+//      for index in 0 ..< entries.count {
+//        entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
+//        }
+//
+//        let timeline = Timeline(entries: entries, policy: .atEnd)
+//        completion(timeline)
+//    }
+//}
+//
+//struct EmitronWidget: Widget {
+//    private let kind: String = "EmitronWidget"
+//
+//    var body: some WidgetConfiguration {
+//        StaticConfiguration(
+//          kind: kind,
+//          provider: Provider()
+//        ) { entry in
+//            EntryView(model: entry)
+//        }
+//        .configurationDisplayName("RW Tutorials")
+//        .description("See the latest video tutorials.")
+//        .supportedFamilies([.systemMedium])
+//    }
+//}
 
-    func getSnapshot(in context: Context, completion: @escaping (WidgetContent) -> ()) {
-        let entry = snapshotEntry
-        completion(entry)
-    }
-  
+// MARK: - Intent Widget
+
+struct Provider: IntentTimelineProvider {
+  func placeholder(in context: Context) -> WidgetContent {
+    snapshotEntry
+  }
+
+  public func getSnapshot(
+    for configuration: TimelineIntervalIntent, in context: Context, completion: @escaping (WidgetContent) -> Void
+  ) {
+    let entry = snapshotEntry
+    completion(entry)
+  }
+
   func readContents() -> [WidgetContent] {
     var contents: [WidgetContent] = []
     let archiveURL = FileManager.sharedContainerURL().appendingPathComponent("contents.json")
     print(">>> \(archiveURL)")
-    
+
     let decoder = JSONDecoder()
     if let codeData = try? Data(contentsOf: archiveURL) {
       do {
@@ -71,33 +132,38 @@ struct Provider: TimelineProvider {
     return contents
   }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries = readContents()
+  public func getTimeline(
+    for configuration: TimelineIntervalIntent,
+    in context: Context,
+    completion: @escaping (Timeline<WidgetContent>) -> Void
+  ) {
+    var entries = readContents()
+    let interval = configuration.interval as! Int
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        let interval = 5
-      for index in 0 ..< entries.count {
-        entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
-        }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+    // Generate a timeline consisting of five entries an hour apart, starting from the current date.
+    let currentDate = Date()
+    for index in 0 ..< entries.count {
+      entries[index].date = Calendar.current.date(byAdding: .second, value: index * interval, to: currentDate)!
     }
+
+    let timeline = Timeline(entries: entries, policy: .atEnd)
+    completion(timeline)
+  }
 }
 
 struct EmitronWidget: Widget {
-    private let kind: String = "EmitronWidget"
+  private let kind: String = "EmitronWidget"
 
-    var body: some WidgetConfiguration {
-        StaticConfiguration(
-          kind: kind,
-          provider: Provider()
-        ) { entry in
-            EntryView(model: entry)
-        }
-        .configurationDisplayName("RW Tutorials")
-        .description("See the latest video tutorials.")
-        .supportedFamilies([.systemMedium])
+  public var body: some WidgetConfiguration {
+    IntentConfiguration(
+      kind: kind,
+      intent: TimelineIntervalIntent.self,
+      provider: Provider()
+    ) { entry in
+      EntryView(model: entry)
     }
+    .configurationDisplayName("RW Tutorials")
+    .description("See the latest video tutorials.")
+    .supportedFamilies([.systemMedium])
+  }
 }
