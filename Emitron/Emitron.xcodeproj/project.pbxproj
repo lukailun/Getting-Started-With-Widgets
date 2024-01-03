@@ -258,8 +258,10 @@
 		5AD14DD82B451401002E3A91 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D4529B22CAB67900BFB812 /* Date+Extensions.swift */; };
 		5AD14DD92B451404002E3A91 /* DateFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D4529722CAB3F600BFB812 /* DateFormatter+Extensions.swift */; };
 		5AD14DDA2B451407002E3A91 /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C0F0DE22D5FD4C00012839 /* TimeInterval+Extensions.swift */; };
-		5AD14DDB2B45141A002E3A91 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7DC5222C7B3FE006DD325 /* Color+Extensions.swift */; };
 		5AD14DDC2B451421002E3A91 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7DC5422C7B408006DD325 /* Font+Extensions.swift */; };
+		5AD14DDE2B451500002E3A91 /* WidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD14DDD2B451500002E3A91 /* WidgetContent.swift */; };
+		5AD14DDF2B451500002E3A91 /* WidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD14DDD2B451500002E3A91 /* WidgetContent.swift */; };
+		5AD14DE32B45165F002E3A91 /* EntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD14DE22B45165F002E3A91 /* EntryView.swift */; };
 		8B283DEF23169A1F001F1B17 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B283DEE23169A1E001F1B17 /* ProgressBarView.swift */; };
 		8B28D2B323546D0F005FCC08 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B28D2B223546D0F005FCC08 /* ActivityIndicator.swift */; };
 		8B7E96DD2357A65F0083DA38 /* ProTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7E96DC2357A65F0083DA38 /* ProTag.swift */; };
@@ -628,6 +630,8 @@
 		5ACF3FAC2B3EC7FF003FC3CF /* EmitronWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmitronWidget.swift; sourceTree = "<group>"; };
 		5ACF3FAE2B3EC801003FC3CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5ACF3FB02B3EC801003FC3CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5AD14DDD2B451500002E3A91 /* WidgetContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetContent.swift; sourceTree = "<group>"; };
+		5AD14DE22B45165F002E3A91 /* EntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryView.swift; sourceTree = "<group>"; };
 		8B283DEE23169A1E001F1B17 /* ProgressBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		8B28D2B223546D0F005FCC08 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		8B7E96DC2357A65F0083DA38 /* ProTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProTag.swift; sourceTree = "<group>"; };
@@ -1381,6 +1385,8 @@
 				5ACF3FAC2B3EC7FF003FC3CF /* EmitronWidget.swift */,
 				5ACF3FAE2B3EC801003FC3CF /* Assets.xcassets */,
 				5ACF3FB02B3EC801003FC3CF /* Info.plist */,
+				5AD14DDD2B451500002E3A91 /* WidgetContent.swift */,
+				5AD14DE22B45165F002E3A91 /* EntryView.swift */,
 			);
 			path = EmitronWidget;
 			sourceTree = "<group>";
@@ -2064,8 +2070,9 @@
 				5AD14DDA2B451407002E3A91 /* TimeInterval+Extensions.swift in Sources */,
 				5AD14DDC2B451421002E3A91 /* Font+Extensions.swift in Sources */,
 				5AD14DD92B451404002E3A91 /* DateFormatter+Extensions.swift in Sources */,
+				5AD14DDF2B451500002E3A91 /* WidgetContent.swift in Sources */,
 				5AD14DD82B451401002E3A91 /* Date+Extensions.swift in Sources */,
-				5AD14DDB2B45141A002E3A91 /* Color+Extensions.swift in Sources */,
+				5AD14DE32B45165F002E3A91 /* EntryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2302,6 +2309,7 @@
 				22F2C45D23EF79D8007ED4A1 /* ContentType+Request.swift in Sources */,
 				B6C0F0DF22D5FD4C00012839 /* TimeInterval+Extensions.swift in Sources */,
 				B6FC15D522CB68E20078CEDB /* Service.swift in Sources */,
+				5AD14DDE2B451500002E3A91 /* WidgetContent.swift in Sources */,
 				B6DF2FAF22CA498B0081A3A3 /* User.swift in Sources */,
 				2213195423EB7A6A00F15816 /* NumberIconView.swift in Sources */,
 			);
